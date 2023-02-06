@@ -30,5 +30,9 @@ https://awesomeopensource.com/project/wifiphisher/wifiphisher
  Kan deauth folk på et wifi
  kan udgive sig for at være et wifi
  
+ ## Andre ideer
+ Det kunne også være spændende på den ene eller anden måde at inkludere noget fysisk hardware i testen - dette kunne fx. være et arduino eller lignende.
+ Der findes boards esp-32 fx som har wifi og BT modul indbygget, hvorfor man evt. kan sende data til dem via dette. Ligeledes kan de også bruges til at præsentere dataen på og man kan evt. sørge for at koden kan køre på disse boards eller lignende?
+ 
  
 
