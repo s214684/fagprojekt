@@ -32,3 +32,15 @@ Lucas Tabersen
 - Everything on github has to be in English.
 - We structure our code by the PEP8 standards. 
 - One can only say a function/code is done/ready after code-review.
+
+### Linting
+use flake8
+Ignore E501 (we don't care about long lines..)
+
+add following to your settings file in vs code:
+
+"python.linting.flake8Enabled": true,
+"python.linting.mypyEnabled": true,
+"python.linting.flake8Args": ["--ignore=E501"]
+
+such that it is inside the outermost {}!
