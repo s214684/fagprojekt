@@ -4,6 +4,7 @@
 ## WiFi
 Generel information:
 https://awesomeopensource.com/project/0x90/wifi-arsenal
+https://github.com/v1s1t0r1sh3r3/airgeddon/
 
 - Wifi Cracking \
 Crack WPA/WPA2 Wi-Fi Routers\
@@ -32,7 +33,8 @@ https://awesomeopensource.com/project/wifiphisher/wifiphisher
  
  ## Andre ideer
  Det kunne også være spændende på den ene eller anden måde at inkludere noget fysisk hardware i testen - dette kunne fx. være et arduino eller lignende.
- Der findes boards esp-32 fx som har wifi og BT modul indbygget, hvorfor man evt. kan sende data til dem via dette. Ligeledes kan de også bruges til at præsentere dataen på og man kan evt. sørge for at koden kan køre på disse boards eller lignende?
+ Der findes boards esp-32 fx som har wifi og BT modul indbygget, hvorfor man evt. kan sende data til dem via dette. Ligeledes kan de også bruges til at præsentere dataen på og man kan evt. sørge for at koden kan køre på disse boards eller lignende?  Altså gør vi at vi laver en server-client forhold ml. en arduino og noget som kører i "skyen". Altså sender arduinoen blot kommandoer til serveren og evt. data med (går an på, hvor vi sætter antennen) og så laver serveren selve udførslen?
+ 
+ ### Program a 4-way-handshake
  
  
-
