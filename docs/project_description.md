@@ -2,15 +2,15 @@
 
 
 
-Project product brainstorm:
+## Product brainstorm
 
 · General:
     
-    - Pineapple, "WiFi swiss army knife".
+    - RaspberryPi Pineapple, "WiFi swiss army knife".
 
     - Man in the middle.
 
-    - Scanner that checks the networks in the area, and displays them with multiple functionalities.
+    - Checks the wifis in the area, and displays them with multiple functionalities.
 
     - Sniff all wireless traffic.
 
@@ -23,9 +23,13 @@ Project product brainstorm:
 · Required functionalities:
 
     - Listening for wireless data.
+
     - Identifying sendes and recieveres of said data
+    
     - Scanning for routers and AP's in the area.
+    
     - Gaining access to network card, read from it and send to it. (windows and macOS complications??)
+    
 
 
 
@@ -44,7 +48,7 @@ Project product brainstorm:
     
     - Reinstallation attack.
 
-    - Crack passwords.
+    - Password cracking.
 
     - Encryption/Decryption (possible out of the scope of the project).
     
