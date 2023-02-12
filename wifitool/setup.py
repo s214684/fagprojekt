@@ -1,7 +1,9 @@
 #!/usr/bin/env python
 
-from distutils.core import setup
-setup(name='wifitool',
-      version='1.0',
-      py_modules=['wifitool'],
-      )
+from setuptools import find_packages, setup
+
+setup(
+    name='wifitool',
+    version='1.0',
+    packages=find_packages('.'),
+    )
