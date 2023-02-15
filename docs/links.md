@@ -18,8 +18,8 @@ https://peps.python.org/pep-0008/
 
 
 # Create fake AP
-https://miloserdov.org/?p=1591 \n
-https://thepi.io/how-to-use-your-raspberry-pi-as-a-wireless-access-point/ \n
+https://miloserdov.org/?p=1591 \newline
+https://thepi.io/how-to-use-your-raspberry-pi-as-a-wireless-access-point/ \newline
 https://medium.com/@brunoamaroalmeida/rogueone-creating-a-rogue-wi-fi-access-point-using-a-raspberry-pi-79e1b7e628c6  - bedste artikel
 
 # Key reinstallation
