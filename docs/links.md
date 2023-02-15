@@ -23,6 +23,7 @@ https://thepi.io/how-to-use-your-raspberry-pi-as-a-wireless-access-point/ \
 https://medium.com/@brunoamaroalmeida/rogueone-creating-a-rogue-wi-fi-access-point-using-a-raspberry-pi-79e1b7e628c6  - bedste artikel \
 YT video gut der laver en rasp pi rougeAP 
 https://www.youtube.com/watch?v=tIM-kdmKhnE \
+https://trottdeaje.github.io/0xapt/wifi/rogue-ap.html - artikel fra ham shabben \
 
 
 # Key reinstallation
