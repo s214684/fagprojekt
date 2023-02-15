@@ -1,5 +1,12 @@
 # Presentation
 
+## TODO now
+- Agree on the actual project
+- Write the project description
+- Create slides
+
+
+
 ## Requirements for presentation
 - 5-10 min
 - Overview of the project
