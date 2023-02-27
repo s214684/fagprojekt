@@ -16,6 +16,9 @@ https://google.github.io/styleguide/pyguide.html
 Python PEP8 (just get a brief overview):
 https://peps.python.org/pep-0008/
 
+Scan of devices in subnet using ARP
+https://www.youtube.com/watch?v=DFTwB2nAexs
+
 
 # Create fake AP
 https://miloserdov.org/?p=1591 \
