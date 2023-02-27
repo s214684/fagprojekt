@@ -2,9 +2,16 @@
 
 from scapy.all import (Dot11, Dot11Beacon, Dot11Elt, RadioTap, sendp)
 import pandas as pd
+import logging
+
+# Create and configure logger
+logging.basicConfig(level=logging.WARNING, filename="log.log", filemode="w",
+                    format="%(asctime)s - %(filename)s - %(levelname)s: %(message)s")
+
+logging.debug("Logger created")
 
 
-def list_available_aps(packet) -> pd.da:
+def list_available_aps(packet) -> pd.DataFrame:
     """Function that is to be called from the "sniff" function as the "prn" argument which calls the function on each packet sniffed.
     The function checks whether the packet is a beacon frame, then adds the MAC address and SSID of the AP if it doesn't exist in the list.
 
@@ -15,6 +22,8 @@ def list_available_aps(packet) -> pd.da:
     Returns:
         dictionary with key as MAC addresse of AP, and value as SSID of AP
     """
+
+    logging.debug("Function 'list_available_aps' has been run")
 
     ap_list = pd.DataFrame(columns=["MAC addr", "SSID"])
 
@@ -35,6 +44,7 @@ def send_beacon_frames(MAC, SSID, iface):
         SSID (str): The SSID that wshows up for the targeted user.
         iface (str): Interface to send frames through
     """
+    logging.debug("Function 'send_beacon_frames' has been run")
 
     dot11 = Dot11(type=0, subtype=8, addr1='ff:ff:ff:ff:ff:ff', addr2=MAC, addr3=MAC)
 
