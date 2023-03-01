@@ -1,5 +1,3 @@
-# Skal nok rykkes til et andet sted...
-
 from scapy.all import (Dot11, Dot11Beacon, Dot11Elt, RadioTap, sendp)
 import pandas as pd
 from wifitool import LOGGER

@@ -28,8 +28,7 @@ def set_interface_to_monitor_mode(interface):
     os.system('ifconfig ' + interface + ' down')
     os.system('iwconfig ' + interface + ' monitor')
     os.system('ifconfig ' + interface + ' up')
-    
+
 
 def get_interface_info():
     return "interface info"
-
