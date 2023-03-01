@@ -30,6 +30,16 @@ def list_available_aps(packet) -> pd.DataFrame:
     return ap_list
 
 
+def do_for_each_packet(function, *args, **kwargs):
+    """
+    @s214584 oliver
+    used when callling the scapy sniff. This enables us to give arguments to the functions we want to call with prn.
+    E.g.
+    sniff(prn=is_seen_before(packet_to_compare))
+    """
+    return function(*args, **kwargs)
+
+
 def send_beacon_frame(MAC, SSID, iface):
     """Function to send out beacon frames using a specified MAC adresse and SSID
 
