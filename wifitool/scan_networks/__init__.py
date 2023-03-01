@@ -2,13 +2,7 @@
 
 from scapy.all import (Dot11, Dot11Beacon, Dot11Elt, RadioTap, sendp)
 import pandas as pd
-import logging
-
-# Create and configure logger
-logging.basicConfig(level=logging.WARNING, filename="log.log", filemode="w",
-                    format="%(asctime)s - %(filename)s - %(levelname)s: %(message)s")
-
-logging.debug("Logger created")
+from wifitool import LOGGER
 
 
 def list_available_aps(packet) -> pd.DataFrame:
@@ -23,7 +17,7 @@ def list_available_aps(packet) -> pd.DataFrame:
         dictionary with key as MAC addresse of AP, and value as SSID of AP
     """
 
-    logging.debug("Function 'list_available_aps' has been run")
+    LOGGER.debug("Function 'list_available_aps' is running")
 
     ap_list = pd.DataFrame(columns=["MAC addr", "SSID"])
 
@@ -36,7 +30,7 @@ def list_available_aps(packet) -> pd.DataFrame:
     return ap_list
 
 
-def send_beacon_frames(MAC, SSID, iface):
+def send_beacon_frame(MAC, SSID, iface):
     """Function to send out beacon frames using a specified MAC adresse and SSID
 
     Args:
@@ -44,7 +38,7 @@ def send_beacon_frames(MAC, SSID, iface):
         SSID (str): The SSID that wshows up for the targeted user.
         iface (str): Interface to send frames through
     """
-    logging.debug("Function 'send_beacon_frames' has been run")
+    LOGGER.debug("Function 'send_beacon_frames' is running")
 
     dot11 = Dot11(type=0, subtype=8, addr1='ff:ff:ff:ff:ff:ff', addr2=MAC, addr3=MAC)
 
@@ -53,6 +47,6 @@ def send_beacon_frames(MAC, SSID, iface):
 
     frame = RadioTap() / dot11 / beacon / essid
 
-    print("Sending beacon frames with MAC addresse: '" + MAC + "' and SSID: '" + SSID + "' through interface: '" + iface + "'.")
+    LOGGER.info("Sending beacon frames with MAC addresse: '" + MAC + "' and SSID: '" + SSID + "' through interface: '" + iface + "'.")
 
     sendp(frame, iface=iface, inter=0.100, loop=1)
