@@ -40,13 +40,12 @@ def get_ap(timeout: int, interface: str, specific_ap: str = ""):
             print(networks)
             time.sleep(0.5)
 
-    
         # interface name, check using iwconfig
-        #interface = interface
+        # interface = interface
         # start the thread that prints all the networks
-        #printer = Thread(target=print_all)
-        #printer.daemon = True
-        #printer.start()
+        # printer = Thread(target=print_all)
+        # printer.daemon = True
+        # printer.start()
 
     def _change_channel():
         """
