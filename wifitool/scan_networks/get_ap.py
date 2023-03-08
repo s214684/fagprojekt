@@ -6,6 +6,7 @@ from scapy.all import Dot11Beacon, Dot11, Dot11Elt, sniff
 from threading import Thread
 import pandas
 
+from utils import get_current_channel
 
 file_handler = logging.FileHandler(filename='tmp.log')
 file_handler.setLevel(level=logging.DEBUG)
@@ -19,13 +20,6 @@ logging.basicConfig(
 )
 LOGGER = logging.getLogger('wifitool')
 LOGGER.debug("Logger created")
-
-
-def set_interface_to_monitor_mode(interface):
-
-    os.system('ifconfig ' + interface + ' down')
-    os.system('iwconfig ' + interface + ' monitor')
-    os.system('ifconfig ' + interface + ' up')
 
 
 def stopfilter(condition):
@@ -65,7 +59,7 @@ def get_ap(timeout: int, interface: str, specific_ap: str = ""):
             os.system(f"iwconfig {interface} channel {ch}")
             # switch channel from 1 to 14 each 0.5s
             ch = (ch % 13) + 1
-            time.sleep(0.5)
+            time.sleep(0.5)  # TODO: Can we tune this?
 
     def _callback(packet):
         if packet.haslayer(Dot11Beacon):
@@ -94,6 +88,7 @@ def get_ap(timeout: int, interface: str, specific_ap: str = ""):
     networks.set_index("BSSID", inplace=True)
 
     # TODO: Save current channel
+    curr_channel = get_current_channel(iface=interface)
 
     # start the channel changer
     channel_changer = Thread(target=_change_channel)
@@ -117,4 +112,5 @@ def get_ap(timeout: int, interface: str, specific_ap: str = ""):
 
     sniff(prn=_callback, filter="type mgt subtype beacon", iface=interface, timeout=timeout)
 
+    _change_channel
     return networks
