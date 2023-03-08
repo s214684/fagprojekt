@@ -6,6 +6,7 @@ from scapy.all import Dot11Beacon, Dot11, Dot11Elt, sniff
 from threading import Thread
 import pandas
 
+
 file_handler = logging.FileHandler(filename='tmp.log')
 file_handler.setLevel(level=logging.DEBUG)
 stdout_handler = logging.StreamHandler(stream=sys.stdout)
@@ -20,57 +21,45 @@ LOGGER = logging.getLogger('wifitool')
 LOGGER.debug("Logger created")
 
 
-def test_interface(interface):
-    pass
-
-
-def setup_interface(interface):
-    pass
-
-
 def set_interface_to_monitor_mode(interface):
-    
+
     os.system('ifconfig ' + interface + ' down')
     os.system('iwconfig ' + interface + ' monitor')
     os.system('ifconfig ' + interface + ' up')
-    
-
-def get_interface_info():
-    return "interface info"
 
 
-def print_all():
-    """
-    @ https://thepacketgeek.com/scapy/sniffing-custom-actions/part-2/
-    """
-    while True:
-        os.system("clear")
-        print(networks)
-        time.sleep(0.5)
+def stopfilter(condition):
+    if condition:
+        return True
+    else:
+        return False
 
 
-def change_channel():
-    """
-    @ https://thepacketgeek.com/scapy/sniffing-custom-actions/part-2/
-    Note: Channels 12 and 13 are allowed in low-power mode, while channel 14 is banned and only allowed in Japan.
-    Thus we don't use channel 14.
-    """
-    ch = 1
-    while True:
-        os.system(f"iwconfig {interface} channel {ch}")
-        # switch channel from 1 to 14 each 0.5s
-        ch = (ch % 13) + 1
-        time.sleep(0.5)
+def get_ap(timeout: int, interface: str, specific_ap: str = ""):
 
+    def print_all():
+        """
+        @ https://thepacketgeek.com/scapy/sniffing-custom-actions/part-2/
+        """
+        while True:
+            os.system("clear")
+            print(networks)
+            time.sleep(0.5)
 
+    def _change_channel():
+        """
+        @ https://thepacketgeek.com/scapy/sniffing-custom-actions/part-2/
+        Note: Channels 12 and 13 are allowed in low-power mode, while channel 14 is banned and only allowed in Japan.
+        Thus we don't use channel 14.
+        """
+        ch = 1
+        while True:
+            os.system(f"iwconfig {interface} channel {ch}")
+            # switch channel from 1 to 14 each 0.5s
+            ch = (ch % 13) + 1
+            time.sleep(0.5)
 
-
-
-
-def get_ap(timeout, interface):
-
-
-    def callback(packet):
+    def _callback(packet):
         if packet.haslayer(Dot11Beacon):
             # extract the MAC address of the network
             bssid = packet[Dot11].addr2
@@ -105,16 +94,25 @@ def get_ap(timeout, interface):
     #printer.start()
 
     # start the channel changer
-    channel_changer = Thread(target=change_channel)
+    channel_changer = Thread(target=_change_channel)
     channel_changer.daemon = True
     channel_changer.start()
 
-    # start sniffing
-    sniff(prn=callback, iface=interface, timeout=timeout)
+    if specific_ap:
+
+        def _stopfilter(x) -> bool:
+            if x[Dot11Elt].info.decode() == specific_ap:
+                print("Stopping sniff. Recieved:")
+                print(x)
+                return True
+            else:
+                return False
+
+        sniff(prn=_callback, filter="type mgt subtype beacon", iface=interface, timeout=timeout, stop_filter=_stopfilter)
+        #if specific_ap not in networks.SSID: #NOT WORKING
+        #    raise ValueError
+        return networks[(networks.SSID == specific_ap)]
+
+    sniff(prn=_callback, filter="type mgt subtype beacon", iface=interface, timeout=timeout)
 
     return networks
-
-interface = "wlan0mon"
-
-
-print(get_ap(10, "wlan0mon"))
