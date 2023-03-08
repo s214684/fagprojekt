@@ -29,8 +29,7 @@ def list_available_aps(packet) -> pd.DataFrame:
 
 
 def do_for_each_packet(function, *args, **kwargs):
-    """
-    @s214584 oliver
+    """@s214584 oliver
     used when callling the scapy sniff. This enables us to give arguments to the functions we want to call with prn.
     E.g.
     sniff(prn=is_seen_before(packet_to_compare))
