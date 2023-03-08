@@ -37,7 +37,7 @@ def stopfilter(condition):
 
 def get_ap(timeout: int, interface: str, specific_ap: str = ""):
 
-    def print_all():
+    def _print_all():
         """
         @ https://thepacketgeek.com/scapy/sniffing-custom-actions/part-2/
         """
@@ -45,6 +45,14 @@ def get_ap(timeout: int, interface: str, specific_ap: str = ""):
             os.system("clear")
             print(networks)
             time.sleep(0.5)
+
+    
+        # interface name, check using iwconfig
+        #interface = interface
+        # start the thread that prints all the networks
+        #printer = Thread(target=print_all)
+        #printer.daemon = True
+        #printer.start()
 
     def _change_channel():
         """
@@ -85,13 +93,7 @@ def get_ap(timeout: int, interface: str, specific_ap: str = ""):
     # set the index BSSID (MAC address of the AP)
     networks.set_index("BSSID", inplace=True)
 
-
-    # interface name, check using iwconfig
-    interface = interface
-    # start the thread that prints all the networks
-    #printer = Thread(target=print_all)
-    #printer.daemon = True
-    #printer.start()
+    # TODO: Save current channel
 
     # start the channel changer
     channel_changer = Thread(target=_change_channel)
@@ -109,7 +111,7 @@ def get_ap(timeout: int, interface: str, specific_ap: str = ""):
                 return False
 
         sniff(prn=_callback, filter="type mgt subtype beacon", iface=interface, timeout=timeout, stop_filter=_stopfilter)
-        #if specific_ap not in networks.SSID: #NOT WORKING
+        # if specific_ap not in networks.SSID: #NOT WORKING
         #    raise ValueError
         return networks[(networks.SSID == specific_ap)]
 
