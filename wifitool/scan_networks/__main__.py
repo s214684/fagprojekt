@@ -45,31 +45,3 @@ os.system(f"iwconfig {INTERFACE} channel {channel}")
 #     print("Deauthenticating clients...")
 #     reason_code = random.randint(1, 68)
 #     deauth_clients(iface=INTERFACE, clients=clients, AP_mac=BSSID, reasoncode=reason_code)
-
-
-
-
-
-# # initialize the networks dataframe that will contain all access points nearby
-# networks = pandas.DataFrame(columns=["BSSID", "SSID", "dBm_Signal", "Channel", "Crypto"])
-# # set the index BSSID (MAC address of the AP)
-# networks.set_index("BSSID", inplace=True)
-
-
-# # interface name, check using iwconfig
-# interface = "wlan0mon"
-# # start the thread that prints all the networks
-# printer = Thread(target=print_all)
-# printer.daemon = True
-# printer.start()
-
-# # start the channel changer
-# channel_changer = Thread(target=change_channel)
-# channel_changer.daemon = True
-# channel_changer.start()
-
-
-# # start sniffing
-# sniff(prn=callback, iface=interface)
-
-

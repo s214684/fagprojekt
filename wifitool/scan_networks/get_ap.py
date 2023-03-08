@@ -22,8 +22,6 @@ LOGGER = logging.getLogger('wifitool')
 LOGGER.debug("Logger created")
 
 
-
-
 def stopfilter(condition):
     if condition:
         return True
