@@ -1,7 +1,22 @@
 import os
-
+import logging
+import sys
 from subprocess import PIPE, run
 from scapy.all import sniff
+
+
+file_handler = logging.FileHandler(filename='tmp.log')
+file_handler.setLevel(level=logging.DEBUG)
+stdout_handler = logging.StreamHandler(stream=sys.stdout)
+handlers = [file_handler, stdout_handler]
+
+logging.basicConfig(
+    level=logging.INFO,
+    format='[%(asctime)s]-{%(filename)s:%(lineno)d} %(levelname)s: %(message)s',
+    handlers=handlers  # type: ignore
+)
+LOGGER = logging.getLogger('wifitool')
+LOGGER.debug("Logger created")
 
 
 def out(command) -> str:
