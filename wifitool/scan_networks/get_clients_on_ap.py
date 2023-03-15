@@ -19,8 +19,6 @@ def get_clients_on_ap(timeout: int, iface: str, dst_BSSID: str) -> list:
         # Function to check whether the packet is sent from the client to AP
         fcfield = packet[Dot11].FCfield & 0x3
 
-        # the FCfield is to_ds:"XXXXXXX1 XXXXXXXX" and from_ds:"XXXXXXXX 1XXXXXXX"
-
         # Extract to_ds and from_ds values
         to_ds = (fcfield & 0x1) != 0
         from_ds = (fcfield & 0x2) != 0

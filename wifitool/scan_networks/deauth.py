@@ -7,7 +7,7 @@ def check_deauth(pkt):
     while elt and elt.ID != 0:
         elt = elt.payload[Dot11Elt]
     print(elt.info)
-    #if elt.info == SSID:
+    # if elt.info == SSID:
     deauth(pkt[Dot11].addr1, pkt[Dot11].addr2)
 
 
@@ -25,4 +25,3 @@ def deauth_clients(iface: str, clients: list[str], AP_mac: str, reasoncode: int 
 
 
 SSID = "b'Sams 9'"
-
