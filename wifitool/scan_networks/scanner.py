@@ -56,6 +56,11 @@ class Scanner:
             ch = (ch % 13) + 1
             time.sleep(0.5)  # TODO: Can we tune this?
 
+    def set_channel(self, channel: int):
+        # TODO ADD TRY STATEMENT AND CREATE EXCEPTION?
+        os.system(f"iwconfig {self.interface} channel {channel}")
+        self.curr_channel = channel
+
     def get_ap(self, timeout: int, specific_ap: str = "") -> pandas.DataFrame:
 
         def _callback(packet):
@@ -98,7 +103,6 @@ class Scanner:
             def _stopfilter(x) -> bool:
                 if x[Dot11Elt].info.decode() == specific_ap:
                     print("Stopping sniff. Recieved:")
-                    print(x)
                     return True
                 else:
                     return False
@@ -109,5 +113,6 @@ class Scanner:
             return networks[(networks.SSID == specific_ap)]
 
         sniff(prn=_callback, filter="type mgt subtype beacon", iface=self.interface, timeout=timeout)
+
 
         return networks
