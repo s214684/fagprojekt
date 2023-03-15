@@ -71,7 +71,7 @@ def get_ap(timeout: int, interface: str, specific_ap: str = ""):
                 return
             try:
                 dbm_signal = packet.dBm_AntSignal
-            except:
+            except Exception:
                 dbm_signal = "N/A"
             # extract network stats
             stats = packet[Dot11Beacon].network_stats()
