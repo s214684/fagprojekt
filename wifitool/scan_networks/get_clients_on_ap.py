@@ -17,13 +17,13 @@ def get_clients_on_ap(timeout: int, iface: str, dst_BSSID: str) -> list:
 
     def _is_packet_from_client(packet) -> bool:
         # Function to check whether the packet is sent from the client to AP
-        fcfield = packet[Dot11].FCfield
+        fcfield = packet[Dot11].FCfield & 0x3
 
-        # TODO research whether it is correct, that the FCfield is really "0000000100000000" for a to_ds and "0000000010000000" for from_ds
+        # the FCfield is to_ds:"XXXXXXX1 XXXXXXXX" and from_ds:"XXXXXXXX 1XXXXXXX"
 
         # Extract to_ds and from_ds values
-        to_ds = (fcfield & 0x0100) != 0
-        from_ds = (fcfield & 0x0200) != 0
+        to_ds = (fcfield & 0x1) != 0
+        from_ds = (fcfield & 0x2) != 0
 
         if not to_ds and from_ds:
             # Packet is sent from AP to client
