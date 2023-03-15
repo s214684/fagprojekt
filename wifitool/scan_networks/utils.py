@@ -1,5 +1,6 @@
 import os
 import logging
+import sys
 from subprocess import PIPE, run
 from scapy.all import sniff
 
@@ -16,6 +17,7 @@ logging.basicConfig(
 )
 LOGGER = logging.getLogger('wifitool')
 LOGGER.debug("Logger created")
+
 
 def out(command) -> str:
     result = run(command, stdout=PIPE, stderr=PIPE, universal_newlines=True, shell=True)
