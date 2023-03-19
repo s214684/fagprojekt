@@ -15,7 +15,7 @@ class Scanner:
         self.clients: list = []
         self.wifis: list[Wifi] = []
         self.interface = interface
-        self.curr_channel = None
+        self.curr_channel: int
 
     def __enter__(self):
         self.curr_channel = get_current_channel(iface=self.interface)
@@ -83,7 +83,7 @@ class Scanner:
                 # get the crypto
                 crypto = stats.get("crypto")
                 networks.loc[bssid] = (ssid, dbm_signal, channel, crypto)
-                
+
                 wifi = Wifi(ssid, bssid, dbm_signal, channel, crypto)
                 if wifi not in self.wifis:
                     self.wifis.append(wifi)
@@ -113,6 +113,5 @@ class Scanner:
             return networks[(networks.SSID == specific_ap)]
 
         sniff(prn=_callback, filter="type mgt subtype beacon", iface=self.interface, timeout=timeout)
-
 
         return networks

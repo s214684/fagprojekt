@@ -1,4 +1,4 @@
-from scapy.all import sendp, Dot11Elt, Dot11, RadioTap, Dot11Deauth, sniff
+from scapy.all import sendp, Dot11Elt, Dot11, RadioTap, Dot11Deauth
 
 
 def check_deauth(pkt):
