@@ -1,4 +1,4 @@
-from scapy.all import RadioTap, Dot11, Dot11Deauth, sendp
+from scapy.all import RadioTap, Dot11, Dot11Deauth, sendp, sniff
 
 
 class Wifi:
@@ -11,7 +11,7 @@ class Wifi:
         self.beacon_interval: int
         self.bitrate: int
         self.frequency_band: str
-        self.clients: list
+        self.clients: list[str] = []
 
     def __eq__(self, other):
         if (isinstance(other, Wifi)):
@@ -23,6 +23,46 @@ class Wifi:
 
     def __repr__(self):
         return str(self)
+
+    def get_clients_on_ap(self, timeout: int, iface: str) -> None:
+        """Append detected client mac-addresses to clientlist for wifi
+
+        Args:
+            timeout (int): Time to run sniff
+            iface (str): Interface to sniff
+        """
+
+        def _is_packet_from_client(packet) -> bool:
+            """Checks whether the packet is sent from the client to AP, returns true if from client"""
+            fcfield = packet[Dot11].FCfield & 0x3
+
+            # Extract to_ds and from_ds values
+            to_ds = (fcfield & 0x1) != 0
+            from_ds = (fcfield & 0x2) != 0
+
+            if not to_ds and from_ds:
+                # Packet is sent from AP to client
+                return False
+            elif to_ds and not from_ds:
+                # Packet is sent from client to AP
+                return True
+            else:
+                # Invalid configuration (e.g., ad-hoc mode)
+                raise ValueError
+
+        def _callback(packet) -> None:
+            # Checks if a packet meets requirements to be
+            # added as a client connected to the ap defined in get_clients_on_ap
+
+            if packet.haslayer(Dot11):
+                if _is_packet_from_client:  # type: ignore[truthy-function]
+                    # extract the MAC address of the client
+                    src_BSSID = packet[Dot11].addr1
+                    # check if destination address is as specified
+                    if packet[Dot11].addr2 == self.BSSID:
+                        self.clients.append(src_BSSID)
+
+        sniff(timeout=timeout, iface=iface, prn=_callback)
 
     def deauth_client(self, iface: str, target_mac: str, reason: int = 7) -> None:
         """Deauthenticate a specific client from a wifi

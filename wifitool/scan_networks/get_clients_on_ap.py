@@ -39,7 +39,7 @@ def get_clients_on_ap(timeout: int, iface: str, dst_BSSID: str) -> list:
 
         if packet.haslayer(Dot11):
 
-            if _is_packet_from_client:
+            if _is_packet_from_client:  # type: ignore[truthy-function]
                 # extract the MAC address of the client
                 src_BSSID = packet[Dot11].addr1
                 # check if destination address is as specified

