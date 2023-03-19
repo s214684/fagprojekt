@@ -48,4 +48,4 @@ def get_clients_on_ap(timeout: int, iface: str, dst_BSSID: str) -> list:
 
     sniff(timeout=timeout, iface=iface, prn=_callback)
 
-    return list(set(client_list))   
+    return list(set(client_list))
