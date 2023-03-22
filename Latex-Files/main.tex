@@ -1,6 +1,7 @@
 \documentclass{article}
 \usepackage[utf8]{inputenc}
 \usepackage[english]{babel}
+\usepackage{csquotes}
 \usepackage[left=3.5cm,right=3.5cm,top=3cm,bottom=3cm]{geometry}
 \usepackage{parskip}
 \usepackage{amssymb}
@@ -17,6 +18,10 @@
 \usepackage{listings}
 \usepackage{fancyhdr}
 \usepackage{lastpage}
+
+
+
+
 \pagestyle{fancy}
 \fancyhf{}
 \lhead{Project}
@@ -49,6 +54,10 @@
 }
 
 \lstset{style=mystyle}
+%Biblatex
+\usepackage{biblatex}
+\addbibresource{Internet.bib}
+
 
 \begin{document}
 
@@ -60,5 +69,6 @@
 \newpage
 \input{Latex-Files/Functionel Description Report}
 %\input{Rapport}
-
+\newpage
+\printbibliography %Prints bibliography
 \end{document}
