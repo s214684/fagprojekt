@@ -1,10 +1,11 @@
 import os
 import time
-from scapy.all import Dot11Beacon, Dot11, Dot11Elt, sniff
+from scapy.all import Dot11Beacon, Dot11, Dot11Elt, sniff, Dot11ProbeResp, Dot11ProbeReq, Dot11AssoReq, Dot11ReassoReq
 from threading import Thread
 import pandas
 from subprocess import PIPE, run
 
+from client import Client
 from wifi import Wifi
 from utils import get_current_channel
 
@@ -117,6 +118,33 @@ class Scanner:
 
         return networks
 
-
     def get_clients(self, timeout: int) -> pandas.DataFrame:
+        # Read probe requests and populate clients list
+        def _callback(packet):
+            if packet.haslayer(Dot11ProbeReq):
+                # extract the MAC address of the network
+                MAC = packet[Dot11].addr2
+                if MAC in clients["MAC"].values:
+                    return
+                try:
+                    RSSI = packet.dBm_AntSignal
+                except Exception:
+                    RSSI = "N/A"
+                # get the channel of the client
+                channel = stats.get("channel")
+                MAC = 1
+                clients.loc[MAC] = (RSSI, channel)
+
+                client = Client(MAC, RSSI, channel)
+                if client not in self.clients:
+                    self.clients.append(client)
         
+        clients = pandas.DataFrame(columns=["MAC", "RSSI", "Channel"])
+        # set the index BSSID (MAC address of the AP)
+        clients.set_index("MAC", inplace=True)
+
+        # start the channel changer
+        channel_changer = Thread(target=self._change_channel)
+        channel_changer.daemon = True
+        channel_changer.start()
+
