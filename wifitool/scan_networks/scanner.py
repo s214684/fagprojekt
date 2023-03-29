@@ -63,6 +63,7 @@ class Scanner:
 
     def get_ap(self, timeout: int, specific_ap: str = "") -> pandas.DataFrame:
 
+
         def _callback(packet):
             if packet.haslayer(Dot11Beacon):
                 # extract the MAC address of the network
@@ -115,3 +116,7 @@ class Scanner:
         sniff(prn=_callback, filter="type mgt subtype beacon", iface=self.interface, timeout=timeout)
 
         return networks
+
+
+    def get_clients(self, timeout: int) -> pandas.DataFrame:
+        
