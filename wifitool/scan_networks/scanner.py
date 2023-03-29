@@ -130,16 +130,14 @@ class Scanner:
                     RSSI = packet.dBm_AntSignal
                 except Exception:
                     RSSI = "N/A"
-                # get the channel of the client
-                channel = stats.get("channel")
                 MAC = 1
-                clients.loc[MAC] = (RSSI, channel)
+                clients.loc[MAC] = (RSSI)
 
-                client = Client(MAC, RSSI, channel)
+                client = Client(MAC, RSSI)
                 if client not in self.clients:
                     self.clients.append(client)
         
-        clients = pandas.DataFrame(columns=["MAC", "RSSI", "Channel"])
+        clients = pandas.DataFrame(columns=["MAC", "RSSI"])
         # set the index BSSID (MAC address of the AP)
         clients.set_index("MAC", inplace=True)
 
