@@ -13,7 +13,7 @@
 # Let clients connect to our rogue AP
 
 from scanner import Scanner
-from deauth import deauth
+from deathenticate import deauth
 from scapy.all import Dot11Elt, Dot11, sniff
 
 INTERFACE = "wlan0"
