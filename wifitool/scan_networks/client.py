@@ -2,9 +2,9 @@
 
 # Path: wifitool\scan_networks\client.py
 
-class client:
-    def __init__(self, MAC-adress, RSSI):
-        self.MAC = MAC-adress
+class Client:
+    def __init__(self, MAC_adress, RSSI):
+        self.MAC = MAC_adress
         self.RSSI: str = RSSI
         self.bitrate: int
         self.frequency_band: str

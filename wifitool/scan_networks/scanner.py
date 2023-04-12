@@ -52,18 +52,19 @@ class Scanner:
         """
         ch = 1
         while True:
-            os.system(f"iwconfig {self.interface} channel {ch}")
+            # os.system(f"iwconfig {self.interface} channel {ch}")
+            os.system(f"iw dev {self.interface} set channel {ch}")
             # switch channel from 1 to 14 each 0.5s
             ch = (ch % 13) + 1
             time.sleep(0.5)  # TODO: Can we tune this?
 
     def set_channel(self, channel: int):
         # TODO ADD TRY STATEMENT AND CREATE EXCEPTION?
-        os.system(f"iwconfig {self.interface} channel {channel}")
+        # os.system(f"iwconfig {self.interface} channel {channel}")
+        os.system(f"iw dev {self.interface} set channel {channel}")
         self.curr_channel = channel
 
     def get_ap(self, timeout: int, specific_ap: str = "") -> pandas.DataFrame:
-
 
         def _callback(packet):
             if packet.haslayer(Dot11Beacon):
@@ -136,7 +137,7 @@ class Scanner:
                 client = Client(MAC, RSSI)
                 if client not in self.clients:
                     self.clients.append(client)
-        
+
         clients = pandas.DataFrame(columns=["MAC", "RSSI"])
         # set the index BSSID (MAC address of the AP)
         clients.set_index("MAC", inplace=True)
@@ -145,4 +146,3 @@ class Scanner:
         channel_changer = Thread(target=self._change_channel)
         channel_changer.daemon = True
         channel_changer.start()
-
