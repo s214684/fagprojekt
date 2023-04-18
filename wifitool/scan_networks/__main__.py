@@ -56,7 +56,7 @@ with Scanner(INTERFACE) as scanner:
             # if pkt[Dot11].addr1 == BSSID:
             deauth(INTERFACE, BSSID, pkt[Dot11].addr2, 6)
 
-        sniff(iface=INTERFACE, prn=check_deauth, filter="type mgt")  # subtype assoc-req")  # start sniffin
+        sniff(iface=INTERFACE, prn=check_deauth, filter="type mgt", count=20)  # subtype assoc-req")  # start sniffin
 
 
 # channel = AP_info.Channel[0]
