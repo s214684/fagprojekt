@@ -15,6 +15,7 @@
 from scanner import Scanner
 from deauth import deauth
 from get_clients_on_ap import get_clients_on_ap
+import datetime
 
 INTERFACE = "wlan0"
 TIMEOUT = 20
@@ -24,15 +25,21 @@ Lukas_WEP_AP = "48:f8:b3:e4:03:04"
 
 # Create terminal menu for user to choose what to do
 def prompt_menu():
-    print("""
+    print(f"""
+
     ░▒█░░▒█░▀█▀░▒█▀▀▀░▀█▀░░░▀▀█▀▀░▒█▀▀▀█░▒█▀▀▀█░▒█░░░
-░▒█▒█▒█░▒█░░▒█▀▀░░▒█░░░░░▒█░░░▒█░░▒█░▒█░░▒█░▒█░░░
-░▒▀▄▀▄▀░▄█▄░▒█░░░░▄█▄░░░░▒█░░░▒█▄▄▄█░▒█▄▄▄█░▒█▄▄█
+    ░▒█▒█▒█░▒█░░▒█▀▀░░▒█░░░░░▒█░░░▒█░░▒█░▒█░░▒█░▒█░░░
+    ░▒▀▄▀▄▀░▄█▄░▒█░░░░▄█▄░░░░▒█░░░▒█▄▄▄█░▒█▄▄▄█░▒█▄▄█
+    
+    Created {datetime.datetime.now()}
+    By: Oliver, Nicklas & Lucas
+    1. Scan network
+    2. Show clients
+    3. Send deauth
+    
+    4. Exit
     """)
-    print("1. Scan network")
-    print("2. Show clients")
-    print("3. Send deauth")
-    print("4. Exit")
+
     action = input("Input action wanted: ").strip()
     return action
 
