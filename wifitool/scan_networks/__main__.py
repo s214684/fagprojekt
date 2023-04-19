@@ -17,40 +17,58 @@ import sys
 from deauth import deauth
 from get_clients_on_ap import get_clients_on_ap
 import datetime
+from getpass import getuser
 
+global TIMEOUT
+global INTERFACE
 INTERFACE = "wlan0"
 TIMEOUT = 20
 
-Lukas_WEP_AP = "48:f8:b3:e4:03:04"
-
 
 # Create terminal menu for user to choose what to do
-def prompt_menu(welcome: bool = False):
+def prompt_menu(welcome: bool = False, start: bool = False):
     if welcome:
-        ASCII_banner = """
+        ASCII_banner = f"""
         ░▒█░░▒█░▀█▀░▒█▀▀▀░▀█▀░░░▀▀█▀▀░▒█▀▀▀█░▒█▀▀▀█░▒█░░░
         ░▒█▒█▒█░▒█░░▒█▀▀░░▒█░░░░░▒█░░░▒█░░▒█░▒█░░▒█░▒█░░░
         ░▒▀▄▀▄▀░▄█▄░▒█░░░░▄█▄░░░░▒█░░░▒█▄▄▄█░▒█▄▄▄█░▒█▄▄█
         Time: {datetime.datetime.now()}
-        By: Lucas, Nicklas & Oliver
+        By: Lucas, Nicklas & Oliver :)
 
         Welcome to WifiTool!
         """
     else:
         ASCII_banner = ""
-    print(f"""
+
+    if start:
+        string_to_show = f"""
+        {ASCII_banner}
+        Please choose what you want to do:
+
+        1. Scan network
+        2. Get clients on AP
+        3. Options
+
+        9. Exit (Ctrl+C)
+
+        """
+    else:
+        string_to_show = f"""
     {ASCII_banner}
     Please choose what you want to do:
 
-    1. Scan network
+    1. Show APs
     2. Show clients
     3. Send deauth
-    
-    4. Exit
-    """)
+
+    9. Exit (Ctrl+C)
+
+    """
+
+    print(string_to_show)
 
     action = input("Input action wanted: ").strip()
-    return action
+    return "a." + action if start else "b." + action
 
 
 def scan_network() -> bool:
@@ -74,6 +92,15 @@ def scan_network() -> bool:
     return True
 
 
+def show_aps():
+    # Check if we have scanned the network. If so, show APs from scanner.wifis
+    if scanner.wifis:
+        print(scanner.wifis)
+    else:
+        print("No APs found. Try scanning network first.")
+        return False
+
+
 def show_clients():
     # Check if we have scanned the network. If so, we can prompt user for AP to attack from scanner.wifis
     if scanner.wifis:
@@ -87,8 +114,11 @@ def show_clients():
         target_ap = scanner.wifis[AP_to_attack].bssid
     else:
         target_ap = input("Input AP BSSID for client scan: ")
+        print("Scanning network for selected AP...")
+        target_ap = scanner.get_ap(timeout=TIMEOUT, specific_ap=target_ap)
 
     print(f"Extracting client list for AP: {target_ap}")
+    scanner.set_channel(target_ap.Channel)
     client_list = get_clients_on_ap(TIMEOUT, INTERFACE, target_ap)
     print(client_list)
 
@@ -99,27 +129,69 @@ def send_deauth():
     deauth(target_ap, target_client, INTERFACE)
 
 
-with Scanner(INTERFACE) as scanner:
-    # Clear screen
-    print("\033c")
-    # check if user wants to exit or presses ctrl+c
-    try:
-        action = prompt_menu(welcome=True)
-        while True:
-            if action == "1":
-                scan_network()
-            elif action == "2":
-                show_clients()
-            elif action == "3":
-                send_deauth()
-            elif action == "4":
-                break
-            else:
-                print("Invalid input. Try again..")
-            action = prompt_menu()
-    except KeyboardInterrupt:
-        print("\nExiting...")
-        sys.exit(0)
+def options():
+    # Let user set constants such as timeout and interface
+    global TIMEOUT
+    global INTERFACE
+    print("Current settings:")
+    print(f"Timeout: {TIMEOUT}")
+    print(f"Interface: {INTERFACE}")
+    print("Choose what to change:")
+    print("1. Timeout")
+    print("2. Interface")
+    print("3. Back")
+    choice = input("Input choice: ")
+    if choice == "1":
+        TIMEOUT = int(input("Input new timeout: "))
+    elif choice == "2":
+        INTERFACE = input("Input new interface: ")
+    elif choice == "3":
+        return
+    else:
+        print("Invalid input. Try again..")
+        options()
+
+
+def main():
+    with Scanner(INTERFACE) as scanner:
+        scanner = scanner
+        # Clear screen
+        print("\033c")
+        # check if user wants to exit or presses ctrl+c
+        try:
+            action = prompt_menu(welcome=True, start=True)
+            while True:
+                if action == "a.1":
+                    scan_network()
+                elif action == "a.2" or action == "b.2":
+                    show_clients()
+                elif action == "b.1":
+                    show_aps()
+                elif action == "b.3":
+                    send_deauth()
+                elif action == "a.3":
+                    options()
+                elif action == "a.9" or action == "b.9":
+                    break
+                else:
+                    print("Invalid input. Try again..")
+                action = prompt_menu()
+        except KeyboardInterrupt:
+            print("\nExiting...")
+            sys.exit(0)
+
+
+if __name__ == "__main__":
+    if sys.platform == "win32":
+        print("Windows detected")
+        print("Windows users are at the moment not able to use this tool.")
+        print("Please use a Linux distribution instead.")
+        exit(1)
+    if getuser() != "root":
+        print("You need to be root to run this script")
+        exit(1)
+    scanner: Scanner = None
+    main()
 
 
 """

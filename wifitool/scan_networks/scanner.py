@@ -33,10 +33,10 @@ class Scanner:
         return self
 
     def __exit__(self, exc_type, exc_value, exc_tb):
+        self.set_channel(self.curr_channel)
         os.system(f'ip link set dev {self.interface} down')
         os.system(f'iw dev {self.interface} set type managed')
         os.system(f'ip link set dev {self.interface} up')
-        # TODO: Change channel back to original channel
 
     def scan_network(self, interface: str, timeout: int = 20):
         """
@@ -74,7 +74,6 @@ class Scanner:
         self.curr_channel = channel
 
     def get_ap(self, timeout: int, specific_ap: str = "") -> pandas.DataFrame:
-
         def _callback(packet):
             if packet.haslayer(Dot11Beacon):
                 # extract the MAC address of the network
