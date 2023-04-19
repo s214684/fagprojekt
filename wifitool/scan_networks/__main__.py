@@ -58,10 +58,10 @@ def show_clients():
     if scanner.wifis:
         print("Choose AP to attack from list:")
         for i, wifi in enumerate(scanner.wifis):
-            print(f"{i}. {wifi}")
-        print(f"{len(scanner.wifis)}. User defined AP")
+            print(f"{i}. {wifi.SSID} - {wifi.BSSID}")
+        print(f"{len(scanner.wifis)+1}. User defined AP")
         AP_to_attack = int(input("Input index of AP to attack: "))
-        if AP_to_attack == len(scanner.wifis):
+        if AP_to_attack == len(scanner.wifis) + 1:
             target_ap = input("Input AP BSSID for client scan: ")
         target_ap = scanner.wifis[AP_to_attack].bssid
     else:
