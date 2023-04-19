@@ -29,14 +29,14 @@ def prompt_menu():
     print("2. Show clients")
     print("3. Send deauth")
     print("4. Exit")
-    action = input("Input action wanted: ")
+    action = input("Input action wanted: ").strip()
     return action
 
 
 def scan_network() -> bool:
     with Scanner(INTERFACE) as scanner:
         # prompt user for AP to attack
-        AP_TO_ATTACK = input("Input AP to attack ('Enter' to skip): ")
+        AP_TO_ATTACK = input("Input AP to attack ('Enter' to skip): ").strip()
 
         if AP_TO_ATTACK:
             AP_info = scanner.get_ap(timeout=TIMEOUT, specific_ap=AP_TO_ATTACK)
@@ -83,10 +83,8 @@ while True:
     elif action == "4":
         break
     else:
-        print("Invalid input")
+        print("Invalid input. Try again..")
     action = prompt_menu()
-
-
 
 
 """
