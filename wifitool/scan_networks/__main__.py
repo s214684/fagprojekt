@@ -36,19 +36,17 @@ def scan_network() -> bool:
     # prompt user for AP to attack
     AP_TO_ATTACK = input("Input AP to attack ('Enter' to skip): ").strip()
     if AP_TO_ATTACK:
-        with Scanner(INTERFACE) as scanner:
-            AP_info = scanner.get_ap(timeout=TIMEOUT, specific_ap=AP_TO_ATTACK)
-            channel = AP_info.Channel[0]
-            BSSID = AP_info.index[0]
-            # change channel to be on APs channelwifi: Wifi
-            scanner.set_channel(channel)
-        print(AP_info)
+        AP_info = scanner.get_ap(timeout=TIMEOUT, specific_ap=AP_TO_ATTACK)
+        channel = AP_info.Channel[0]
+        BSSID = AP_info.index[0]
+        # change channel to be on APs channelwifi: Wifi
+        scanner.set_channel(channel)
         print(scanner.wifis)
+        print(AP_info)
         print(f"Channel is: {channel}")
         print(f"BSSID is: {BSSID}")
     else:
-        with Scanner(INTERFACE) as scanner:
-            AP_info = scanner.get_ap(timeout=TIMEOUT)
+        AP_info = scanner.get_ap(timeout=TIMEOUT)
         print(AP_info)
         print(scanner.wifis)
     input("Press enter to continue...")
@@ -56,7 +54,19 @@ def scan_network() -> bool:
 
 
 def show_clients():
-    target_ap = input("Input AP BSSID for client scan: ")
+    # Check if we have scanned the network. If so, we can prompt user for AP to attack from scanner.wifis
+    if scanner.wifis:
+        print("Choose AP to attack from list:")
+        for i, wifi in enumerate(scanner.wifis):
+            print(f"{i}. {wifi}")
+        print(f"{len(scanner.wifis)}. User defined AP")
+        AP_to_attack = int(input("Input index of AP to attack: "))
+        if AP_to_attack == len(scanner.wifis):
+            target_ap = input("Input AP BSSID for client scan: ")
+        target_ap = scanner.wifis[AP_to_attack].bssid
+    else:
+        target_ap = input("Input AP BSSID for client scan: ")
+
     print(f"Extracting client list for AP: {target_ap}")
     client_list = get_clients_on_ap(TIMEOUT, INTERFACE, target_ap)
     print(client_list)
@@ -70,19 +80,20 @@ def send_deauth():
     input("Press enter to continue...")
 
 
-action = prompt_menu()
-while True:
-    if action == "1":
-        scan_network()
-    elif action == "2":
-        show_clients()
-    elif action == "3":
-        send_deauth()
-    elif action == "4":
-        break
-    else:
-        print("Invalid input. Try again..")
+with Scanner(INTERFACE) as scanner:
     action = prompt_menu()
+    while True:
+        if action == "1":
+            scan_network()
+        elif action == "2":
+            show_clients()
+        elif action == "3":
+            send_deauth()
+        elif action == "4":
+            break
+        else:
+            print("Invalid input. Try again..")
+        action = prompt_menu()
 
 
 """
