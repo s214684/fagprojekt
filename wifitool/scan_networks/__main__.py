@@ -94,6 +94,8 @@ def send_deauth():
 
 
 with Scanner(INTERFACE) as scanner:
+    # Clear screen
+    print("\033c")
     action = prompt_menu()
     while True:
         if action == "1":
