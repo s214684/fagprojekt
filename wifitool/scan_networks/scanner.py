@@ -3,6 +3,7 @@ import time
 from scapy.all import Dot11Beacon, Dot11, Dot11Elt, sniff, Dot11ProbeResp, Dot11ProbeReq, Dot11AssoReq, Dot11ReassoReq
 from threading import Thread
 import pandas
+from getpass import getuser
 from subprocess import PIPE, run
 
 from client import Client
@@ -11,6 +12,9 @@ from utils import get_current_channel
 
 
 class Scanner:
+    """
+    Context manager for scanning the network
+    """
     def __init__(self, interface: str):
         # self.APs: list = []
         self.clients: list = []
@@ -19,6 +23,9 @@ class Scanner:
         self.curr_channel: int
 
     def __enter__(self):
+        if getuser() != "root":
+            print("You need to be root to run this script")
+            exit(1)
         self.curr_channel = get_current_channel(iface=self.interface)
         os.system(f'ip link set dev {self.interface} down')
         os.system(f'iw dev {self.interface} set type monitor')
@@ -29,10 +36,12 @@ class Scanner:
         os.system(f'ip link set dev {self.interface} down')
         os.system(f'iw dev {self.interface} set type managed')
         os.system(f'ip link set dev {self.interface} up')
+        # TODO: Change channel back to original channel
 
     def scan_network(self, interface: str, timeout: int = 20):
         """
         Scan the network and Populate variables
+        TODO
         """
         pass
 
@@ -102,7 +111,6 @@ class Scanner:
         channel_changer.start()
 
         if specific_ap:
-
             def _stopfilter(x) -> bool:
                 if x[Dot11Elt].info.decode() == specific_ap:
                     print("Stopping sniff. Recieved:")
@@ -120,7 +128,10 @@ class Scanner:
         return networks
 
     def get_clients(self, timeout: int) -> pandas.DataFrame:
-        # Read probe requests and populate clients list
+        """ 
+        Read probe requests and populate clients list
+        The probe request is used to find the MAC address of the client as it is only clients that send probe requests
+        """
         def _callback(packet):
             if packet.haslayer(Dot11ProbeReq):
                 # extract the MAC address of the network
@@ -133,7 +144,6 @@ class Scanner:
                     RSSI = "N/A"
                 MAC = 1
                 clients.loc[MAC] = (RSSI)
-
                 client = Client(MAC, RSSI)
                 if client not in self.clients:
                     self.clients.append(client)
