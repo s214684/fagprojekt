@@ -97,18 +97,23 @@ with Scanner(INTERFACE) as scanner:
     # Clear screen
     print("\033c")
     action = prompt_menu()
-    while True:
-        if action == "1":
-            scan_network()
-        elif action == "2":
-            show_clients()
-        elif action == "3":
-            send_deauth()
-        elif action == "4":
-            break
-        else:
-            print("Invalid input. Try again..")
-        action = prompt_menu()
+    # check if user wants to exit or presses ctrl+c
+    try:
+        while True:
+            if action == "1":
+                scan_network()
+            elif action == "2":
+                show_clients()
+            elif action == "3":
+                send_deauth()
+            elif action == "4":
+                break
+            else:
+                print("Invalid input. Try again..")
+            action = prompt_menu()
+    except KeyboardInterrupt:
+        print("Exiting...")
+        exit(0)
 
 
 """
