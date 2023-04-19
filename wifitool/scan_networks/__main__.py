@@ -68,7 +68,9 @@ def prompt_menu(welcome: bool = False, start: bool = False):
     print(string_to_show)
 
     action = input("Input action wanted: ").strip()
-    return "a." + action if start else "b." + action
+    action = "a." + action if start else "b." + action
+    print(f"Action chosen: {action}")
+    return action
 
 
 def scan_network() -> bool:
