@@ -172,7 +172,7 @@ class Scanner:
         # find wifi with dst_bssid from self.wifis
         wifi = None
         for w in self.wifis:
-            if w.bssid == dst_BSSID:
+            if w.BSSID == dst_BSSID:
                 wifi = w
                 break
         if wifi is None:
