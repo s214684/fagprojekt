@@ -13,14 +13,14 @@
 # Let clients connect to our rogue AP
 
 from scanner import Scanner
+from utils import get_interface, check_system
+from wifi import Wifi
 import sys
 from deauth import deauth
 import datetime
-from getpass import getuser
 
-#global TIMEOUT
-#global INTERFACE
-INTERFACE = "wlan0"
+check_system()
+INTERFACE = get_interface()
 TIMEOUT = 20
 
 
@@ -101,18 +101,13 @@ def show_aps():
         return False
 
 
-def show_clients() -> bool:
-    # Check if we have scanned the network. If so, we can prompt user for AP to attack from scanner.wifis
-    if scanner.wifis:
-        print("Choose AP to attack from list:")
-        for i, wifi in enumerate(scanner.wifis):
-            print(f"{i}. {wifi.SSID} - {wifi.BSSID}")
-        print(f"{len(scanner.wifis)+1}. User defined AP")
-        AP_to_attack = int(input("Input index of AP to attack: "))
-        if AP_to_attack == len(scanner.wifis) + 1:
-            AP_to_attack = int(input("Input AP BSSID for client scan: "))
-        target_ap = scanner.wifis[AP_to_attack]
-    else:
+def get_ap() -> Wifi:
+    """
+    Check if we have scanned the network. If so, we can prompt user for AP to attack from scanner.wifis
+    Then in scanner.wifis find the AP with the same BSSID as the one we scanned for
+    Then check if we found the AP
+    """
+    def _get_targeted_ap():
         AP_to_attack_str = input("Input AP BSSID for client scan: ")
         print("Scanning network for selected AP...")
         scanner.get_ap(timeout=TIMEOUT, specific_ap=AP_to_attack_str)
@@ -125,7 +120,25 @@ def show_clients() -> bool:
         if not target_ap:
             print("Could not find AP in scanned APs. Try scanning network first.")
             return False
+        return target_ap
 
+    if scanner.wifis:
+        print("Choose AP to attack from list: ")
+        for i, wifi in enumerate(scanner.wifis):
+            print(f"{i}. {wifi.SSID} - {wifi.BSSID}")
+        print(f"{len(scanner.wifis)+1}. User defined AP")
+        AP_to_attack = int(input("Input index of AP to attack: "))
+        if AP_to_attack == len(scanner.wifis) + 1:
+            target_ap = _get_targeted_ap()
+        target_ap = scanner.wifis[AP_to_attack]
+    else:
+        print("No APs found. Try scanning network first.")
+        return False
+    return target_ap
+
+
+def show_clients() -> bool:
+    target_ap = get_ap()
     print(f"Extracting client list for AP: {target_ap.SSID}")
     scanner.set_channel(target_ap.channel)
     client_list = scanner.get_clients_on_ap(TIMEOUT, INTERFACE, target_ap.BSSID)
@@ -136,30 +149,8 @@ def show_clients() -> bool:
 
 
 def send_deauth():
-    # Check if we have scanned the network. If so, we can prompt user for AP to attack from scanner.wifis
-    if scanner.wifis:
-        print("Choose AP to attack from list:")
-        for i, wifi in enumerate(scanner.wifis):
-            print(f"{i}. {wifi.SSID} - {wifi.BSSID}")
-        print(f"{len(scanner.wifis)+1}. User defined AP")
-        AP_to_attack = int(input("Input index of AP to attack: "))
-        if AP_to_attack == len(scanner.wifis) + 1:
-            AP_to_attack = int(input("Input AP BSSID for client scan: "))
-        target_ap = scanner.wifis[AP_to_attack]
-    # If we haven't scanned the network, prompt user for AP to attack
-    else:
-        AP_to_attack = input("Input AP BSSID for client scan: ")
-        print("Scanning network for selected AP...")
-        scanner.get_ap(timeout=TIMEOUT, specific_ap=AP_to_attack)
-        # in scanner.wifis find the AP with the same BSSID as the one we scanned for
-        for wifi in scanner.wifis:
-            if wifi.BSSID == AP_to_attack:
-                target_ap = wifi
-                break
-        # check if we found the AP
-        if not target_ap:
-            print("Could not find AP in scanned APs. Try scanning network first.")
-            return False
+    target_ap = get_ap()
+    scanner.set_channel(target_ap.channel)
 
     # Check if we have clients on the AP. If so, prompt user for client to deauth
     if target_ap.clients:
@@ -202,15 +193,6 @@ def options():
         print("Invalid input. Try again..")
         options()
 
-
-if sys.platform == "win32":
-    print("Windows detected")
-    print("Windows users are at the moment not able to use this tool.")
-    print("Please use a Linux distribution instead.")
-    exit(1)
-if getuser() != "root":
-    print("You need to be root to run this script")
-    exit(1)
 
 with Scanner(INTERFACE) as scanner:
     scanner = scanner
