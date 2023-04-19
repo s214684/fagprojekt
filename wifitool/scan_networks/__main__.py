@@ -128,7 +128,7 @@ def show_clients():
             return False
 
     print(f"Extracting client list for AP: {target_ap.SSID}")
-    scanner.set_channel(target_ap.Channel)
+    scanner.set_channel(target_ap.channel)
     client_list = get_clients_on_ap(TIMEOUT, INTERFACE, target_ap.BSSID)
     print(client_list)
 
