@@ -112,16 +112,25 @@ def show_clients():
         print(f"{len(scanner.wifis)+1}. User defined AP")
         AP_to_attack = int(input("Input index of AP to attack: "))
         if AP_to_attack == len(scanner.wifis) + 1:
-            target_ap = input("Input AP BSSID for client scan: ")
-        target_ap = scanner.wifis[AP_to_attack].BSSID
+            AP_to_attack = int(input("Input AP BSSID for client scan: "))
+        target_ap = scanner.wifis[AP_to_attack]
     else:
-        target_ap = input("Input AP BSSID for client scan: ")
+        AP_to_attack = input("Input AP BSSID for client scan: ")
         print("Scanning network for selected AP...")
-        target_ap = scanner.get_ap(timeout=TIMEOUT, specific_ap=target_ap)
+        scanner.get_ap(timeout=TIMEOUT, specific_ap=AP_to_attack)
+        # in scanner.wifis find the AP with the same BSSID as the one we scanned for
+        for wifi in scanner.wifis:
+            if wifi.BSSID == AP_to_attack:
+                target_ap = wifi
+                break
+        # check if we found the AP
+        if not target_ap:
+            print("Could not find AP in scanned APs. Try scanning network first.")
+            return False
 
-    print(f"Extracting client list for AP: {target_ap}")
+    print(f"Extracting client list for AP: {target_ap.SSID}")
     scanner.set_channel(target_ap.Channel)
-    client_list = get_clients_on_ap(TIMEOUT, INTERFACE, target_ap)
+    client_list = get_clients_on_ap(TIMEOUT, INTERFACE, target_ap.BSSID)
     print(client_list)
 
 
@@ -194,12 +203,6 @@ with Scanner(INTERFACE) as scanner:
     except KeyboardInterrupt:
         print("\nExiting...")
         sys.exit(0)
-
-
-
-
-
-
 
 
 """
