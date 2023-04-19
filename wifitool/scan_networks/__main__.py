@@ -24,6 +24,11 @@ Lukas_WEP_AP = "48:f8:b3:e4:03:04"
 
 # Create terminal menu for user to choose what to do
 def prompt_menu():
+    print("""
+    ░▒█░░▒█░▀█▀░▒█▀▀▀░▀█▀░░░▀▀█▀▀░▒█▀▀▀█░▒█▀▀▀█░▒█░░░
+░▒█▒█▒█░▒█░░▒█▀▀░░▒█░░░░░▒█░░░▒█░░▒█░▒█░░▒█░▒█░░░
+░▒▀▄▀▄▀░▄█▄░▒█░░░░▄█▄░░░░▒█░░░▒█▄▄▄█░▒█▄▄▄█░▒█▄▄█
+    """)
     print("1. Scan network")
     print("2. Show clients")
     print("3. Send deauth")
@@ -46,6 +51,7 @@ def scan_network() -> bool:
         print(f"Channel is: {channel}")
         print(f"BSSID is: {BSSID}")
     else:
+        print("Scanning network for APs...")
         AP_info = scanner.get_ap(timeout=TIMEOUT)
         print(AP_info)
         print(scanner.wifis)
