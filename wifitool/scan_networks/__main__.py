@@ -21,6 +21,7 @@ from getpass import getuser
 
 global TIMEOUT
 global INTERFACE
+global scanner
 INTERFACE = "wlan0"
 TIMEOUT = 20
 
