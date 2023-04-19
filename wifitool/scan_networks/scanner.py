@@ -157,3 +157,69 @@ class Scanner:
         channel_changer = Thread(target=self._change_channel)
         channel_changer.daemon = True
         channel_changer.start()
+
+    def get_clients_on_ap(self, timeout: int, iface: str, dst_BSSID: str) -> list[str]:
+        """Function to create a list of the clients communicating with a certain AP
+
+        Args:
+            timeout (int): Time to run sniff
+            iface (str): Interface to sniff
+            dst_BSSID (str): AP from which clients will be listed
+
+        Returns:
+            list: List of unique clients that are connected to the AP specified
+        """
+        # find wifi with dst_bssid from self.wifis
+        wifi = None
+        for w in self.wifis:
+            if w.bssid == dst_BSSID:
+                wifi = w
+                break
+        if wifi is None:
+            raise ValueError("Could not find wifi with specified BSSID")
+
+        client_list = []
+
+        def _is_packet_from_client(packet) -> bool:
+            """Function to check whether the packet is sent from client or AP"""
+
+            DS = packet.FCfield & 0x3
+            to_ds = DS & 0x1 != 0
+            from_ds = DS & 0x2 != 0
+
+            # to_ds betyder at addr1 vil være AP, og addr2 vil være client.
+
+            if not to_ds and from_ds:
+                # Packet is sent from AP to client
+                return False
+            elif to_ds and not from_ds:
+                # Packet is sent from client to AP
+                return True
+            else:
+                # Invalid configuration (e.g., ad-hoc mode)
+                return False
+
+        def _callback(packet) -> None:
+            """Checks conditions, and adds clients to list"""
+
+            if packet.haslayer(Dot11):
+
+                if _is_packet_from_client(packet):  # type: ignore[truthy-function]
+                    # extract the MAC address of the client
+                    src_BSSID = packet[Dot11].addr2
+                    # check if destination address is as specified
+                    if packet[Dot11].addr1 == dst_BSSID:
+                        client_list.append(src_BSSID)
+
+        sniff(timeout=timeout, iface=iface, prn=_callback)
+
+        if client_list == []:
+            print("Found no clients, trying again...")
+            sniff(timeout=timeout, iface=iface, prn=_callback)
+
+        print("Finished scanning")
+        # Add clients to wifi object if they are not already there
+        for client in client_list:
+            if client not in wifi.clients:
+                wifi.clients.append(client)
+        return list(set(client_list))
