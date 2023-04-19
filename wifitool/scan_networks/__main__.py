@@ -97,9 +97,9 @@ def send_deauth():
 with Scanner(INTERFACE) as scanner:
     # Clear screen
     print("\033c")
-    action = prompt_menu()
     # check if user wants to exit or presses ctrl+c
     try:
+        action = prompt_menu()
         while True:
             if action == "1":
                 scan_network()
@@ -113,7 +113,7 @@ with Scanner(INTERFACE) as scanner:
                 print("Invalid input. Try again..")
             action = prompt_menu()
     except KeyboardInterrupt:
-        print("Exiting...")
+        print("\nExiting...")
         sys.exit(0)
 
 
