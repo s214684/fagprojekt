@@ -25,15 +25,20 @@ Lukas_WEP_AP = "48:f8:b3:e4:03:04"
 
 
 # Create terminal menu for user to choose what to do
-def prompt_menu():
-    print(f"""
+def prompt_menu(welcome: bool = False):
+    if welcome:
+        ASCII_banner = """
+        ░▒█░░▒█░▀█▀░▒█▀▀▀░▀█▀░░░▀▀█▀▀░▒█▀▀▀█░▒█▀▀▀█░▒█░░░
+        ░▒█▒█▒█░▒█░░▒█▀▀░░▒█░░░░░▒█░░░▒█░░▒█░▒█░░▒█░▒█░░░
+        ░▒▀▄▀▄▀░▄█▄░▒█░░░░▄█▄░░░░▒█░░░▒█▄▄▄█░▒█▄▄▄█░▒█▄▄█
+        Time: {datetime.datetime.now()}
+        By: Lucas, Nicklas & Oliver
 
-    ░▒█░░▒█░▀█▀░▒█▀▀▀░▀█▀░░░▀▀█▀▀░▒█▀▀▀█░▒█▀▀▀█░▒█░░░
-    ░▒█▒█▒█░▒█░░▒█▀▀░░▒█░░░░░▒█░░░▒█░░▒█░▒█░░▒█░▒█░░░
-    ░▒▀▄▀▄▀░▄█▄░▒█░░░░▄█▄░░░░▒█░░░▒█▄▄▄█░▒█▄▄▄█░▒█▄▄█
-    
-    Created {datetime.datetime.now()}
-    By: Oliver, Nicklas & Lucas
+        """
+    else:
+        ASCII_banner = ""
+    print(f"""
+    {ASCII_banner}
     1. Scan network
     2. Show clients
     3. Send deauth
@@ -97,7 +102,7 @@ def send_deauth():
 with Scanner(INTERFACE) as scanner:
     # Clear screen
     print("\033c")
-    action = prompt_menu()
+    action = prompt_menu(welcome=True)
     # check if user wants to exit or presses ctrl+c
     try:
         while True:
