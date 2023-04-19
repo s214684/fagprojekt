@@ -111,7 +111,7 @@ def show_clients():
         AP_to_attack = int(input("Input index of AP to attack: "))
         if AP_to_attack == len(scanner.wifis) + 1:
             target_ap = input("Input AP BSSID for client scan: ")
-        target_ap = scanner.wifis[AP_to_attack].bssid
+        target_ap = scanner.wifis[AP_to_attack].BSSID
     else:
         target_ap = input("Input AP BSSID for client scan: ")
         print("Scanning network for selected AP...")
