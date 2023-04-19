@@ -121,10 +121,12 @@ class Scanner:
             sniff(prn=_callback, filter="type mgt subtype beacon", iface=self.interface, timeout=timeout, stop_filter=_stopfilter)
             # if specific_ap not in networks.SSID: #NOT WORKING
             #    raise ValueError
-            return networks[(networks.SSID == specific_ap)]
+            try:
+                return networks[(networks.SSID == specific_ap)]
+            except KeyError:
+                return networks
 
         sniff(prn=_callback, filter="type mgt subtype beacon", iface=self.interface, timeout=timeout)
-
         return networks
 
     def get_clients(self, timeout: int) -> pandas.DataFrame:
