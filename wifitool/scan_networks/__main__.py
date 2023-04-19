@@ -34,25 +34,24 @@ def prompt_menu():
 
 
 def scan_network() -> bool:
-    with Scanner(INTERFACE) as scanner:
-        # prompt user for AP to attack
-        AP_TO_ATTACK = input("Input AP to attack ('Enter' to skip): ").strip()
-
-        if AP_TO_ATTACK:
+    # prompt user for AP to attack
+    AP_TO_ATTACK = input("Input AP to attack ('Enter' to skip): ").strip()
+    if AP_TO_ATTACK:
+        with Scanner(INTERFACE) as scanner:
             AP_info = scanner.get_ap(timeout=TIMEOUT, specific_ap=AP_TO_ATTACK)
-            print(AP_info)
-            print(scanner.wifis)
             channel = AP_info.Channel[0]
             BSSID = AP_info.index[0]
             # change channel to be on APs channelwifi: Wifi
             scanner.set_channel(channel)
-
-            print(f"Channel is: {channel}")
-            print(f"BSSID is: {BSSID}")
-        else:
+        print(AP_info)
+        print(scanner.wifis)
+        print(f"Channel is: {channel}")
+        print(f"BSSID is: {BSSID}")
+    else:
+        with Scanner(INTERFACE) as scanner:
             AP_info = scanner.get_ap(timeout=TIMEOUT)
-            print(AP_info)
-            print(scanner.wifis)
+        print(AP_info)
+        print(scanner.wifis)
     input("Press enter to continue...")
     return True
 
