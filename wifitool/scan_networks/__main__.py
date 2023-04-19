@@ -143,8 +143,10 @@ def options():
     choice = input("Input choice: ")
     if choice == "1":
         TIMEOUT = int(input("Input new timeout: "))
+        options()
     elif choice == "2":
         INTERFACE = input("Input new interface: ")
+        options()
     elif choice == "3":
         return
     else:
@@ -171,6 +173,7 @@ def main():
                     send_deauth()
                 elif action == "a.3":
                     options()
+                    action = prompt_menu(start=True)
                 elif action == "a.9" or action == "b.9":
                     break
                 else:
