@@ -19,8 +19,8 @@ from get_clients_on_ap import get_clients_on_ap
 import datetime
 from getpass import getuser
 
-global TIMEOUT
-global INTERFACE
+#global TIMEOUT
+#global INTERFACE
 INTERFACE = "wlan0"
 TIMEOUT = 20
 
@@ -136,7 +136,7 @@ def show_clients():
 def send_deauth():
     target_ap = input("Input AP BSSID for deauth: ")
     target_client = input("Input client MAC for deauth: ")
-    deauth(target_ap, target_client, INTERFACE)
+    deauth(INTERFACE, target_ap, target_client)
 
 
 def options():
