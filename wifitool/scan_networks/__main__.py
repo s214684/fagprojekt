@@ -163,8 +163,10 @@ def main():
         print("\033c")
         # check if user wants to exit or presses ctrl+c
         try:
+            start = True
             action = prompt_menu(welcome=True, start=True)
             while True:
+                start = False
                 if action == "a.1":
                     scan_network()
                 elif action == "a.2" or action == "b.2":
@@ -175,12 +177,12 @@ def main():
                     send_deauth()
                 elif action == "a.3":
                     options()
-                    action = prompt_menu(start=True)
+                    start = True
                 elif action == "a.9" or action == "b.9":
                     break
                 else:
                     print("Invalid input. Try again..")
-                action = prompt_menu()
+                action = prompt_menu(start=start)
         except KeyboardInterrupt:
             print("\nExiting...")
             sys.exit(0)
