@@ -159,9 +159,12 @@ def send_deauth():
             print(f"{i}. {client}")
         print(f"{len(target_ap.clients)+1}. User defined client")
         client_to_deauth = int(input("Input index of client to deauth: "))
+
         if client_to_deauth == len(target_ap.clients) + 1:
-            client_to_deauth = int(input("Input client MAC for deauth: "))
-        target_client = target_ap.clients[client_to_deauth]
+            target_client = input("Input client MAC for deauth: ")
+        else:
+            target_client = target_ap.clients[client_to_deauth]
+        
     # If we don't have clients on the AP, prompt user for client to deauth
     else:
         target_client = input("Input client MAC for deauth: ")
