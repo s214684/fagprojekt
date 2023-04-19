@@ -128,7 +128,7 @@ class Scanner:
         sniff(prn=_callback, filter="type mgt subtype beacon", iface=self.interface, timeout=timeout)
         return networks
 
-    def get_clients(self, timeout: int) -> pandas.DataFrame:
+    def get_clients_on_ap_probe(self, timeout: int) -> pandas.DataFrame:
         """
         Read probe requests and populate clients list
         The probe request is used to find the MAC address of the client as it is only clients that send probe requests
@@ -143,8 +143,7 @@ class Scanner:
                     RSSI = packet.dBm_AntSignal
                 except Exception:
                     RSSI = "N/A"
-                MAC = 1
-                clients.loc[MAC] = (RSSI)
+                clients.loc[MAC] = (MAC, RSSI)
                 client = Client(MAC, RSSI)
                 if client not in self.clients:
                     self.clients.append(client)
@@ -152,11 +151,7 @@ class Scanner:
         clients = pandas.DataFrame(columns=["MAC", "RSSI"])
         # set the index BSSID (MAC address of the AP)
         clients.set_index("MAC", inplace=True)
-
-        # start the channel changer
-        channel_changer = Thread(target=self._change_channel)
-        channel_changer.daemon = True
-        channel_changer.start()
+        sniff(prn=_callback, filter="type mgt subtype probe-req", iface=self.interface, timeout=timeout)
 
     def get_clients_on_ap(self, timeout: int, iface: str, dst_BSSID: str) -> list[str]:
         """Function to create a list of the clients communicating with a certain AP

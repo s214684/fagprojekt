@@ -164,7 +164,7 @@ def send_deauth():
             target_client = input("Input client MAC for deauth: ")
         else:
             target_client = target_ap.clients[client_to_deauth]
-        
+
     # If we don't have clients on the AP, prompt user for client to deauth
     else:
         target_client = input("Input client MAC for deauth: ")
