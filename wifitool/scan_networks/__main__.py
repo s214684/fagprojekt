@@ -102,10 +102,9 @@ def send_deauth():
 with Scanner(INTERFACE) as scanner:
     # Clear screen
     print("\033c")
-    action = prompt_menu(welcome=True)
     # check if user wants to exit or presses ctrl+c
     try:
-        action = prompt_menu()
+        action = prompt_menu(welcome=True)
         while True:
             if action == "1":
                 scan_network()
