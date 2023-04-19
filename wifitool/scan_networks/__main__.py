@@ -13,6 +13,7 @@
 # Let clients connect to our rogue AP
 
 from scanner import Scanner
+import sys
 from deauth import deauth
 from get_clients_on_ap import get_clients_on_ap
 import datetime
@@ -113,7 +114,7 @@ with Scanner(INTERFACE) as scanner:
             action = prompt_menu()
     except KeyboardInterrupt:
         print("Exiting...")
-        exit(0)
+        sys.exit(0)
 
 
 """
