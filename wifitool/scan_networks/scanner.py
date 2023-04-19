@@ -1,6 +1,6 @@
 import os
 import time
-from scapy.all import Dot11Beacon, Dot11, Dot11Elt, sniff, Dot11ProbeResp, Dot11ProbeReq, Dot11AssoReq, Dot11ReassoReq
+from scapy.all import Dot11Beacon, Dot11, Dot11Elt, sniff, Dot11ProbeReq
 from threading import Thread
 import pandas
 from getpass import getuser
@@ -129,7 +129,7 @@ class Scanner:
         return networks
 
     def get_clients(self, timeout: int) -> pandas.DataFrame:
-        """ 
+        """
         Read probe requests and populate clients list
         The probe request is used to find the MAC address of the client as it is only clients that send probe requests
         """
