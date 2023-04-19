@@ -21,7 +21,6 @@ from getpass import getuser
 
 global TIMEOUT
 global INTERFACE
-global scanner
 INTERFACE = "wlan0"
 TIMEOUT = 20
 
@@ -157,49 +156,50 @@ def options():
         options()
 
 
-def main():
-    with Scanner(INTERFACE) as scanner:
-        scanner = scanner
-        # Clear screen
-        print("\033c")
-        # check if user wants to exit or presses ctrl+c
-        try:
-            start = True
-            action = prompt_menu(welcome=True, start=True)
-            while True:
-                start = False
-                if action == "a.1":
-                    scan_network()
-                elif action == "a.2" or action == "b.2":
-                    show_clients()
-                elif action == "b.1":
-                    show_aps()
-                elif action == "b.3":
-                    send_deauth()
-                elif action == "a.3":
-                    options()
-                    start = True
-                elif action == "a.9" or action == "b.9":
-                    break
-                else:
-                    print("Invalid input. Try again..")
-                action = prompt_menu(start=start)
-        except KeyboardInterrupt:
-            print("\nExiting...")
-            sys.exit(0)
+if sys.platform == "win32":
+    print("Windows detected")
+    print("Windows users are at the moment not able to use this tool.")
+    print("Please use a Linux distribution instead.")
+    exit(1)
+if getuser() != "root":
+    print("You need to be root to run this script")
+    exit(1)
+
+with Scanner(INTERFACE) as scanner:
+    scanner = scanner
+    # Clear screen
+    print("\033c")
+    # check if user wants to exit or presses ctrl+c
+    try:
+        start = True
+        action = prompt_menu(welcome=True, start=True)
+        while True:
+            start = False
+            if action == "a.1":
+                scan_network()
+            elif action == "a.2" or action == "b.2":
+                show_clients()
+            elif action == "b.1":
+                show_aps()
+            elif action == "b.3":
+                send_deauth()
+            elif action == "a.3":
+                options()
+                start = True
+            elif action == "a.9" or action == "b.9":
+                break
+            else:
+                print("Invalid input. Try again..")
+            action = prompt_menu(start=start)
+    except KeyboardInterrupt:
+        print("\nExiting...")
+        sys.exit(0)
 
 
-if __name__ == "__main__":
-    if sys.platform == "win32":
-        print("Windows detected")
-        print("Windows users are at the moment not able to use this tool.")
-        print("Please use a Linux distribution instead.")
-        exit(1)
-    if getuser() != "root":
-        print("You need to be root to run this script")
-        exit(1)
-    scanner: Scanner = None
-    main()
+
+
+
+
 
 
 """
