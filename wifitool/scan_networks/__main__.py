@@ -13,14 +13,14 @@
 # Let clients connect to our rogue AP
 
 from scanner import Scanner
-from utils import get_interface, check_system
+from utils import get_iface, check_system
 from wifi import Wifi
 import sys
 from deauth import deauth
 import datetime
 
 check_system()
-INTERFACE = get_interface()
+INTERFACE = get_iface()
 TIMEOUT = 20
 
 
