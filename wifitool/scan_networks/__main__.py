@@ -34,11 +34,14 @@ def prompt_menu(welcome: bool = False):
         Time: {datetime.datetime.now()}
         By: Lucas, Nicklas & Oliver
 
+        Welcome to WifiTool!
         """
     else:
         ASCII_banner = ""
     print(f"""
     {ASCII_banner}
+    Please choose what you want to do:
+
     1. Scan network
     2. Show clients
     3. Send deauth
@@ -68,7 +71,6 @@ def scan_network() -> bool:
         AP_info = scanner.get_ap(timeout=TIMEOUT)
         print(AP_info)
         print(scanner.wifis)
-    input("Press enter to continue...")
     return True
 
 
@@ -89,14 +91,12 @@ def show_clients():
     print(f"Extracting client list for AP: {target_ap}")
     client_list = get_clients_on_ap(TIMEOUT, INTERFACE, target_ap)
     print(client_list)
-    input("Press enter to continue...")
 
 
 def send_deauth():
     target_ap = input("Input AP BSSID for deauth: ")
     target_client = input("Input client MAC for deauth: ")
     deauth(target_ap, target_client, INTERFACE)
-    input("Press enter to continue...")
 
 
 with Scanner(INTERFACE) as scanner:
