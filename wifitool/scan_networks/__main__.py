@@ -14,7 +14,6 @@
 
 from scanner import Scanner
 from deauth import deauth
-from scapy.all import Dot11Elt, Dot11, sniff
 from get_clients_on_ap import get_clients_on_ap
 
 INTERFACE = "wlan0"
@@ -124,12 +123,6 @@ with Scanner(INTERFACE) as scanner:
     elif action == "4":
         exit()
 """
-
-
-
-
-
-
 
 # channel = AP_info.Channel[0]
 # BSSID = AP_info.index[0]
