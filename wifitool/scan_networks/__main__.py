@@ -96,6 +96,11 @@ def scan_network() -> bool:
     scanner.get_clients(timeout=TIMEOUT)
     print(scanner.clients)
 
+    # using probe requests to get clients on AP
+    for wifi in scanner.wifis:
+        print(f"Scanning network for clients on {wifi.SSID}...")
+        scanner.get_clients_on_ap_probe(5, INTERFACE, wifi.BSSID)
+
     return True
 
 
