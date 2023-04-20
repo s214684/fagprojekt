@@ -261,6 +261,12 @@ class Scanner:
                     # check if destination address is as specified
                     if packet[Dot11].addr1 in wifis_list_of_bssid:
                         client_list.append([src_BSSID, packet[Dot11].addr1])
+                else:
+                    # extract the MAC address of the Client
+                    dst_BSSID = packet[Dot11].addr1
+                    # check if source address is as specified
+                    if packet[Dot11].addr2 in wifis_list_of_bssid:
+                        client_list.append([dst_BSSID, packet[Dot11].addr2])
 
         sniff(timeout=timeout, iface=self.interface, prn=_callback)
 
@@ -276,4 +282,4 @@ class Scanner:
                 if wifi.BSSID == client[1]:
                     if client[0] not in wifi.clients:
                         wifi.clients.append(client[0])
-        return list(set(client_list[0]))
+        return list(set(client_list[0])) if client_list != [] else []
