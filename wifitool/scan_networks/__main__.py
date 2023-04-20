@@ -90,6 +90,12 @@ def scan_network() -> bool:
         AP_info = scanner.get_ap(timeout=TIMEOUT)
         print(AP_info)
         print(scanner.wifis)
+
+    # scan network for clients as well
+    print("Scanning network for clients...")
+    scanner.get_clients(timeout=TIMEOUT)
+    print(scanner.clients)
+
     return True
 
 

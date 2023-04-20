@@ -218,3 +218,62 @@ class Scanner:
             if client not in wifi.clients:
                 wifi.clients.append(client)
         return list(set(client_list))
+
+    def get_clients(self, timeout: int) -> list[str]:
+        """Function to populate the clients list of each AP
+
+        Args:
+            timeout (int): Time to run sniff
+
+        Returns:
+            list: List of unique clients that are connected to the AP specified
+        """
+        client_list = []
+        wifis_list_of_bssid = [wifi.BSSID for wifi in self.wifis]
+
+        def _is_packet_from_client(packet) -> bool:
+            """Function to check whether the packet is sent from client or AP"""
+
+            DS = packet.FCfield & 0x3
+            to_ds = DS & 0x1 != 0
+            from_ds = DS & 0x2 != 0
+
+            # to_ds betyder at addr1 vil være AP, og addr2 vil være client.
+
+            if not to_ds and from_ds:
+                # Packet is sent from AP to client
+                return False
+            elif to_ds and not from_ds:
+                # Packet is sent from client to AP
+                return True
+            else:
+                # Invalid configuration (e.g., ad-hoc mode)
+                return False
+
+        def _callback(packet) -> None:
+            """Checks conditions, and adds clients to list"""
+
+            if packet.haslayer(Dot11):
+
+                if _is_packet_from_client(packet):  # type: ignore[truthy-function]
+                    # extract the MAC address of the client
+                    src_BSSID = packet[Dot11].addr2
+                    # check if destination address is as specified
+                    if packet[Dot11].addr1 in wifis_list_of_bssid:
+                        client_list.append([src_BSSID, packet[Dot11].addr1])
+
+        sniff(timeout=timeout, iface=self.interface, prn=_callback)
+
+        if client_list == []:
+            print("Found no clients, trying again...")
+            sniff(timeout=timeout, iface=self.interface, prn=_callback)
+
+        print("Finished scanning")
+        # Add clients to wifi if they communicated with wifi and are not already there
+        for client in client_list:
+            # find wifi that client communicated with
+            for wifi in self.wifis:
+                if wifi.BSSID == client[1]:
+                    if client[0] not in wifi.clients:
+                        wifi.clients.append(client[0])
+        return list(set(client_list[0]))
