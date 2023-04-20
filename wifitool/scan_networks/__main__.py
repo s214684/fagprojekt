@@ -216,6 +216,8 @@ with Scanner(INTERFACE) as scanner:
     print("\033c")
     # check if user wants to exit or presses ctrl+c
     try:
+        # Clear screen
+        print("\033c")
         start = True
         action = prompt_menu(welcome=True, start=True)
         while True:
@@ -241,17 +243,3 @@ with Scanner(INTERFACE) as scanner:
     except KeyboardInterrupt:
         print("\nExiting...")
         sys.exit(0)
-
-
-# channel = AP_info.Channel[0]
-# BSSID = AP_info.index[0]
-# print(AP_info.Channel)
-# print(BSSID[0])
-# os.system(f"iwconfig {INTERFACE} channel {channel}")
-# # clients = get_clients_on_ap(timeout=10, iface=INTERFACE, BSSID=BSSID)
-
-# # Deauth clients
-# while True:
-#     print("Deauthenticating clients...")
-#     reason_code = random.randint(1, 68)
-#     deauth_clients(iface=INTERFACE, clients=clients, AP_mac=BSSID, reasoncode=reason_code)
