@@ -60,6 +60,7 @@ def prompt_menu(welcome: bool = False, start: bool = False):
     2. Show clients
     3. Send deauth
 
+    8. Back to start
     9. Exit (Ctrl+C)
 
     """
@@ -217,6 +218,8 @@ with Scanner(INTERFACE) as scanner:
                 send_deauth()
             elif action == "a.3":
                 options()
+                start = True
+            elif action == "b.8":
                 start = True
             elif action == "a.9" or action == "b.9":
                 break
