@@ -222,11 +222,11 @@ with Scanner(INTERFACE) as scanner:
     print("\033c")
     # check if user wants to exit or presses ctrl+c
     try:
-        # Clear screen
-        print("\033c")
         start = True
         action = prompt_menu(welcome=True, start=True)
         while True:
+            # Clear screen
+            print("\033c")
             start = False
             if action == "a.1":
                 scan_network()
