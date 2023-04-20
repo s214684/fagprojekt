@@ -81,7 +81,9 @@ class Scanner:
                 packet[Dot11]
                 # get the name of it
                 ssid = packet[Dot11Elt].info.decode()
-                if ssid in networks["SSID"].values or ssid.strip() == "":
+                if not ssid:
+                    ssid = "'Hidden SSID'"
+                if ssid in networks["SSID"].values:
                     return
                 try:
                     dbm_signal = packet.dBm_AntSignal
