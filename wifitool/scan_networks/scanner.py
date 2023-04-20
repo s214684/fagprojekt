@@ -81,7 +81,7 @@ class Scanner:
                 packet[Dot11]
                 # get the name of it
                 ssid = packet[Dot11Elt].info.decode()
-                if not ssid:
+                if not packet.info:
                     ssid = "'Hidden SSID'"
                 if ssid in networks["SSID"].values:
                     return
