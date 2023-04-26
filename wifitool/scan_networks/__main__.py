@@ -150,7 +150,7 @@ def show_clients() -> bool:
         # Print clients using target_ap.get_clients(), shown as i. client.mac - ssid
         clients = target_ap.get_clients()
         for i, client in enumerate(clients):
-            print(f"{i}. {client.MAC} - {client.SSID}")
+            print(f"{i}. {client['MAC']} - {client['SSID']}")
     else:
         print("No clients found on AP.")
         # prompt if user wants to seach for clients on AP

