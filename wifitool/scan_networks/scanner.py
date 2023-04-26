@@ -1,6 +1,6 @@
 import os
 import time
-from scapy.all import Dot11Beacon, Dot11, Dot11Elt, sniff, Dot11ProbeReq
+from scapy.all import Dot11Beacon, Dot11, Dot11Elt, sniff, Dot11probeReq, Dot11probeResp
 from threading import Thread
 import pandas
 from getpass import getuser
@@ -81,7 +81,9 @@ class Scanner:
                 packet[Dot11]
                 # get the name of it
                 ssid = packet[Dot11Elt].info.decode()
-                if ssid in networks["SSID"].values or ssid.strip() == "":
+                if not packet.info:
+                    ssid = "'Hidden SSID'"
+                if ssid in networks["SSID"].values:
                     return
                 try:
                     dbm_signal = packet.dBm_AntSignal
@@ -128,30 +130,31 @@ class Scanner:
         sniff(prn=_callback, filter="type mgt subtype beacon", iface=self.interface, timeout=timeout)
         return networks
 
-    def get_clients_on_ap_probe(self, timeout: int) -> pandas.DataFrame:
-        """
-        Read probe requests and populate clients list
-        The probe request is used to find the MAC address of the client as it is only clients that send probe requests
-        """
-        def _callback(packet):
-            if packet.haslayer(Dot11ProbeReq):
-                # extract the MAC address of the network
-                MAC = packet[Dot11].addr2
-                if MAC in clients["MAC"].values:
-                    return
-                try:
-                    RSSI = packet.dBm_AntSignal
-                except Exception:
-                    RSSI = "N/A"
-                clients.loc[MAC] = (MAC, RSSI)
-                client = Client(MAC, RSSI)
-                if client not in self.clients:
-                    self.clients.append(client)
+    def get_clients_on_ap_probe(self, timeout: int, iface: str, wifi: Wifi) -> None:
+        """Function to create a list of the clients communicating with a certain AP using probe requests and responses
 
-        clients = pandas.DataFrame(columns=["MAC", "RSSI"])
-        # set the index BSSID (MAC address of the AP)
-        clients.set_index("MAC", inplace=True)
-        sniff(prn=_callback, filter="type mgt subtype probe-req", iface=self.interface, timeout=timeout)
+        Args:
+            timeout (int): Time to run sniff
+            iface (str): Interface to sniff
+            wifi (Wifi): Wifi object to add clients to
+        """
+        def _callback(packet) -> None:
+            # Checks conditions, and adds clients to list
+            if packet.haslayer(Dot11probeReq):
+                src_BSSID = packet[Dot11].addr2
+                if packet[Dot11].addr1 == wifi.BSSID:
+                    client_list.append(src_BSSID)
+                    print(f"Client found from probeReq: {src_BSSID}")
+
+            elif packet.haslayer(Dot11probeResp):
+                src_BSSID = packet[Dot11].addr1
+                if packet[Dot11].addr2 == wifi.BSSID:
+                    client_list.append(src_BSSID)
+                    print(f"Client found from probeResp: {src_BSSID}")
+
+        client_list: list[str] = []
+        sniff(timeout=timeout, iface=iface, prn=_callback)
+        wifi.clients = list(set(client_list))
 
     def get_clients_on_ap(self, timeout: int, iface: str, dst_BSSID: str) -> list[str]:
         """Function to create a list of the clients communicating with a certain AP

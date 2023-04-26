@@ -1,7 +1,37 @@
-from scapy.all import Dot11, sniff
+from scapy.all import Dot11, sniff, Dot11probeReq, Dot11probeResp
 
 
-def get_clients_on_ap(timeout: int, iface: str, dst_BSSID: str) -> list:
+def get_clients_on_ap_probe(timeout: int, iface: str, dst_BSSID) -> list[str]:
+    """Function to create a list of the clients communicating with a certain AP using probe requests and responses
+
+    Args:
+        timeout (int): Time to run sniff
+        iface (str): Interface to sniff
+        dst_BSSID (str): AP from which clients will be listed
+
+    Returns:
+        list: List of unique clients that are connected to the AP specified
+    """
+
+    def _callback(packet) -> None:
+        """Checks conditions, and adds clients to list"""
+        if packet.haslayer(Dot11probeReq):
+            src_BSSID = packet[Dot11].addr2
+            if packet[Dot11].addr1 == dst_BSSID:
+                client_list.append(src_BSSID)
+
+        elif packet.haslayer(Dot11probeResp):
+            src_BSSID = packet[Dot11].addr1
+            if packet[Dot11].addr2 == dst_BSSID:
+                client_list.append(src_BSSID)
+
+    client_list: list[str] = []
+    sniff(timeout=timeout, iface=iface, prn=_callback)
+
+    return list(set(client_list))
+
+
+def get_clients_on_ap(timeout: int, iface: str, dst_BSSID: str) -> list[str]:
     """Function to create a list of the clients communicating with a certain AP
 
     Args:
