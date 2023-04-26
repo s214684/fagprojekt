@@ -1,6 +1,6 @@
 import os
 import time
-from scapy.all import Dot11Beacon, Dot11, Dot11Elt, sniff, Dot11probeReq, Dot11probeResp
+from scapy.all import Dot11Beacon, Dot11, Dot11Elt, sniff, Dot11ProbeReq, Dot11ProbeResp
 from threading import Thread
 import pandas
 from getpass import getuser
