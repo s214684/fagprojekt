@@ -24,6 +24,14 @@ class Wifi:
     def __repr__(self):
         return str(self)
 
+    def get_clients(self) -> list[dict[str, str]]:
+        """Function to get all clients connected to the AP
+
+        Returns:
+            list: of dicts for each client containing the MAC address and the SSID
+        """
+        return [{"MAC": client, "SSID": self.SSID} for client in self.clients]
+
     def get_clients_on_ap(self, timeout: int, iface: str) -> None:
         """Append detected client mac-addresses to clientlist for wifi
 

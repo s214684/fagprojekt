@@ -1,5 +1,6 @@
 import os
 import time
+from typing import Union, get_type_hints
 from scapy.all import Dot11Beacon, Dot11, Dot11Elt, sniff, Dot11ProbeReq, Dot11ProbeResp
 from threading import Thread
 import pandas
@@ -16,8 +17,6 @@ class Scanner:
     Context manager for scanning the network
     """
     def __init__(self, interface: str):
-        # self.APs: list = []
-        self.clients: list = []
         self.wifis: list[Wifi] = []
         self.interface = interface
         self.curr_channel: int
@@ -37,13 +36,6 @@ class Scanner:
         os.system(f'ip link set dev {self.interface} down')
         os.system(f'iw dev {self.interface} set type managed')
         os.system(f'ip link set dev {self.interface} up')
-
-    def scan_network(self, interface: str, timeout: int = 20):
-        """
-        Scan the network and Populate variables
-        TODO
-        """
-        pass
 
     def _out(self, command) -> str:
         result = run(command, stdout=PIPE, stderr=PIPE, universal_newlines=True, shell=True)
@@ -73,7 +65,7 @@ class Scanner:
         os.system(f"iw dev {self.interface} set channel {channel}")
         self.curr_channel = channel
 
-    def get_ap(self, timeout: int, specific_ap: str = "") -> pandas.DataFrame:
+    def scan_for_aps(self, timeout: int, specific_ap: str = "") -> pandas.DataFrame:
         def _callback(packet):
             if packet.haslayer(Dot11Beacon):
                 # extract the MAC address of the network
@@ -156,73 +148,7 @@ class Scanner:
         sniff(timeout=timeout, iface=iface, prn=_callback)
         wifi.clients = list(set(client_list))
 
-    def get_clients_on_ap(self, timeout: int, iface: str, dst_BSSID: str) -> list[str]:
-        """Function to create a list of the clients communicating with a certain AP
-
-        Args:
-            timeout (int): Time to run sniff
-            iface (str): Interface to sniff
-            dst_BSSID (str): AP from which clients will be listed
-
-        Returns:
-            list: List of unique clients that are connected to the AP specified
-        """
-        # find wifi with dst_bssid from self.wifis
-        wifi = None
-        for w in self.wifis:
-            if w.BSSID == dst_BSSID:
-                wifi = w
-                break
-        if wifi is None:
-            raise ValueError("Could not find wifi with specified BSSID")
-
-        client_list = []
-
-        def _is_packet_from_client(packet) -> bool:
-            """Function to check whether the packet is sent from client or AP"""
-
-            DS = packet.FCfield & 0x3
-            to_ds = DS & 0x1 != 0
-            from_ds = DS & 0x2 != 0
-
-            # to_ds betyder at addr1 vil være AP, og addr2 vil være client.
-
-            if not to_ds and from_ds:
-                # Packet is sent from AP to client
-                return False
-            elif to_ds and not from_ds:
-                # Packet is sent from client to AP
-                return True
-            else:
-                # Invalid configuration (e.g., ad-hoc mode)
-                return False
-
-        def _callback(packet) -> None:
-            """Checks conditions, and adds clients to list"""
-
-            if packet.haslayer(Dot11):
-
-                if _is_packet_from_client(packet):  # type: ignore[truthy-function]
-                    # extract the MAC address of the client
-                    src_BSSID = packet[Dot11].addr2
-                    # check if destination address is as specified
-                    if packet[Dot11].addr1 == dst_BSSID:
-                        client_list.append(src_BSSID)
-
-        sniff(timeout=timeout, iface=iface, prn=_callback)
-
-        if client_list == []:
-            print("Found no clients, trying again...")
-            sniff(timeout=timeout, iface=iface, prn=_callback)
-
-        print("Finished scanning")
-        # Add clients to wifi object if they are not already there
-        for client in client_list:
-            if client not in wifi.clients:
-                wifi.clients.append(client)
-        return list(set(client_list))
-
-    def get_clients(self, timeout: int) -> list[str]:
+    def scan_for_clients(self, timeout: int) -> list[str]:
         """Function to populate the clients list of each AP
 
         Args:
@@ -286,3 +212,21 @@ class Scanner:
                     if client[0] not in wifi.clients:
                         wifi.clients.append(client[0])
         return list(set(client_list[0])) if client_list != [] else []
+
+    def get_clients(self, specific_acces_point: Union[Wifi, None] = None) -> list[dict[str, list[dict[str, str]]]]:
+        """Function to get all clients connected to the APs
+
+        Returns:
+            list: of dict for each AP containing a list of dictions for each client containing the MAC address and the SSID
+        """
+        clients = []
+        if specific_acces_point:
+            for wifi in self.wifis:
+                if wifi.BSSID == specific_acces_point.BSSID:
+                    clients.append({"SSID": wifi.SSID, "clients": wifi.get_clients()})
+                    return clients
+            raise ValueError("The specific acces point was not found")
+        else:
+            for wifi in self.wifis:
+                clients.append({"SSID": wifi.SSID, "clients": wifi.get_clients()})
+        return clients if clients != [] else []

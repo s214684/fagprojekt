@@ -73,33 +73,16 @@ def prompt_menu(welcome: bool = False, start: bool = False):
 
 
 def scan_network() -> bool:
-    # prompt user for AP to attack
-    AP_TO_ATTACK = input("Input AP to attack ('Enter' to skip): ").strip()
-    if AP_TO_ATTACK:
-        AP_info = scanner.get_ap(timeout=TIMEOUT, specific_ap=AP_TO_ATTACK)
-        channel = AP_info.Channel[0]
-        BSSID = AP_info.index[0]
-        # change channel to be on APs channelwifi: Wifi
-        scanner.set_channel(channel)
-        print(scanner.wifis)
-        print(AP_info)
-        print(f"Channel is: {channel}")
-        print(f"BSSID is: {BSSID}")
-    else:
-        print("Scanning network for APs...")
-        AP_info = scanner.get_ap(timeout=TIMEOUT)
-        print(AP_info)
-        #print(scanner.wifis)
+    print("Scanning network for APs...")
+    AP_info = scanner.scan_for_aps(timeout=TIMEOUT)
+    print(AP_info)
+    # print(scanner.wifis)
 
     # scan network for clients as well
     print("Scanning network for clients...")
-    scanner.get_clients(timeout=TIMEOUT)
-    print(scanner.clients)
+    scanner.scan_for_clients(timeout=TIMEOUT)
+    print(scanner.get_clients())
 
-    # using probe requests to get clients on AP
-    # for wifi in scanner.wifis:
-    print("Scanning network for clients")
-    scanner.get_clients(5)
 
     return True
 
@@ -122,19 +105,19 @@ def show_aps():
         return False
 
 
-def get_ap() -> Wifi:
+def prompt_for_ap() -> Wifi:
     """
     Check if we have scanned the network. If so, we can prompt user for AP to attack from scanner.wifis
     Then in scanner.wifis find the AP with the same BSSID as the one we scanned for
     Then check if we found the AP
     """
-    def _get_targeted_ap():
+    def _get_targeted_ap() -> Wifi:
         AP_to_attack_str = input("Input AP BSSID for client scan: ")
         print("Scanning network for selected AP...")
-        scanner.get_ap(timeout=TIMEOUT, specific_ap=AP_to_attack_str)
+        scanner.scan_for_aps(timeout=TIMEOUT, specific_ap=AP_to_attack_str)
         # in scanner.wifis find the AP with the same BSSID as the one we scanned for
         for wifi in scanner.wifis:
-            if wifi.BSSID == AP_to_attack:
+            if wifi.BSSID == AP_to_attack_str:
                 target_ap = wifi
                 break
         # check if we found the AP
@@ -144,7 +127,7 @@ def get_ap() -> Wifi:
         return target_ap
 
     if scanner.wifis:
-        print("Choose AP to attack from list: ")
+        print("Choose AP from list: ")
         for i, wifi in enumerate(scanner.wifis):
             print(f"{i}. {wifi.SSID} - {wifi.BSSID}")
         print(f"{len(scanner.wifis)+1}. User defined AP")
@@ -159,18 +142,26 @@ def get_ap() -> Wifi:
 
 
 def show_clients() -> bool:
-    target_ap = get_ap()
+    target_ap = prompt_for_ap()
     print(f"Extracting client list for AP: {target_ap.SSID}")
-    scanner.set_channel(target_ap.channel)
-    client_list = scanner.get_clients(TIMEOUT, INTERFACE, target_ap.BSSID)
-    # Print new clients obtained and all the clients seen on the wifi
-    print(f"New clients: {client_list}")
-    print(f"All clients: {target_ap.clients}")
+    # Get clients from AP
+    if target_ap.clients:
+        print("Clients on AP:")
+        # Print clients using target_ap.get_clients(), shown as i. client.mac - ssid
+        clients = target_ap.get_clients()
+        for i, client in enumerate(clients):
+            print(f"{i}. {client.MAC} - {client.SSID}")
+    else:
+        print("No clients found on AP.")
+        # prompt if user wants to seach for clients on AP
+        search_for_clients = input("Do you want to search for clients on AP? (y/n): ").strip()
+        if search_for_clients == "y":
+            scanner.scan_for_clients(timeout=TIMEOUT)
     return True
 
 
 def send_deauth():
-    target_ap = get_ap()
+    target_ap = prompt_for_ap()
     scanner.set_channel(target_ap.channel)
 
     # Check if we have clients on the AP. If so, prompt user for client to deauth
