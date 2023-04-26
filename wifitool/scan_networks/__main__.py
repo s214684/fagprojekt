@@ -162,7 +162,7 @@ def show_clients() -> bool:
     target_ap = get_ap()
     print(f"Extracting client list for AP: {target_ap.SSID}")
     scanner.set_channel(target_ap.channel)
-    client_list = scanner.get_clients_on_ap(TIMEOUT, INTERFACE, target_ap.BSSID)
+    client_list = scanner.get_clients(TIMEOUT, INTERFACE, target_ap.BSSID)
     # Print new clients obtained and all the clients seen on the wifi
     print(f"New clients: {client_list}")
     print(f"All clients: {target_ap.clients}")
