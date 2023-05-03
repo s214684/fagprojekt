@@ -132,13 +132,13 @@ class Scanner:
         """
         def _callback(packet) -> None:
             # Checks conditions, and adds clients to list
-            if packet.haslayer(Dot11probeReq):
+            if packet.haslayer(Dot11ProbeReq):
                 src_BSSID = packet[Dot11].addr2
                 if packet[Dot11].addr1 == wifi.BSSID:
                     client_list.append(src_BSSID)
                     print(f"Client found from probeReq: {src_BSSID}")
 
-            elif packet.haslayer(Dot11probeResp):
+            elif packet.haslayer(Dot11ProbeResp):
                 src_BSSID = packet[Dot11].addr1
                 if packet[Dot11].addr2 == wifi.BSSID:
                     client_list.append(src_BSSID)
