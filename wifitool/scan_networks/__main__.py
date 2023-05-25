@@ -19,57 +19,59 @@ import sys
 from deauth import deauth
 import datetime
 
+from wifitool.cli import prompt_menu
+
 check_system()
 INTERFACE = get_iface()
 TIMEOUT = 20
 
 
-# Create terminal menu for user to choose what to do
-def prompt_menu(welcome: bool = False, start: bool = False):
-    if welcome:
-        ASCII_banner = f"""
-        ░▒█░░▒█░▀█▀░▒█▀▀▀░▀█▀░░░▀▀█▀▀░▒█▀▀▀█░▒█▀▀▀█░▒█░░░
-        ░▒█▒█▒█░▒█░░▒█▀▀░░▒█░░░░░▒█░░░▒█░░▒█░▒█░░▒█░▒█░░░
-        ░▒▀▄▀▄▀░▄█▄░▒█░░░░▄█▄░░░░▒█░░░▒█▄▄▄█░▒█▄▄▄█░▒█▄▄█
-        Time: {datetime.datetime.now()}
-        By: Lucas, Nicklas & Oliver :)
+# # Create terminal menu for user to choose what to do
+# def prompt_menu(welcome: bool = False, start: bool = False):
+#     if welcome:
+#         ASCII_banner = f"""
+#         ░▒█░░▒█░▀█▀░▒█▀▀▀░▀█▀░░░▀▀█▀▀░▒█▀▀▀█░▒█▀▀▀█░▒█░░░
+#         ░▒█▒█▒█░▒█░░▒█▀▀░░▒█░░░░░▒█░░░▒█░░▒█░▒█░░▒█░▒█░░░
+#         ░▒▀▄▀▄▀░▄█▄░▒█░░░░▄█▄░░░░▒█░░░▒█▄▄▄█░▒█▄▄▄█░▒█▄▄█
+#         Time: {datetime.datetime.now()}
+#         By: Lucas, Nicklas & Oliver :)
 
-        Welcome to WifiTool!
-        """
-    else:
-        ASCII_banner = ""
+#         Welcome to WifiTool!
+#         """
+#     else:
+#         ASCII_banner = ""
 
-    if start:
-        string_to_show = f"""
-        {ASCII_banner}
-        Please choose what you want to do:
+#     if start:
+#         string_to_show = f"""
+#         {ASCII_banner}
+#         Please choose what you want to do:
 
-        1. Scan network
-        2. Get clients on AP
-        3. Options
+#         1. Scan network
+#         2. Get clients on AP
+#         3. Options
 
-        9. Exit (Ctrl+C)
+#         9. Exit (Ctrl+C)
 
-        """
-    else:
-        string_to_show = f"""
-    {ASCII_banner}
-    Please choose what you want to do:
+#         """
+#     else:
+#         string_to_show = f"""
+#     {ASCII_banner}
+#     Please choose what you want to do:
 
-    1. Show APs
-    2. Show clients
-    3. Send deauth
+#     1. Show APs
+#     2. Show clients
+#     3. Send deauth
 
-    8. Back to start
-    9. Exit (Ctrl+C)
+#     8. Back to start
+#     9. Exit (Ctrl+C)
 
-    """
+#     """
 
-    print(string_to_show)
+#     print(string_to_show)
 
-    action = input("Input action wanted: ").strip()
-    action = "a." + action if start else "b." + action
-    return action
+#     action = input("Input action wanted: ").strip()
+#     action = "a." + action if start else "b." + action
+#     return action
 
 
 def scan_network() -> bool:
@@ -82,7 +84,6 @@ def scan_network() -> bool:
     print("Scanning network for clients...")
     scanner.scan_for_clients(timeout=TIMEOUT)
     print(scanner.get_clients())
-
 
     return True
 
