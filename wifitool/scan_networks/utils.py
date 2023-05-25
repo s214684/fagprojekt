@@ -32,15 +32,20 @@ def set_interface_to_monitor_mode(interface):
     os.system(f'ip link set dev {interface} up')
 
 
-def check_system():
+def check_system() -> str:
     if sys.platform == "win32":
         print("Windows detected")
         print("Windows users are at the moment not able to use this tool.")
         print("Please use a Linux distribution instead.")
         exit(1)
     if getuser() != "root":
-        print("You need to be root to run this script")
+        print("Error: You need to be root to run this script")
         exit(1)
+    iface = get_iface().strip()
+    if iface == "":
+        print("Error: No wifi card detected")
+        exit(1)
+    return iface
 
 
 def set_channel(interface: str, channel: str) -> None:
