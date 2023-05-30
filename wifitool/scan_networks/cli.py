@@ -1,4 +1,5 @@
 import datetime
+from scanner import Scanner
 
 
 # Terminal menu for user to choose what to do
@@ -49,24 +50,26 @@ def prompt_menu(welcome: bool = False, start: bool = False):
     return action
 
 
-def options(TIMEOUT: int, INTERFACE: str) -> str:
+def options(scanner: Scanner) -> str:
     # Let user set constants such as timeout and interface
     print("Current settings:")
-    print(f"Timeout: {TIMEOUT}")
-    print(f"Interface: {INTERFACE}")
+    print(f"Timeout: {scanner.timeout}")
+    print(f"Interface: {scanner.interface}")
     print("Choose what to change:")
     print("1. Timeout")
     print("2. Interface")
     print("3. Back")
     choice = input("Input choice: ")
     if choice == "1":
-        TIMEOUT = int(input("Input new timeout: "))
-        options(TIMEOUT, INTERFACE)
+        timeout = int(input("Input new timeout: "))
+        scanner.timeout = timeout
+        options(scanner)
     elif choice == "2":
-        INTERFACE = input("Input new interface: ")
-        options(TIMEOUT, INTERFACE)
+        interface = input("Input new interface: ")
+        scanner.interface = interface
+        options(scanner)
     elif choice == "3":
-        return TIMEOUT, INTERFACE
+        return
     else:
         print("Invalid input. Try again..")
-        options(TIMEOUT, INTERFACE)
+        options(scanner)

