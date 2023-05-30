@@ -17,6 +17,7 @@ from utils import check_system
 import sys
 
 from cli import prompt_menu, options
+import pprint
 
 INTERFACE = check_system()
 TIMEOUT = 20
