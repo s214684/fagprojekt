@@ -13,67 +13,18 @@
 # Let clients connect to our rogue AP
 
 from scanner import Scanner
-from utils import get_iface, check_system
+from utils import check_system
 from wifi import Wifi
 import sys
 from deauth import deauth
-import datetime
+from cli import prompt_menu, options
 import pprint
 
-check_system()
-INTERFACE = get_iface()
+INTERFACE = check_system()
 TIMEOUT = 20
 
 
-# Create terminal menu for user to choose what to do
-def prompt_menu(welcome: bool = False, start: bool = False):
-    if welcome:
-        ASCII_banner = f"""
-        ░▒█░░▒█░▀█▀░▒█▀▀▀░▀█▀░░░▀▀█▀▀░▒█▀▀▀█░▒█▀▀▀█░▒█░░░
-        ░▒█▒█▒█░▒█░░▒█▀▀░░▒█░░░░░▒█░░░▒█░░▒█░▒█░░▒█░▒█░░░
-        ░▒▀▄▀▄▀░▄█▄░▒█░░░░▄█▄░░░░▒█░░░▒█▄▄▄█░▒█▄▄▄█░▒█▄▄█
-        Time: {datetime.datetime.now()}
-        By: Lucas, Nicklas & Oliver :)
-
-        Welcome to WifiTool!
-        """
-    else:
-        ASCII_banner = ""
-
-    if start:
-        string_to_show = f"""
-        {ASCII_banner}
-        Please choose what you want to do:
-
-        1. Scan network
-        2. Get clients on AP
-        3. Options
-
-        9. Exit (Ctrl+C)
-
-        """
-    else:
-        string_to_show = f"""
-    {ASCII_banner}
-    Please choose what you want to do:
-
-    1. Show APs
-    2. Show clients
-    3. Send deauth
-
-    8. Back to start
-    9. Exit (Ctrl+C)
-
-    """
-
-    print(string_to_show)
-
-    action = input("Input action wanted: ").strip()
-    action = "a." + action if start else "b." + action
-    return action
-
-
-def scan_network() -> bool:
+def scan_network(scanner: Scanner) -> bool:
     print("Scanning network for APs...")
     AP_info = scanner.scan_for_aps(timeout=TIMEOUT)
     print(AP_info)
@@ -82,8 +33,7 @@ def scan_network() -> bool:
     # scan network for clients as well
     print("Scanning network for clients...")
     scanner.scan_for_clients(timeout=TIMEOUT)
-    pp = pprint.PrettyPrinter(depth=4)
-    pp.pprint(scanner.get_clients())
+    print(scanner.get_clients())
 
 
     return True
@@ -189,31 +139,6 @@ def send_deauth():
     deauth(INTERFACE, target_ap.BSSID, target_client)
 
 
-def options():
-    # Let user set constants such as timeout and interface
-    global TIMEOUT
-    global INTERFACE
-    print("Current settings:")
-    print(f"Timeout: {TIMEOUT}")
-    print(f"Interface: {INTERFACE}")
-    print("Choose what to change:")
-    print("1. Timeout")
-    print("2. Interface")
-    print("3. Back")
-    choice = input("Input choice: ")
-    if choice == "1":
-        TIMEOUT = int(input("Input new timeout: "))
-        options()
-    elif choice == "2":
-        INTERFACE = input("Input new interface: ")
-        options()
-    elif choice == "3":
-        return
-    else:
-        print("Invalid input. Try again..")
-        options()
-
-
 with Scanner(INTERFACE) as scanner:
     scanner = scanner
     # Clear screen
@@ -235,7 +160,7 @@ with Scanner(INTERFACE) as scanner:
             elif action == "b.3":
                 send_deauth()
             elif action == "a.3":
-                options()
+                TIMEOUT, INTERFACE = options(TIMEOUT, INTERFACE)
                 start = True
             elif action == "b.8":
                 start = True
