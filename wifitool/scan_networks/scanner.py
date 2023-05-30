@@ -1,5 +1,6 @@
 import os
 import time
+import pprint
 from typing import Union, get_type_hints
 from scapy.all import Dot11Beacon, Dot11, Dot11Elt, sniff, Dot11ProbeReq, Dot11ProbeResp
 from threading import Thread
@@ -229,4 +230,6 @@ class Scanner:
         else:
             for wifi in self.wifis:
                 clients.append({"SSID": wifi.SSID, "clients": wifi.get_clients()})
+        
         return clients if clients != [] else []
+

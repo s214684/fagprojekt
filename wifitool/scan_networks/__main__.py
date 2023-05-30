@@ -18,6 +18,7 @@ from wifi import Wifi
 import sys
 from deauth import deauth
 import datetime
+import pprint
 
 check_system()
 INTERFACE = get_iface()
@@ -81,7 +82,8 @@ def scan_network() -> bool:
     # scan network for clients as well
     print("Scanning network for clients...")
     scanner.scan_for_clients(timeout=TIMEOUT)
-    print(scanner.get_clients())
+    pp = pprint.PrettyPrinter(depth=4)
+    pp.pprint(scanner.get_clients())
 
 
     return True
