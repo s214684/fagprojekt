@@ -7,7 +7,7 @@ import pandas
 from subprocess import PIPE, run
 from deauth import deauth
 from wifi import Wifi
-from utils import get_current_channel, change_channel
+from utils import get_current_channel, change_channel, set_channel
 
 
 class Scanner:
@@ -35,10 +35,7 @@ class Scanner:
         os.system(f'ip link set dev {self.interface} down')
         os.system(f'iw dev {self.interface} set type managed')
         os.system(f'ip link set dev {self.interface} up')
-
-    # def _out(self, command) -> str:
-    #     result = run(command, stdout=PIPE, stderr=PIPE, universal_newlines=True, shell=True)
-    #     return result.stdout
+        set_channel(self.interface, self.curr_channel)
 
     def scan_for_aps(self, timeout: int = 0, specific_ap: str = "") -> pandas.DataFrame:
         if timeout == 0:
@@ -247,7 +244,7 @@ class Scanner:
 
     def send_deauth(self):
         target_ap = self.prompt_for_ap()
-        self.set_channel(target_ap.channel)
+        set_channel(self.interface, target_ap.channel)
 
         # Check if we have clients on the AP. If so, prompt user for client to deauth
         if target_ap.clients:
