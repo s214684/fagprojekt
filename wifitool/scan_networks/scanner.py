@@ -5,7 +5,7 @@ from scapy.all import Dot11Beacon, Dot11, Dot11Elt, sniff, Dot11ProbeReq, Dot11P
 from threading import Thread
 import pandas
 from subprocess import PIPE, run
-from deauth import deauth
+from deauth import deauth_with_beacon
 from wifi import Wifi
 from utils import get_current_channel, change_channel, set_channel
 
@@ -285,4 +285,4 @@ class Scanner:
         else:
             target_client = input("Input client MAC for deauth: ")
 
-        deauth(self.interface, target_ap.BSSID, target_client)
+        deauth_with_beacon(self.interface, target_ap.BSSID, target_client, target_ap.SSID)
