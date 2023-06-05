@@ -50,7 +50,7 @@ def prompt_menu(welcome: bool = False, start: bool = False):
     return action
 
 
-def options(scanner: Scanner) -> str:
+def options(scanner: Scanner):
     # Let user set constants such as timeout and interface
     print("Current settings:")
     print(f"Timeout: {scanner.timeout}")
