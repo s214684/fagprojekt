@@ -3,6 +3,7 @@ import logging
 import sys
 from getpass import getuser
 from subprocess import PIPE, run
+import time
 from scapy.all import sniff
 
 
@@ -48,13 +49,32 @@ def check_system() -> str:
     return iface
 
 
-def set_channel(interface: str, channel: str) -> None:
-    out(f"iw dev {interface} set channel {channel}")
-
-
 def get_current_channel(iface: str) -> str:
-    x = out(f"iw {iface} info | grep 'channel' | cut -d ' ' -f 2")
+    x = self._out(f"iw {iface} info | grep 'channel' | cut -d ' ' -f 2")
     return x.strip()
+
+
+def change_channel(self) -> None:
+    """
+    @ https://thepacketgeek.com/scapy/sniffing-custom-actions/part-2/
+    Note: Channels 12 and 13 are allowed in low-power mode, while channel 14 is banned and only allowed in Japan.
+    Thus we don't use channel 14.
+    """
+    ch = 1
+    interface = get_iface()
+    while True:
+        set_channel(interface, ch)
+        # switch channel from 1 to 14 each 0.5s
+        ch = (ch % 13) + 1
+        time.sleep(0.5)  # TODO: Can we tune this?
+
+
+def set_channel(interface, channel: int) -> None:
+    # TODO ADD TRY STATEMENT AND CREATE EXCEPTION?
+    try:
+        os.system(f"iw dev {interface} set channel {channel}")
+    except Exception:
+        print("Failed to set channel")
 
 
 def get_iface() -> str:
