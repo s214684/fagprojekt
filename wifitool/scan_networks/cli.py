@@ -47,6 +47,8 @@ def prompt_menu(welcome: bool = False, start: bool = False):
 
     action = input("Input action wanted: ").strip()
     action = "a." + action if start else "b." + action
+    print("\033c")
+
     return action
 
 

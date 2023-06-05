@@ -227,35 +227,36 @@ class Scanner:
                         wifi.clients.append(client[0])
         return list(set(client_list[0])) if client_list != [] else []
 
-    def get_clients(self, specific_acces_point: Union[Wifi, None] = None) -> list[dict[str, list[dict[str, str]]]]:
-        """Function to get all clients connected to the APs
+    # def get_clients(self, specific_acces_point: Union[Wifi, None] = None) -> list[dict[str, list[dict[str, str]]]]:
+    #     """Function to get all clients connected to the APs
 
-        Returns:
-            list: of dict for each AP containing a list of dictions for each client containing the MAC address and the SSID
-        """
-        clients = []
-        if specific_acces_point:
-            for wifi in self.wifis:
-                if wifi.BSSID == specific_acces_point.BSSID:
-                    clients.append({"SSID": wifi.SSID, "clients": wifi.get_clients()})
-                    return clients
-            raise ValueError("The specific acces point was not found")
-        else:
-            for wifi in self.wifis:
-                clients.append({"SSID": wifi.SSID, "clients": wifi.get_clients()})
+    #     Returns:
+    #         list: of dict for each AP containing a list of dictions for each client containing the MAC address and the SSID
+    #     """
+    #     clients = []
+    #     if specific_acces_point:
+    #         for wifi in self.wifis:
+    #             if wifi.BSSID == specific_acces_point.BSSID:
+    #                 clients.append({"SSID": wifi.SSID, "clients": wifi.get_clients()})
+    #                 return clients
+    #         raise ValueError("The specific acces point was not found")
+    #     else:
+    #         for wifi in self.wifis:
+    #             clients.append({"SSID": wifi.SSID, "clients": wifi.get_clients()})
         
-        return clients if clients != [] else []
+    #     return clients if clients != [] else []
 
     def scan_network(self) -> bool:
         print("Scanning network for APs...")
         AP_info = self.scan_for_aps()
         print(AP_info)
-        # print(scanner.wifis)
 
         # scan network for clients as well
         print("Scanning network for clients...")
         self.scan_for_clients()
-        print(self.get_clients())
+        # for each AP print the clients
+        for wifi in self.wifis:
+            print(f"{wifi.SSID} - {wifi.BSSID} - {wifi.get_clients_MAC()}")
 
         return True
 
@@ -270,7 +271,7 @@ class Scanner:
             more_info = input("Do you want more info on AP? (y/n): ").strip()
             if more_info == "y":
                 AP_to_show = int(input("Input index of AP to show: "))
-                print(self.wifis[AP_to_show])
+                print(self.wifis[AP_to_show].details())
 
         else:
             print("No APs found. Try scanning network first.")
@@ -317,10 +318,7 @@ class Scanner:
         # Get clients from AP
         if target_ap.clients:
             print("Clients on AP:")
-            # Print clients using target_ap.get_clients(), shown as i. client.mac - ssid
-            clients = target_ap.get_clients()
-            for i, client in enumerate(clients):
-                print(f"{i}. {client['MAC']} - {client['SSID']}")
+            print(target_ap.get_clients_MAC())
         else:
             print("No clients found on AP.")
             # prompt if user wants to seach for clients on AP
