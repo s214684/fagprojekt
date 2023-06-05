@@ -47,10 +47,12 @@ def prompt_menu(welcome: bool = False, start: bool = False):
 
     action = input("Input action wanted: ").strip()
     action = "a." + action if start else "b." + action
+    print("\033c")
+
     return action
 
 
-def options(scanner: Scanner):
+def options(scanner: Scanner) -> None:
     # Let user set constants such as timeout and interface
     print("Current settings:")
     print(f"Timeout: {scanner.timeout}")

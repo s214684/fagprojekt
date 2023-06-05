@@ -17,23 +17,19 @@ from utils import check_system
 import sys
 
 from cli import prompt_menu, options
-import pprint
 
 INTERFACE = check_system()
 TIMEOUT = 20
-
 
 with Scanner(INTERFACE, TIMEOUT) as scanner:
     scanner = scanner
     # Clear screen
     print("\033c")
-    # check if user wants to exit or presses ctrl+c
+    start = True
     try:
-        start = True
         action = prompt_menu(welcome=True, start=True)
         while True:
             # Clear screen
-            print("\033c")
             start = False
             if action == "a.1":
                 scanner.scan_network()
