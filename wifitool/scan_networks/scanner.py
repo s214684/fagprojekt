@@ -25,17 +25,20 @@ class Scanner:
         os.system(f'ip link set dev {self.interface} down')
         os.system(f'iw dev {self.interface} set type monitor')
         os.system(f'ip link set dev {self.interface} up')
+        # start the channel changer
+        channel_changer = Thread(target=change_channel)
+        channel_changer.daemon = True
+        channel_changer.start()
         return self
 
     def __exit__(self, exc_type, exc_value, exc_tb):
-        self.set_channel(self.curr_channel)
         os.system(f'ip link set dev {self.interface} down')
         os.system(f'iw dev {self.interface} set type managed')
         os.system(f'ip link set dev {self.interface} up')
 
-    def _out(self, command) -> str:
-        result = run(command, stdout=PIPE, stderr=PIPE, universal_newlines=True, shell=True)
-        return result.stdout
+    # def _out(self, command) -> str:
+    #     result = run(command, stdout=PIPE, stderr=PIPE, universal_newlines=True, shell=True)
+    #     return result.stdout
 
     def scan_for_aps(self, timeout: int = 0, specific_ap: str = "") -> pandas.DataFrame:
         if timeout == 0:
@@ -73,11 +76,6 @@ class Scanner:
         # set the index BSSID (MAC address of the AP)
         networks.set_index("BSSID", inplace=True)
 
-        # start the channel changer
-        channel_changer = Thread(target=change_channel)
-        channel_changer.daemon = True
-        channel_changer.start()
-
         if specific_ap:
             def _stopfilter(x) -> bool:
                 if x[Dot11Elt].info.decode() == specific_ap:
@@ -95,7 +93,6 @@ class Scanner:
                 return networks
 
         sniff(prn=_callback, filter="type mgt subtype beacon", iface=self.interface, timeout=timeout)
-        change_channel.stop()
         return networks
 
     def scan_for_clients(self, timeout: int = 0) -> list[str]:
@@ -151,11 +148,6 @@ class Scanner:
                     if packet[Dot11].addr2 in wifis_list_of_bssid:
                         client_list.append([dst_BSSID, packet[Dot11].addr2])
 
-        # start the channel changer
-        channel_changer = Thread(target=change_channel)
-        channel_changer.daemon = True
-        channel_changer.start()
-
         sniff(timeout=timeout, iface=self.interface, prn=_callback)
 
         if client_list == []:
@@ -170,7 +162,6 @@ class Scanner:
                 if wifi.BSSID == client[1]:
                     if client[0] not in wifi.clients:
                         wifi.clients.append(client[0])
-        channel_changer.stop()
         return list(set(client_list[0])) if client_list != [] else []
 
     def scan_network(self) -> bool:

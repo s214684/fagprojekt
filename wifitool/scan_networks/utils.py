@@ -50,11 +50,11 @@ def check_system() -> str:
 
 
 def get_current_channel(iface: str) -> str:
-    x = self._out(f"iw {iface} info | grep 'channel' | cut -d ' ' -f 2")
+    x = out(f"iw {iface} info | grep 'channel' | cut -d ' ' -f 2")
     return x.strip()
 
 
-def change_channel(self) -> None:
+def change_channel() -> None:
     """
     @ https://thepacketgeek.com/scapy/sniffing-custom-actions/part-2/
     Note: Channels 12 and 13 are allowed in low-power mode, while channel 14 is banned and only allowed in Japan.
