@@ -4,11 +4,10 @@ from typing import Union
 from scapy.all import Dot11Beacon, Dot11, Dot11Elt, sniff, Dot11ProbeReq, Dot11ProbeResp
 from threading import Thread
 import pandas
-from getpass import getuser
 from subprocess import PIPE, run
 from deauth import deauth
 from wifi import Wifi
-from utils import get_current_channel
+from utils import get_current_channel, change_channel
 
 
 class Scanner:
@@ -22,48 +21,24 @@ class Scanner:
         self.timeout: int = timeout
 
     def __enter__(self):
-        if getuser() != "root":
-            print("You need to be root to run this script")
-            exit(1)
         self.curr_channel = get_current_channel(iface=self.interface)
         os.system(f'ip link set dev {self.interface} down')
         os.system(f'iw dev {self.interface} set type monitor')
         os.system(f'ip link set dev {self.interface} up')
+        # start the channel changer
+        channel_changer = Thread(target=change_channel)
+        channel_changer.daemon = True
+        channel_changer.start()
         return self
 
     def __exit__(self, exc_type, exc_value, exc_tb):
-        self.set_channel(self.curr_channel)
         os.system(f'ip link set dev {self.interface} down')
         os.system(f'iw dev {self.interface} set type managed')
         os.system(f'ip link set dev {self.interface} up')
 
-    def _out(self, command) -> str:
-        result = run(command, stdout=PIPE, stderr=PIPE, universal_newlines=True, shell=True)
-        return result.stdout
-
-    def _get_current_channel(self, iface: str) -> str:
-        x = self._out(f"iw {iface} info | grep 'channel' | cut -d ' ' -f 2")
-        return x.strip()
-
-    def _change_channel(self):
-        """
-        @ https://thepacketgeek.com/scapy/sniffing-custom-actions/part-2/
-        Note: Channels 12 and 13 are allowed in low-power mode, while channel 14 is banned and only allowed in Japan.
-        Thus we don't use channel 14.
-        """
-        ch = 1
-        while True:
-            # os.system(f"iwconfig {self.interface} channel {ch}")
-            os.system(f"iw dev {self.interface} set channel {ch}")
-            # switch channel from 1 to 14 each 0.5s
-            ch = (ch % 13) + 1
-            time.sleep(0.5)  # TODO: Can we tune this?
-
-    def set_channel(self, channel: int):
-        # TODO ADD TRY STATEMENT AND CREATE EXCEPTION?
-        # os.system(f"iwconfig {self.interface} channel {channel}")
-        os.system(f"iw dev {self.interface} set channel {channel}")
-        self.curr_channel = channel
+    # def _out(self, command) -> str:
+    #     result = run(command, stdout=PIPE, stderr=PIPE, universal_newlines=True, shell=True)
+    #     return result.stdout
 
     def scan_for_aps(self, timeout: int = 0, specific_ap: str = "") -> pandas.DataFrame:
         if timeout == 0:
@@ -101,11 +76,6 @@ class Scanner:
         # set the index BSSID (MAC address of the AP)
         networks.set_index("BSSID", inplace=True)
 
-        # start the channel changer
-        channel_changer = Thread(target=self._change_channel)
-        channel_changer.daemon = True
-        channel_changer.start()
-
         if specific_ap:
             def _stopfilter(x) -> bool:
                 if x[Dot11Elt].info.decode() == specific_ap:
@@ -124,39 +94,6 @@ class Scanner:
 
         sniff(prn=_callback, filter="type mgt subtype beacon", iface=self.interface, timeout=timeout)
         return networks
-
-    def get_clients_on_ap_probe(self, wifi: Wifi, timeout: int = 0, iface: str = "") -> None:
-        """Function to create a list of the clients communicating with a certain AP using probe requests and responses
-
-        Args:
-            timeout (int): Time to run sniff
-            iface (str): Interface to sniff
-            wifi (Wifi): Wifi object to add clients to
-        """
-
-        if timeout == 0:
-            timeout = self.timeout
-
-        if not iface:
-            iface = self.interface
-
-        def _callback(packet) -> None:
-            # Checks conditions, and adds clients to list
-            if packet.haslayer(Dot11ProbeReq):
-                src_BSSID = packet[Dot11].addr2
-                if packet[Dot11].addr1 == wifi.BSSID:
-                    client_list.append(src_BSSID)
-                    print(f"Client found from probeReq: {src_BSSID}")
-
-            elif packet.haslayer(Dot11ProbeResp):
-                src_BSSID = packet[Dot11].addr1
-                if packet[Dot11].addr2 == wifi.BSSID:
-                    client_list.append(src_BSSID)
-                    print(f"Client found from probeResp: {src_BSSID}")
-
-        client_list: list[str] = []
-        sniff(timeout=timeout, iface=iface, prn=_callback)
-        wifi.clients = list(set(client_list))
 
     def scan_for_clients(self, timeout: int = 0) -> list[str]:
         """Function to populate the clients list of each AP
@@ -226,25 +163,6 @@ class Scanner:
                     if client[0] not in wifi.clients:
                         wifi.clients.append(client[0])
         return list(set(client_list[0])) if client_list != [] else []
-
-    # def get_clients(self, specific_acces_point: Union[Wifi, None] = None) -> list[dict[str, list[dict[str, str]]]]:
-    #     """Function to get all clients connected to the APs
-
-    #     Returns:
-    #         list: of dict for each AP containing a list of dictions for each client containing the MAC address and the SSID
-    #     """
-    #     clients = []
-    #     if specific_acces_point:
-    #         for wifi in self.wifis:
-    #             if wifi.BSSID == specific_acces_point.BSSID:
-    #                 clients.append({"SSID": wifi.SSID, "clients": wifi.get_clients()})
-    #                 return clients
-    #         raise ValueError("The specific acces point was not found")
-    #     else:
-    #         for wifi in self.wifis:
-    #             clients.append({"SSID": wifi.SSID, "clients": wifi.get_clients()})
-        
-    #     return clients if clients != [] else []
 
     def scan_network(self) -> bool:
         print("Scanning network for APs...")
