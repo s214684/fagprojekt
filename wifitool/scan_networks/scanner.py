@@ -159,8 +159,6 @@ class Scanner:
         else:
             for wifi in self.wifis:
                 clients.append({"SSID": wifi.SSID, "clients": wifi.get_clients()})
-
-
         return clients if clients != [] else []
 
     def scan_network(self) -> bool:
