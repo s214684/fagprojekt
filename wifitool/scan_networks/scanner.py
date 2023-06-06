@@ -1,10 +1,7 @@
 import os
-import time
 from typing import Union
-from scapy.all import Dot11Beacon, Dot11, Dot11Elt, sniff, Dot11ProbeReq, Dot11ProbeResp
+from scapy.all import Dot11Beacon, Dot11, sniff
 from threading import Thread
-import pandas
-from subprocess import PIPE, run
 from deauth import deauth_with_beacon
 from wifi import Wifi
 from utils import get_current_channel, change_channel, set_channel
@@ -102,9 +99,6 @@ class Scanner:
 
         sniff(prn=_callback, iface=self.interface, timeout=self.timeout, count=4)
 
-        
-
-
     def handle_clients(self, packet, client_list: list[list[str]]) -> list[list[str]]:
         """Function to handle the clients connected to the APs
 
@@ -165,7 +159,7 @@ class Scanner:
         else:
             for wifi in self.wifis:
                 clients.append({"SSID": wifi.SSID, "clients": wifi.get_clients()})
-        
+
         return clients if clients != [] else []
 
     def scan_network(self) -> bool:
@@ -187,7 +181,7 @@ class Scanner:
             for i, wifi in enumerate(self.wifis):
                 # print all the data associated with the AP
                 print(f"{i}. {wifi.SSID}: {wifi.BSSID} | {wifi.channel} | {wifi.crypto} | {wifi.country} | {wifi.max_bitrate} | {wifi.beacon_interval}")
-                
+
                 if wifi.clients:
                     print("\tClients:")
                     for client in wifi.clients:
