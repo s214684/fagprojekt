@@ -2,7 +2,7 @@ import os
 from typing import Union
 from scapy.all import Dot11Beacon, Dot11, sniff
 from threading import Thread
-from deauth import deauth_with_beacon
+from deauth import deauth, deauth_with_beacon
 from wifi import Wifi
 from utils import get_current_channel, change_channel, set_channel
 
