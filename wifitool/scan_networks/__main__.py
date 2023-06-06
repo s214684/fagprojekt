@@ -24,6 +24,8 @@ with Scanner(INTERFACE, TIMEOUT) as scanner:
                 scanner.show_aps()
             elif action == "b.3":
                 scanner.send_deauth()
+            elif action == "b.4":
+                scanner.send_deauth_with_beacon()
             elif action == "a.3":
                 options(scanner)
                 start = True

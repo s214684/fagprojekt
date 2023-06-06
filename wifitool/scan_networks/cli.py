@@ -37,6 +37,7 @@ def prompt_menu(welcome: bool = False, start: bool = False):
     1. Show APs
     2. Show clients
     3. Send deauth
+    4. Send deauth with beacon
 
     8. Back to start
     9. Exit (Ctrl+C)

@@ -5,7 +5,7 @@ from scapy.all import Dot11Beacon, Dot11, Dot11Elt, sniff, Dot11ProbeReq, Dot11P
 from threading import Thread
 import pandas
 from subprocess import PIPE, run
-from deauth import deauth_with_beacon
+from deauth import deauth, deauth_with_beacon
 from wifi import Wifi
 from utils import get_current_channel, change_channel, set_channel
 
@@ -291,4 +291,33 @@ class Scanner:
         else:
             target_client = input("Input client MAC for deauth: ")
 
-        deauth_with_beacon(self.interface, target_ap.SSID, target_ap.BSSID, target_client, "c3:f0:cf:2f:51:78")
+        deauth(self.interface, target_ap.BSSID, target_client)
+
+    def send_deauth_with_beacon(self):
+        if not self.wifis:
+            print("AP list is empty, please scan the network first.")
+            return
+        target_ap = self.prompt_for_ap()
+        set_channel(self.interface, target_ap.channel)
+
+        # Check if we have clients on the AP. If so, prompt user for client to deauth
+        if target_ap.clients:
+            print("Choose client to deauth from list:")
+            for i, client in enumerate(target_ap.clients):
+                print(f"{i}. {client}")
+            print(f"{len(target_ap.clients)+1}. User defined client")
+            print(f"{len(target_ap.clients)+2}. Deauth all clients")
+            client_to_deauth = int(input("Input choice: "))
+
+            if client_to_deauth == len(target_ap.clients) + 1:
+                target_client = input("Input client MAC for deauth: ")
+            elif client_to_deauth == len(target_ap.clients) + 2:
+                target_client = "ff:ff:ff:ff:ff:ff"
+            else:
+                target_client = target_ap.clients[client_to_deauth]
+
+        # If we don't have clients on the AP, prompt user for client to deauth
+        else:
+            target_client = input("Input client MAC for deauth: ")
+
+        deauth_with_beacon(self.interface, target_ap.SSID, target_ap.BSSID, target_client)

