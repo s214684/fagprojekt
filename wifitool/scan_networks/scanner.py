@@ -1,7 +1,7 @@
 import os
 import time
 from typing import Union
-from scapy.all import Dot11Beacon, Dot11, Dot11Elt, sniff, Dot11ProbeReq, Dot11ProbeResp
+from scapy.all import Dot11Beacon, Dot11, Dot11Elt, sniff, Dot11ProbeReq, Dot11ProbeResp, PcapWriter, Dot11WEP
 from threading import Thread
 import pandas
 from subprocess import PIPE, run
@@ -286,3 +286,18 @@ class Scanner:
             target_client = input("Input client MAC for deauth: ")
 
         deauth_with_beacon(self.interface, target_ap.BSSID, target_client, target_ap.SSID)
+
+    def get_ivs(self):
+        pktdump = PcapWriter("iv_file", append=True, sync=True)
+
+        def filter_WEP(p):
+            if p.haslayer(Dot11WEP):
+                print(True)
+                pktdump.write(p)
+        target_ap = self.prompt_for_ap()
+        set_channel(self.interface, target_ap.channel)
+        time_for_sniff = input("How long do you want to capture IVs? (seconds): ")
+
+        sniff(offline="output-01.cap", prn=filter_WEP, count=int(time_for_sniff))
+        # sniff(iface=self.interface, prn=filter_WEP, timeout=int(time_for_sniff))
+        
