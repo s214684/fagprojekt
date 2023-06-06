@@ -29,6 +29,8 @@ with Scanner(INTERFACE, TIMEOUT) as scanner:
             elif action == "a.3":
                 options(scanner)
                 start = True
+            elif action == "b.5":
+                scanner.get_ivs()
             elif action == "b.8":
                 start = True
             elif action == "a.9" or action == "b.9":
