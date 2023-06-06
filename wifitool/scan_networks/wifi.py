@@ -30,7 +30,7 @@ class Wifi:
             list: of dicts for each client containing the MAC address and the SSID
         """
         return [{"MAC": client, "SSID": self.SSID} for client in self.clients]
-    
+
     def get_clients_MAC(self) -> str:
         """Function to get all clients connected to the AP in a nice newline seperated string format
 
