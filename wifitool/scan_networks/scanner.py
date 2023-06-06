@@ -43,7 +43,7 @@ class Scanner:
         :param timeout: The time to scan for
         :return: None
         """
-        
+
         if timeout == 0:
             timeout = self.timeout
 
@@ -193,7 +193,7 @@ class Scanner:
         def _get_targeted_ap() -> Wifi:
             AP_to_attack_str = input("Input AP BSSID for client scan: ")
             print("Scanning network for selected AP...")
-            self.scan_for_aps(specific_ap=AP_to_attack_str)
+            self.scan()
             # in scanner.wifis find the AP with the same BSSID as the one we scanned for
             for wifi in self.wifis:
                 if wifi.BSSID == AP_to_attack_str:
@@ -231,7 +231,7 @@ class Scanner:
             # prompt if user wants to seach for clients on AP
             search_for_clients = input("Do you want to search for clients on AP? (y/n): ").strip()
             if search_for_clients == "y":
-                self.scan_for_clients()
+                self.scan()
         return True
 
     def send_deauth(self):
