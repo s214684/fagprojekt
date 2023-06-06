@@ -47,19 +47,19 @@ class Scanner:
         if timeout == 0:
             timeout = self.timeout
 
-        client_list: list[list[str]] = []
+        self.client_list: list[list[str]] = []
 
         def _callback(packet):
-            if packet[Dot11Beacon]:
+            if Dot11Beacon in packet.layers():
                 wifi = self.handle_beacon(packet)
                 if wifi not in self.wifis:
                     self.wifis.append(wifi)
             elif packet[Dot11]:
-                client_list = self.handle_clients(packet, client_list)
+                self.client_list = self.handle_clients(packet, self.client_list)
 
         sniff(prn=_callback, iface=self.interface, timeout=timeout)
 
-        for client in client_list:
+        for client in self.client_list:
             # find wifi that client communicated with
             for wifi in self.wifis:
                 if wifi.BSSID == client[1]:
@@ -85,7 +85,10 @@ class Scanner:
         channel = stats["channel"]
         # get the crypto
         crypto = stats["crypto"]
-        country = stats['country']
+        try:
+            country = stats['country']
+        except KeyError:
+            country = ""
         max_rate = stats['rates'][-1]
         beacon_interval: int = packet[Dot11Beacon].fields['beacon_interval']
 
@@ -93,8 +96,11 @@ class Scanner:
 
     def test(self):
         def _callback(packet):
-            print(packet.layers())
-        sniff(prn=_callback, iface=self.interface, timeout=timeout, count=4)
+            stats = packet[Dot11Beacon].network_stats()
+            print(stats)
+            print(stats['country'])
+
+        sniff(prn=_callback, iface=self.interface, timeout=self.timeout, count=4)
 
         
 
@@ -176,12 +182,14 @@ class Scanner:
         # for each AP print in tabular the data associated with it and its clients
         if self.wifis:
             print("Network topology:\n")
+            print("{wifi.SSID}: {wifi.BSSID} | {wifi.channel} | {wifi.crypto} | {wifi.country} | {wifi.max_bitrate} | {wifi.beacon_interval}")
+
             for i, wifi in enumerate(self.wifis):
                 # print all the data associated with the AP
-                print(f"{i}. {wifi.SSID}: {wifi.BSSID} | {wifi.channel} | {wifi.crypto} | {wifi.country} | {wifi.max_rate} | {wifi.beacon_interval}")
+                print(f"{i}. {wifi.SSID}: {wifi.BSSID} | {wifi.channel} | {wifi.crypto} | {wifi.country} | {wifi.max_bitrate} | {wifi.beacon_interval}")
                 
                 if wifi.clients:
-                    print("Clients:")
+                    print("\tClients:")
                     for client in wifi.clients:
                         print(f"\t{client}")
                 else:
