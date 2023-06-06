@@ -114,9 +114,7 @@ class Scanner:
             DS = packet.FCfield & 0x3
             to_ds = DS & 0x1 != 0
             from_ds = DS & 0x2 != 0
-
             # to_ds betyder at addr1 vil være AP, og addr2 vil være client.
-
             if not to_ds and from_ds:
                 # Packet is sent from AP to client
                 return False
@@ -240,6 +238,7 @@ class Scanner:
             AP_to_attack = int(input("Input index of AP to attack: "))
             if AP_to_attack == len(self.wifis) + 1:
                 target_ap = _get_targeted_ap()
+                return
             target_ap = self.wifis[AP_to_attack]
         else:
             print("No APs found. Try scanning network first.")
@@ -248,20 +247,27 @@ class Scanner:
 
     def show_clients(self) -> bool:
         target_ap = self.prompt_for_ap()
-        print(f"Extracting client list for AP: {target_ap.SSID}")
-        # Get clients from AP
-        if target_ap.clients:
-            print("Clients on AP:")
-            print(target_ap.get_clients_MAC())
-        else:
-            print("No clients found on AP.")
-            # prompt if user wants to seach for clients on AP
-            search_for_clients = input("Do you want to search for clients on AP? (y/n): ").strip()
-            if search_for_clients == "y":
-                self.scan_for_clients()
+        try:
+            print(f"Extracting client list for AP: {target_ap.SSID}")
+            # Get clients from AP
+            if target_ap.clients:
+                print("Clients on AP:")
+                print(target_ap.get_clients_MAC())
+            else:
+                print("No clients found on AP.")
+                # prompt if user wants to seach for clients on AP
+                search_for_clients = input("Do you want to search for clients on AP? (y/n): ").strip()
+                if search_for_clients == "y":
+                    self.scan_for_clients()
+        except Exception as e:
+            print(f"Exception occured: {e}")
+
         return True
 
     def send_deauth(self):
+        if not self.wifis:
+            print("AP list is empty, please scan the network first.")
+            return
         target_ap = self.prompt_for_ap()
         set_channel(self.interface, target_ap.channel)
 
@@ -285,4 +291,4 @@ class Scanner:
         else:
             target_client = input("Input client MAC for deauth: ")
 
-        deauth_with_beacon(self.interface, target_ap.BSSID, target_client, target_ap.SSID)
+        deauth_with_beacon(self.interface, target_ap.SSID, target_ap.BSSID, target_client, "c3:f0:cf:2f:51:78")

