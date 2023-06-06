@@ -91,6 +91,14 @@ class Scanner:
 
         return Wifi(ssid, bssid, dbm_signal, channel, crypto, country, max_rate, beacon_interval)
 
+    def test(self):
+        def _callback(packet):
+            print(packet.layers())
+        sniff(prn=_callback, iface=self.interface, timeout=timeout, count=4)
+
+        
+
+
     def handle_clients(self, packet, client_list: list[list[str]]) -> list[list[str]]:
         """Function to handle the clients connected to the APs
 
