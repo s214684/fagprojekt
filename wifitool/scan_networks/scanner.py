@@ -37,6 +37,46 @@ class Scanner:
         os.system(f'ip link set dev {self.interface} up')
         set_channel(self.interface, self.curr_channel)
 
+    def scan(self, timeout: int = 0, specific_ap: str = ""):
+        if timeout == 0:
+            timeout = self.timeout
+
+        packets_to_handle_after = []
+
+        def _callback(packet):
+            print(packet.summary())
+            print(packet.show())
+            print(packet[Dot11].network_stats())
+            print(packet[Dot11Elt].info)
+            print(packet[Dot11Elt].info.decode())
+            
+        sniff(prn=_callback, iface=self.interface, timeout=timeout, count=2)
+
+    def handle_beacon(self, packet):
+
+        # get the name of it
+        ssid = packet[Dot11Elt].info.decode().strip()
+        if not ssid:
+            ssid = "'Hidden SSID'"
+        if ssid in self.wifis:
+            return
+        # extract the MAC address of the network
+        bssid = packet[Dot11].addr2
+        try:
+            dbm_signal = packet.dBm_AntSignal
+        except Exception:
+            dbm_signal = "N/A"
+        # extract network stats
+        stats = packet[Dot11Beacon].network_stats()
+        # get the channel of the AP
+        channel = stats.get("channel")
+        # get the crypto
+        crypto = stats.get("crypto")
+        networks.loc[bssid] = (ssid, dbm_signal, channel, crypto)
+
+        wifi = Wifi(ssid, bssid, dbm_signal, channel, crypto)
+
+
     def scan_for_aps(self, timeout: int = 0, specific_ap: str = "") -> pandas.DataFrame:
         if timeout == 0:
             timeout = self.timeout
