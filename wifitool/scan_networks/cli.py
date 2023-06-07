@@ -39,6 +39,7 @@ def prompt_menu(welcome: bool = False, start: bool = False):
     3. Send deauth
     4. Send deauth with beacon
     5. Crack WEP
+    6. Send beacon
 
     8. Back to start
     9. Exit (Ctrl+C)

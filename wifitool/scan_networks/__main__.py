@@ -31,6 +31,8 @@ with Scanner(INTERFACE, TIMEOUT) as scanner:
                 start = True
             elif action == "b.5":
                 scanner.get_ivs()
+            elif action == "b.6":
+                scanner.send_beacon()
             elif action == "b.8":
                 start = True
             elif action == "a.9" or action == "b.9":

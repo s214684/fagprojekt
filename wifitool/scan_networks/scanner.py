@@ -1,8 +1,8 @@
 import os
 from typing import Union
-from scapy.all import Dot11Beacon, Dot11, sniff, Dot11WEP, PcapWriter
+from scapy.all import Dot11Beacon, Dot11, sniff, Dot11WEP, PcapWriter, RandMAC
 from threading import Thread
-from deauth import deauth, deauth_with_beacon
+from deauth import deauth, beacon, deauth_with_beacon
 from wifi import Wifi
 from utils import get_current_channel, change_channel, set_channel
 
@@ -301,6 +301,17 @@ class Scanner:
             target_client = input("Input client MAC for deauth: ")
 
         deauth_with_beacon(self.interface, target_ap.SSID, target_ap.BSSID, target_client)
+
+    def send_beacon(self):
+        SSID = input("Write SSID to mimic ")
+        BSSID = input("Write MAC address to mimic ('0' for random MAC) ")
+        if BSSID == '0':
+            BSSID = str(RandMAC())
+        if input("Do you want to broadcast beacon frames? (y,n) ").lower() == "n":
+            client = input("Write MAC address of client to send to")
+            beacon(self.interface, BSSID, SSID, client)
+        else:
+            beacon(self.interface, BSSID, SSID)
 
     def get_ivs(self):
         # Create file to save IVs to
