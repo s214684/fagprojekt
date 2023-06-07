@@ -1,4 +1,5 @@
 [flake8]
 ignore = E501
+ignore = C901
 exclude = .git,__pycache__,docs,Latex-Files,build,dist
 max-complexity = 10

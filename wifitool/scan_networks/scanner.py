@@ -322,7 +322,7 @@ class Scanner:
             return
         set_channel(self.interface, target_ap.channel)
         time_for_sniff = input("How long do you want to capture IVs? (seconds): ")
-        
+
         sniff(iface=self.interface, prn=filter_WEP, timeout=int(time_for_sniff))
 
         print(f'IVs saved to file: {pktdump.filename}')
