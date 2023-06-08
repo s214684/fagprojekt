@@ -40,6 +40,7 @@ def prompt_menu(welcome: bool = False, start: bool = False):
     4. Send deauth with beacon
     5. Crack WEP
     6. Send beacon
+    7. Save topology to file
 
     8. Back to start
     9. Exit (Ctrl+C)

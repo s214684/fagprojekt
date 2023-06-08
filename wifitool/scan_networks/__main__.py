@@ -33,6 +33,11 @@ with Scanner(INTERFACE, TIMEOUT) as scanner:
                 scanner.get_ivs()
             elif action == "b.6":
                 scanner.send_beacon()
+            elif action == "b.7":
+                filename = input("Filename: ")
+                scanner.save_scan(filename=
+                                  filename if filename.endswith(".json") else filename + ".json"
+                                    )
             elif action == "b.8":
                 start = True
             elif action == "a.9" or action == "b.9":
