@@ -61,13 +61,13 @@ class Scanner:
             wifi_dict = {"BSSID": wifi.BSSID,
                          "CRYPTO": wifi.crypto,
                          "CHANNEL": wifi.channel,
-                         "DBM_SIGNAL": wifi.dbm_signal,
+                         "DBM_SIGNAL": wifi.dBm_signal,
                          "COUNTRY": wifi.country,
-                         "MAX_RATE": wifi.max_rate,
+                         "MAX_RATE": wifi.max_bitrate,
                          "BEACON_INTERVAL": wifi.beacon_interval,
                          "CLIENTS": wifi.clients}
             # add the wifi to the dictionary
-            scan["Topology"][wifi.ssid] = wifi_dict
+            scan["Topology"][wifi.SSID] = wifi_dict
 
         # save the dictionary to the file
         with open(filename, "w") as file:
