@@ -54,8 +54,7 @@ class Scanner:
                 "scan_time": scan_time,
                 "interface": self.interface,
                 "TIMEOUT": self.timeout,
-                "Topology": {}}
-
+                "Topology": {}}  # the topology dictionary
         # for each wifi
         for wifi in self.wifis:
             # create the wifi dictionary
@@ -73,7 +72,6 @@ class Scanner:
         # save the dictionary to the file
         with open(filename, "w") as file:
             json.dump(scan, file, indent=4)
-
 
     def scan(self, timeout: int = 0) -> None:
         """
