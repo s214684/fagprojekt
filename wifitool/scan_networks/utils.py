@@ -7,7 +7,7 @@ import time
 from scapy.all import sniff
 
 
-file_handler = logging.FileHandler(filename='tmp.log')
+file_handler = logging.FileHandler(filename='log.log')
 file_handler.setLevel(level=logging.DEBUG)
 stdout_handler = logging.StreamHandler(stream=sys.stdout)
 handlers = [file_handler]

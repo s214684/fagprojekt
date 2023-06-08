@@ -50,7 +50,7 @@ class Scanner:
         :param filename: The name of the file to save to
         :return: None
         """
-
+        LOGGER.debug("Running 'save_scan' function")
         # get the scan time
         scan_time = time.time()
 
@@ -77,6 +77,7 @@ class Scanner:
         # save the dictionary to the file
         with open(filename, "w") as file:
             json.dump(scan, file, indent=4)
+        LOGGER.info(f"Network scan has been saved to file {filename}")
 
     def scan(self, timeout: int = 0) -> None:
         """
