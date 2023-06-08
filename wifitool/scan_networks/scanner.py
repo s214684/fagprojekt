@@ -7,7 +7,7 @@ from threading import Thread
 from deauth import deauth, beacon, deauth_with_beacon
 from wifi import Wifi
 from utils import get_current_channel, change_channel, set_channel, strip_non_ascii
-from wifitool import LOGGER
+from utils import LOGGER
 
 
 class Scanner:

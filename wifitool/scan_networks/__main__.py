@@ -2,7 +2,7 @@ from scanner import Scanner
 from utils import check_system
 import sys
 from cli import prompt_menu, options
-from wifitool import LOGGER
+from utils import LOGGER
 INTERFACE = check_system()
 TIMEOUT = 20
 

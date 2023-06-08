@@ -1,6 +1,6 @@
 from scapy.all import sendp, Dot11, RadioTap, Dot11Deauth, Dot11Beacon, Dot11Elt, RandMAC
 import time
-from wifitool import LOGGER
+from utils import LOGGER
 
 
 def deauth(iface: str, BSSID: str, client: str, reason: int = 7):

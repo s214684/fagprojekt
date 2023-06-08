@@ -10,7 +10,7 @@ from scapy.all import sniff
 file_handler = logging.FileHandler(filename='tmp.log')
 file_handler.setLevel(level=logging.DEBUG)
 stdout_handler = logging.StreamHandler(stream=sys.stdout)
-handlers = [file_handler, stdout_handler]
+handlers = [file_handler]
 
 logging.basicConfig(
     level=logging.INFO,

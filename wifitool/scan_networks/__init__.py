@@ -1,6 +1,6 @@
 from scapy.all import (Dot11, Dot11Beacon, Dot11Elt, RadioTap, sendp)
 import pandas as pd
-from wifitool import LOGGER
+from utils import LOGGER
 
 
 def list_available_aps(packet) -> pd.DataFrame:
