@@ -1,10 +1,12 @@
 import os
+import json
+import time
 from typing import Union
 from scapy.all import Dot11Beacon, Dot11, sniff, Dot11WEP, PcapWriter, RandMAC
 from threading import Thread
 from deauth import deauth, beacon, deauth_with_beacon
 from wifi import Wifi
-from utils import get_current_channel, change_channel, set_channel
+from utils import get_current_channel, change_channel, set_channel, strip_non_ascii
 from wifitool import LOGGER
 
 
@@ -38,6 +40,43 @@ class Scanner:
         os.system(f'ip link set dev {self.interface} up')
         set_channel(self.interface, self.curr_channel)
         LOGGER.info("Exiting scanner")
+
+    def save_scan(self, filename: str) -> None:
+        """
+        Saves the topology to a file in JSON format:
+        {Num_of_wifis: , scan_time: , interface: , TIMEOUT: , Topology: 
+            {WIFI_NAME (SSID): 
+                {BSSID: ,CRYPTO: CRYPTO, CHANNEL: CHANNEL, DBM_SIGNAL: DBM_SIGNAL, COUNTRY: COUNTRY, MAX_RATE: MAX_RATE, BEACON_INTERVAL: BEACON_INTERVAL, CLIENTS: [CLIENTS]}}}
+        :param filename: The name of the file to save to
+        :return: None
+        """
+
+        # get the scan time
+        scan_time = time.time()
+
+        # create the dictionary
+        scan = {"Num_of_wifis": len(self.wifis),
+                "scan_time": scan_time,
+                "interface": self.interface,
+                "TIMEOUT": self.timeout,
+                "Topology": {}}  # the topology dictionary
+        # for each wifi
+        for wifi in self.wifis:
+            # create the wifi dictionary
+            wifi_dict = {"BSSID": wifi.BSSID,
+                         "CRYPTO": wifi.crypto,
+                         "CHANNEL": wifi.channel,
+                         "DBM_SIGNAL": wifi.dBm_signal,
+                         "COUNTRY": wifi.country,
+                         "MAX_RATE": wifi.max_bitrate,
+                         "BEACON_INTERVAL": wifi.beacon_interval,
+                         "CLIENTS": wifi.clients}
+            # add the wifi to the dictionary
+            scan["Topology"][wifi.SSID] = wifi_dict
+
+        # save the dictionary to the file
+        with open(filename, "w") as file:
+            json.dump(scan, file, indent=4)
 
     def scan(self, timeout: int = 0) -> None:
         """
@@ -91,11 +130,11 @@ class Scanner:
         except Exception:
             dbm_signal = "N/A"
         # get the channel of the AP
-        channel = stats["channel"]
+        channel = strip_non_ascii(stats["channel"])
         # get the crypto
-        crypto = stats["crypto"]
+        crypto = strip_non_ascii(stats["crypto"])
         try:
-            country = stats['country']
+            country = strip_non_ascii(stats['country'])
         except KeyError:
             country = ""
         max_rate = stats['rates'][-1]

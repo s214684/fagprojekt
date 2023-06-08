@@ -49,7 +49,11 @@ with Scanner(INTERFACE, TIMEOUT) as scanner:
             elif action == "b.6":
                 LOGGER.info("Starting beacon attack...")
                 scanner.send_beacon()
-                LOGGER.info("Beacon attack complete.")
+            elif action == "b.7":
+                filename = input("Filename: ")
+                scanner.save_scan(filename=
+                                  filename if filename.endswith(".json") else filename + ".json"
+                                    )
             elif action == "b.8":
                 LOGGER.info("going back to start...")
                 start = True
