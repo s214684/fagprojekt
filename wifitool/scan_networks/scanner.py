@@ -6,7 +6,7 @@ from scapy.all import Dot11Beacon, Dot11, sniff, Dot11WEP, PcapWriter, RandMAC
 from threading import Thread
 from deauth import deauth, beacon, deauth_with_beacon
 from wifi import Wifi
-from utils import get_current_channel, change_channel, set_channel
+from utils import get_current_channel, change_channel, set_channel, strip_non_ascii
 
 
 class Scanner:
@@ -118,11 +118,11 @@ class Scanner:
         except Exception:
             dbm_signal = "N/A"
         # get the channel of the AP
-        channel = stats["channel"]
+        channel = strip_non_ascii(stats["channel"])
         # get the crypto
-        crypto = stats["crypto"]
+        crypto = strip_non_ascii(stats["crypto"])
         try:
-            country = stats['country']
+            country = strip_non_ascii(stats['country'])
         except KeyError:
             country = ""
         max_rate = stats['rates'][-1]
