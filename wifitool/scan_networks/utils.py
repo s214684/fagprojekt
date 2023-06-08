@@ -76,12 +76,12 @@ def set_channel(interface, channel: int) -> None:
     except Exception:
         print("Failed to set channel")
 
-def strip_non_ascii(string):
+def strip_non_ascii(string: str) -> str:
     ''' Returns the string without non ASCII characters
     FROM: https://stackoverflow.com/questions/2743070/remove-non-ascii-characters-from-a-string-using-python-django
     '''
-    string.encode('ascii',errors='ignore')
-    return string.decode()
+    s = string.encode('ascii',errors='ignore')
+    return s.decode()
 
 def get_iface() -> str:
     return out("iw dev | grep Interface | cut -d ' ' -f 2").strip()

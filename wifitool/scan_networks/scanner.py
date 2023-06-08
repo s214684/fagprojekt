@@ -130,9 +130,9 @@ class Scanner:
         except Exception:
             dbm_signal = "N/A"
         # get the channel of the AP
-        channel = strip_non_ascii(stats["channel"])
+        channel = stats["channel"]
         # get the crypto
-        crypto = strip_non_ascii(stats["crypto"])
+        crypto = strip_non_ascii(str(stats["crypto"]))
         try:
             country = strip_non_ascii(stats['country'])
         except KeyError:
