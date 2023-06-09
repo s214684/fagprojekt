@@ -35,16 +35,21 @@ def set_interface_to_monitor_mode(interface):
 
 def check_system() -> str:
     """Checks if the user is root and if the system is Linux. If not, the program exits."""
+    LOGGER.debug("Checking system")
     if sys.platform == "win32":
+        LOGGER.debug("Windows detected")
         print("Windows detected")
         print("Windows users are at the moment not able to use this tool.")
         print("Please use a Linux distribution instead.")
         exit(1)
+    LOGGER.debug("Checking if user is root")
     if getuser() != "root":
         print("Error: You need to be root to run this script")
+        LOGGER.debug("User is not root")
         exit(1)
     iface = get_iface().strip()
     if iface == "":
+        LOGGER.debug("No wifi card detected")
         print("Error: No wifi card detected")
         exit(1)
     return iface
