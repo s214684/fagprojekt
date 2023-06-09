@@ -3,6 +3,7 @@ import os
 import sys
 import time
 
+# TODO: Is this logger needed? (When we have the logger in the utils file)
 file_handler = logging.FileHandler(filename='tmp.log')
 file_handler.setLevel(level=logging.DEBUG)
 stdout_handler = logging.StreamHandler(stream=sys.stdout)
@@ -16,26 +17,25 @@ logging.basicConfig(
 LOGGER = logging.getLogger('wifitool')
 LOGGER.debug("Logger created")
 
-
+# TODO: Is this needed?
 def test_interface(interface):
     pass
 
-
+# TODO: Is this needed?
 def setup_interface(interface):
     pass
 
-
+# TODO: This exists in util and scanner already, remove?
 def set_interface_to_monitor_mode(interface):
-
     os.system('ifconfig ' + interface + ' down')
     os.system('iwconfig ' + interface + ' monitor')
     os.system('ifconfig ' + interface + ' up')
 
-
+# TODO: Seems unnecessary, remove?
 def get_interface_info():
     return "interface info"
 
-
+# TODO: Seems unnecessary, remove?
 def print_all(stuff_to_print):
     """
     @ https://thepacketgeek.com/scapy/sniffing-custom-actions/part-2/
@@ -45,7 +45,7 @@ def print_all(stuff_to_print):
         print(stuff_to_print)
         time.sleep(0.5)
 
-
+# TODO: Exists in scanner, unused, remove?
 def change_channel(interface: str):
     """
     @ https://thepacketgeek.com/scapy/sniffing-custom-actions/part-2/

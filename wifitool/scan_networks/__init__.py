@@ -1,6 +1,7 @@
 from scapy.all import (Dot11, Dot11Beacon, Dot11Elt, RadioTap, sendp)
-import pandas as pd
 from utils import LOGGER
+import pandas as pd
+
 
 
 def list_available_aps(packet) -> pd.DataFrame:

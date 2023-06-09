@@ -2,6 +2,7 @@ from scapy.all import RadioTap, Dot11, Dot11Deauth, sendp, sniff
 
 
 class Wifi:
+    """Class to represent a wifi network."""
     def __init__(self, SSID, BSSID, dBm_signal, channel, crypto, max_bitrate: int = 0, country: str = "", beacon_interval: int = 0):
         self.SSID: str = SSID
         self.BSSID: str = BSSID
@@ -14,6 +15,7 @@ class Wifi:
         self.clients: list[str] = []
 
     def __eq__(self, other):
+        # Dunder for comparing two Wifi objects
         if (isinstance(other, Wifi)):
             return self.SSID == other.SSID
         return False
@@ -22,6 +24,7 @@ class Wifi:
         return self.SSID
 
     def __repr__(self):
+        # Dunder for printing a Wifi object
         return str(self)
 
     def get_clients(self) -> list[dict[str, str]]:

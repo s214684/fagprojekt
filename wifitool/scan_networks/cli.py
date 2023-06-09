@@ -1,9 +1,9 @@
-import datetime
 from scanner import Scanner
-
+import datetime
 
 # Terminal menu for user to choose what to do
 def prompt_menu(welcome: bool = False, start: bool = False):
+    """Prints the menu and returns the action chosen by the user."""
     if welcome:
         ASCII_banner = f"""
         ░▒█░░▒█░▀█▀░▒█▀▀▀░▀█▀░░░▀▀█▀▀░▒█▀▀▀█░▒█▀▀▀█░▒█░░░
@@ -57,7 +57,7 @@ def prompt_menu(welcome: bool = False, start: bool = False):
 
 
 def options(scanner: Scanner) -> None:
-    # Let user set constants such as timeout and interface
+    """Lets the user change the settings of the network scanner."""
     print("Current settings:")
     print(f"Timeout: {scanner.timeout}")
     print(f"Interface: {scanner.interface}")

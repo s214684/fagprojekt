@@ -1,12 +1,14 @@
+from cli import prompt_menu, options
 from scanner import Scanner
 from utils import check_system
-import sys
-from cli import prompt_menu, options
 from utils import LOGGER
+import sys
+
 INTERFACE = check_system()
 TIMEOUT = 20
 
 with Scanner(INTERFACE, TIMEOUT) as scanner:
+    """The context manager is entered here. Then the functions are called based on the user input."""
     scanner = scanner
     LOGGER.info("Starting WifiTool...")
     # Clear screen

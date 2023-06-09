@@ -1,12 +1,13 @@
-import os
-import logging
-import sys
 from getpass import getuser
-from subprocess import PIPE, run
-import time
 from scapy.all import sniff
+from subprocess import PIPE, run
+import logging
+import os
+import sys
+import time
 
 
+# Create the logger for the whole project
 file_handler = logging.FileHandler(filename='log.log')
 file_handler.setLevel(level=logging.DEBUG)
 stdout_handler = logging.StreamHandler(stream=sys.stdout)
@@ -27,13 +28,13 @@ def out(command) -> str:
 
 
 def set_interface_to_monitor_mode(interface):
-
     os.system(f'ip link set dev {interface} down')
     os.system(f'iw dev {interface} set type monitor')
     os.system(f'ip link set dev {interface} up')
 
 
 def check_system() -> str:
+    """Checks if the user is root and if the system is Linux. If not, the program exits."""
     if sys.platform == "win32":
         print("Windows detected")
         print("Windows users are at the moment not able to use this tool.")
@@ -70,7 +71,6 @@ def change_channel() -> None:
 
 
 def set_channel(interface, channel: int) -> None:
-    # TODO ADD TRY STATEMENT AND CREATE EXCEPTION?
     try:
         os.system(f"iw dev {interface} set channel {channel}")
     except Exception:

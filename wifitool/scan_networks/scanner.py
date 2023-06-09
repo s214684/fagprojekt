@@ -1,14 +1,13 @@
-import os
-import json
-import time
-from typing import Union
-from scapy.all import Dot11Beacon, Dot11, sniff, Dot11WEP, PcapWriter, RandMAC
-from threading import Thread
 from deauth import deauth, beacon, deauth_with_beacon
-from wifi import Wifi
+from scapy.all import Dot11Beacon, Dot11, sniff, Dot11WEP, PcapWriter, RandMAC
+from typing import Union
+from threading import Thread
 from utils import get_current_channel, change_channel, set_channel, strip_non_ascii
 from utils import LOGGER
-
+from wifi import Wifi
+import json
+import os
+import time
 
 class Scanner:
     """
@@ -21,8 +20,10 @@ class Scanner:
         self.timeout: int = timeout
 
     def __enter__(self):
+        """Enter the scanner context manager"""
         LOGGER.debug("Function '__enter__' is running")
         self.curr_channel = get_current_channel(iface=self.interface)
+        # set the interface to monitor mode
         os.system(f'ip link set dev {self.interface} down')
         os.system(f'iw dev {self.interface} set type monitor')
         os.system(f'ip link set dev {self.interface} up')
@@ -34,10 +35,13 @@ class Scanner:
         return self
 
     def __exit__(self, exc_type, exc_value, exc_tb):
+        """Exit the scanner context manager"""
         LOGGER.debug("Function '__exit__' is running")
+        # Set the interface back to managed mode
         os.system(f'ip link set dev {self.interface} down')
         os.system(f'iw dev {self.interface} set type managed')
         os.system(f'ip link set dev {self.interface} up')
+        # set the channel back to the original channel
         set_channel(self.interface, self.curr_channel)
         LOGGER.info("Exiting scanner")
 
@@ -92,6 +96,7 @@ class Scanner:
         self.client_list: list[list[str]] = []
 
         def _callback(packet):
+            # Check for type of packet
             if Dot11Beacon in packet.layers():
                 wifi = self.handle_beacon(packet)
                 if wifi not in self.wifis:
@@ -203,13 +208,16 @@ class Scanner:
         """
         LOGGER.debug("Function 'get_clients' is running")
         clients = []
+        # Handle specific acces point specified
         if specific_acces_point:
             for wifi in self.wifis:
                 if wifi.BSSID == specific_acces_point.BSSID:
+                    # Add clients for specific AP to list
                     clients.append({"SSID": wifi.SSID, "clients": wifi.get_clients()})
                     return clients
             raise ValueError("The specific acces point was not found")
         else:
+            # Add all clients to wifis
             for wifi in self.wifis:
                 clients.append({"SSID": wifi.SSID, "clients": wifi.get_clients()})
         return clients if clients != [] else []
@@ -363,7 +371,7 @@ class Scanner:
 
         deauth_with_beacon(self.interface, target_ap.SSID, target_ap.BSSID, target_client)
 
-    def send_beacon(self):
+    def send_beacon(self):  # TODO: Rewrite this function
         """Function to send beacon packets to APs"""
         LOGGER.debug("Function 'send_beacon' is running")
         choice = input("1. Pick AP from list to mimic\n2. User defined AP\nInput choice: ")
