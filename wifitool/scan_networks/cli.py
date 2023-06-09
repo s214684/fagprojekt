@@ -1,6 +1,7 @@
 from scanner import Scanner
 import datetime
 
+
 # Terminal menu for user to choose what to do
 def prompt_menu(welcome: bool = False, start: bool = False):
     """Prints the menu and returns the action chosen by the user."""

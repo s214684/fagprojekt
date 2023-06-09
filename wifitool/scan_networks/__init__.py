@@ -3,7 +3,6 @@ from utils import LOGGER
 import pandas as pd
 
 
-
 def list_available_aps(packet) -> pd.DataFrame:
     """Function that is to be called from the "sniff" function as the "prn" argument which calls the function on each packet sniffed.
     The function checks whether the packet is a beacon frame, then adds the MAC address and SSID of the AP if it doesn't exist in the list.

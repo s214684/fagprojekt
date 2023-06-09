@@ -9,6 +9,7 @@ import json
 import os
 import time
 
+
 class Scanner:
     """
     Context manager for scanning the network

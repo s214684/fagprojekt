@@ -4,8 +4,10 @@ from utils import check_system
 from utils import LOGGER
 import sys
 
+
 INTERFACE = check_system()
 TIMEOUT = 20
+
 
 with Scanner(INTERFACE, TIMEOUT) as scanner:
     """The context manager is entered here. Then the functions are called based on the user input."""
