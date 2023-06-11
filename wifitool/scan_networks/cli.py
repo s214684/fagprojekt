@@ -51,6 +51,9 @@ def scan_menu(scanner: Scanner):
     """Prints the scan menu and send user to chosen action."""
 
     print("""
+    
+    SCAN MENU:
+
         Please choose what you want to do:
     1. Scan network
     2. Show APs
@@ -58,7 +61,7 @@ def scan_menu(scanner: Scanner):
     4. Send deauth
     5. Send deauth with beacon
     6. Send beacon
-    7. Save scan
+    7. Save network topology
 
     9. Back
     """)
