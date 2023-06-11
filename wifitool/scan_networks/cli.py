@@ -113,60 +113,6 @@ def crack_menu(scanner: Scanner):
     LOGGER.info("IV scan complete.")
     start_menu(scanner)
 
-# Terminal menu for user to choose what to do
-def prompt_menu(welcome: bool = False, start: bool = False):
-    """Prints the menu and returns the action chosen by the user."""
-    if welcome:
-        ASCII_banner = f"""
-        ░▒█░░▒█░▀█▀░▒█▀▀▀░▀█▀░░░▀▀█▀▀░▒█▀▀▀█░▒█▀▀▀█░▒█░░░
-        ░▒█▒█▒█░▒█░░▒█▀▀░░▒█░░░░░▒█░░░▒█░░▒█░▒█░░▒█░▒█░░░
-        ░▒▀▄▀▄▀░▄█▄░▒█░░░░▄█▄░░░░▒█░░░▒█▄▄▄█░▒█▄▄▄█░▒█▄▄█
-        Time: {datetime.datetime.now()}
-        By: Lucas, Nicklas & Oliver :)
-
-        Welcome to WifiTool!
-        """
-    else:
-        ASCII_banner = ""
-
-    if start:
-        string_to_show = f"""
-        {ASCII_banner}
-        Please choose what you want to do:
-
-        1. Scan network
-        2. Get clients on AP
-        3. Options
-
-        9. Exit (Ctrl+C)
-
-        """
-    else:
-        string_to_show = f"""
-    {ASCII_banner}
-    Please choose what you want to do:
-
-    1. Show APs
-    2. Show clients
-    3. Send deauth
-    4. Send deauth with beacon
-    5. Crack WEP
-    6. Send beacon
-    7. Save topology to file
-
-    8. Back to start
-    9. Exit (Ctrl+C)
-
-    """
-
-    print(string_to_show)
-
-    action = input("Input action wanted: ").strip()
-    action = "a." + action if start else "b." + action
-    print("\033c")
-
-    return action
-
 
 def options_menu(scanner: Scanner) -> None:
     """Lets the user change the settings of the network scanner."""
@@ -189,4 +135,3 @@ def options_menu(scanner: Scanner) -> None:
     else:
         print("Invalid input. Try again..")
     options_menu(scanner)
-    
