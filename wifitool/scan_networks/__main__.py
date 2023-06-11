@@ -1,4 +1,4 @@
-from cli import prompt_menu, options_menu
+from cli import prompt_menu, options_menu, start_menu
 from scanner import Scanner
 from utils import check_system
 from utils import LOGGER
@@ -14,7 +14,7 @@ def main(interface: str, timeout: int) -> None:
         # Clear screen
         print("\033c")
         try:
-            prompt_menu(scanner)
+            start_menu(scanner)
         except KeyboardInterrupt:
             print("\nExiting...")
             sys.exit(0)
