@@ -53,7 +53,7 @@ def scan_menu(scanner: Scanner):
     
     SCAN MENU:
 
-        Please choose what you want to do:
+    Please choose what you want to do:
     1. Scan network
     2. Show APs
     3. Show clients
@@ -98,6 +98,7 @@ def scan_menu(scanner: Scanner):
                             )
         LOGGER.info("Scan saved.")
     elif action == "9":
+        print("\033c")
         start_menu(scanner)
     else:
         print("Invalid input. Try again..")
@@ -114,6 +115,7 @@ def crack_menu(scanner: Scanner):
 
 
 def options_menu(scanner: Scanner) -> None:
+    print("\n")
     """Lets the user change the settings of the network scanner."""
     LOGGER.info("Entering options menu...")
     print("Current settings:")
@@ -133,6 +135,7 @@ def options_menu(scanner: Scanner) -> None:
         scanner.interface = interface
         LOGGER.info(f"Interface changed to {interface}")
     elif choice == "3":
+        print("\033c")
         return
     else:
         print("Invalid input. Try again..")

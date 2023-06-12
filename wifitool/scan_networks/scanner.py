@@ -82,6 +82,7 @@ class Scanner:
         # save the dictionary to the file
         with open(filename, "w") as file:
             json.dump(scan, file, indent=4)
+        print(f"Network topology has been saved to file {filename}")
         LOGGER.info(f"Network scan has been saved to file {filename}")
 
     def scan(self, timeout: int = 0) -> None:
@@ -229,7 +230,7 @@ class Scanner:
         Returns:
             bool: True if APs were found, False if not
         """
-        print("Building topology:\n Scanning network for APs and clients...")
+        print("Building topology:\nScanning network for APs and clients...")
         self.scan()
         return self.show_aps()
 
@@ -315,6 +316,7 @@ class Scanner:
         LOGGER.debug("Function 'send_deauth' is running")
         if not self.wifis:
             print("AP list is empty, please scan the network first.")
+            time.sleep(0.5)
             return
         target_ap = self.prompt_for_ap()
         set_channel(self.interface, target_ap.channel)
@@ -346,6 +348,7 @@ class Scanner:
         LOGGER.debug("Function 'send_deauth_with_beacon' is running")
         if not self.wifis:
             print("AP list is empty, please scan the network first.")
+            time.sleep(0.5)
             return
         target_ap = self.prompt_for_ap()
         set_channel(self.interface, target_ap.channel)
@@ -376,15 +379,20 @@ class Scanner:
         """Function to send beacon packets"""
         LOGGER.debug("Function 'send_beacon' is running")
         self.show_aps()
+        print("\n")
         SSID =  input("Write SSID to mimic ")
         BSSID = input("Write MAC address to mimic ('0' for random MAC) ").strip()
         if BSSID == '0':
             BSSID = str(RandMAC())
-
         beacon(self.interface, BSSID, SSID)
 
 
     def get_ivs(self):
+
+        if not self.wifis:
+            print("AP list is empty, please scan the network first.")
+            time.sleep(0.5)
+            return
         # Create file to save IVs to
         pktdump = PcapWriter("iv_file.cap", append=True, sync=True)
 
@@ -399,6 +407,7 @@ class Scanner:
 
         # Get AP to sniff from
         target_ap = self.prompt_for_ap()
+        
         if not target_ap.crypto == "WEP":
             print("AP is not WEP encrypted. Please choose another AP.")
             return
