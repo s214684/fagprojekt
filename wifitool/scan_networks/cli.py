@@ -108,10 +108,26 @@ def scan_menu(scanner: Scanner):
 
 
 def crack_menu(scanner: Scanner):
-    LOGGER.info("Starting IV scan...")
-    scanner.get_ivs()
-    LOGGER.info("IV scan complete.")
-    start_menu(scanner)
+    print("Either scan a specific AP or load a scan to crack WEP.")
+    print("1: Choose AP to scan \n2: Load scan \n3: Back")
+    action = input("Input action wanted: ").strip()
+    print(action)
+    if action == "1":
+        LOGGER.info("Starting IV scan...")
+        scanner.get_ivs()
+        LOGGER.info("IV scan complete.")
+    elif action == "2":
+        LOGGER.info("Starting WEP crack...")
+        scanner.crack_wep()
+        LOGGER.info("WEP crack complete.")
+    elif action == "3":
+        print("Returning to start menu...")
+        start_menu(scanner)
+    else:
+        print("Invalid input. Try again..")
+        LOGGER.info("Invalid input detected")
+    crack_menu(scanner)
+
 
 
 def options_menu(scanner: Scanner) -> None:

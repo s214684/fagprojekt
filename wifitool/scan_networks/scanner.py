@@ -1,3 +1,5 @@
+import subprocess
+import sys
 from deauth import deauth, beacon, deauth_with_beacon
 from scapy.all import Dot11Beacon, Dot11, sniff, Dot11WEP, PcapWriter, RandMAC
 from typing import Union
@@ -388,7 +390,7 @@ class Scanner:
 
 
     def get_ivs(self):
-
+        LOGGER.debug("Function 'get_ivs' is running")
         if not self.wifis:
             print("AP list is empty, please scan the network first.")
             time.sleep(0.5)
@@ -417,4 +419,18 @@ class Scanner:
         sniff(iface=self.interface, prn=filter_WEP, timeout=int(time_for_sniff))
 
         print(f'IVs saved to file: {pktdump.filename}')
+
+
+    def crack_wep(self):
+        """Function to crack WEP encryption"""
+        LOGGER.debug("Function 'crack_wep' is running")
+        # Check if we have a file with IVs
+        if not os.path.isfile("iv_file.cap"):
+            print("No file with IVs found. Please capture IVs first.")
+            time.sleep(0.5)
+            return
+        # Crack WEP encryption
         # os.system(f'Aircrack-ng {pktdump.filename}') Doesn't work
+        command = f"aircrack-ng output-01.cap"
+        subprocess.call(command, shell=True)
+        sys.exit(0)
