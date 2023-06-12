@@ -1,8 +1,7 @@
 from scanner import Scanner
+from utils import LOGGER
 import datetime
 import sys
-
-from utils import LOGGER
 
 
 def start_menu(scanner: Scanner):
@@ -116,6 +115,7 @@ def crack_menu(scanner: Scanner):
 
 def options_menu(scanner: Scanner) -> None:
     """Lets the user change the settings of the network scanner."""
+    LOGGER.info("Entering options menu...")
     print("Current settings:")
     print(f"Timeout: {scanner.timeout}")
     print(f"Interface: {scanner.interface}")
@@ -127,9 +127,11 @@ def options_menu(scanner: Scanner) -> None:
     if choice == "1":
         timeout = int(input("Input new timeout: "))
         scanner.timeout = timeout
+        LOGGER.info(f"Timeout changed to {timeout}")
     elif choice == "2":
         interface = input("Input new interface: ")
         scanner.interface = interface
+        LOGGER.info(f"Interface changed to {interface}")
     elif choice == "3":
         return
     else:

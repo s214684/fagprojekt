@@ -372,27 +372,17 @@ class Scanner:
 
         deauth_with_beacon(self.interface, target_ap.SSID, target_ap.BSSID, target_client)
 
-    def send_beacon(self):  # TODO: Rewrite this function
-        """Function to send beacon packets to APs"""
+    def send_beacon(self):
+        """Function to send beacon packets"""
         LOGGER.debug("Function 'send_beacon' is running")
-        choice = input("1. Pick AP from list to mimic\n2. User defined AP\nInput choice: ")
-        if choice == "1":
-            if not self.wifis:
-                print("AP list is empty, please scan the network first.")
-                return
-            target_ap = self.prompt_for_ap()
-            set_channel(self.interface, target_ap.channel)
-            beacon(self.interface, target_ap.BSSID, target_ap.SSID)
-        elif choice == "2":    
-            SSID = input("Write SSID to mimic ")
-            BSSID = input("Write MAC address to mimic ('0' for random MAC) ")
-            if BSSID == '0':
-                BSSID = str(RandMAC())
-            if input("Do you want to broadcast beacon frames? (y,n) ").lower() == "n":
-                client = input("Write MAC address of client to send to")
-                beacon(self.interface, BSSID, SSID, client)
-            else:
-                beacon(self.interface, BSSID, SSID)
+        self.show_aps()
+        SSID =  input("Write SSID to mimic ")
+        BSSID = input("Write MAC address to mimic ('0' for random MAC) ").strip()
+        if BSSID == '0':
+            BSSID = str(RandMAC())
+
+        beacon(self.interface, BSSID, SSID)
+
 
     def get_ivs(self):
         # Create file to save IVs to
