@@ -408,7 +408,7 @@ class Scanner:
         # Get AP to sniff from
         target_ap = self.prompt_for_ap()
         
-        if not target_ap.crypto == "WEP":
+        if not target_ap.crypto == "{'WEP'}":
             print("AP is not WEP encrypted. Please choose another AP.")
             return
         set_channel(self.interface, target_ap.channel)
