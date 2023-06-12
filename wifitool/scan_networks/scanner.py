@@ -390,6 +390,7 @@ class Scanner:
 
 
     def get_ivs(self):
+        count = 0
         LOGGER.debug("Function 'get_ivs' is running")
         if not self.wifis:
             print("AP list is empty, please scan the network first.")
@@ -402,6 +403,7 @@ class Scanner:
         def filter_WEP(p):
             if p.haslayer(Dot11WEP):
                 print("Found WEP packet")
+                count += 1
                 pktdump.write(p)
 
         # For testing
@@ -418,7 +420,7 @@ class Scanner:
 
         sniff(iface=self.interface, prn=filter_WEP, timeout=int(time_for_sniff))
 
-        print(f'IVs saved to file: {pktdump.filename}')
+        print(f'IVs saved to file: {pktdump.filename}.\nIVs captured: {count}\n')
 
 
     def crack_wep(self):
