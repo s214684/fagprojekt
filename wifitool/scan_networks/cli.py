@@ -50,9 +50,16 @@ def start_menu(scanner: Scanner):
 def scan_menu(scanner: Scanner):
     """Prints the scan menu and send user to chosen action."""
 
-    print("""
-    
-    SCAN MENU:
+    if not scanner.wifis:
+        LOGGER.info("Starting network scan...")
+        print(f"Building topology:\n Scanning network for APs and clients with timeout={scanner.timeout} on interface={scanner.interface}...")
+        scanner.scan()
+        scanner.show_aps()
+        LOGGER.info("Network scan complete.")
+
+    print(f"""    
+    SCAN MENU
+    Network topology currently consists of {len(scanner.wifis)} APs.
 
         Please choose what you want to do:
     1. Scan network
@@ -62,6 +69,7 @@ def scan_menu(scanner: Scanner):
     5. Send deauth with beacon
     6. Send beacon
     7. Save network topology
+    8. save network topology as .pdf
 
     9. Back
     """)
@@ -69,7 +77,9 @@ def scan_menu(scanner: Scanner):
 
     if action == "1":
         LOGGER.info("Starting network scan...")
-        scanner.scan_network()
+        print(f"Building topology:\n Scanning network for APs and clients with timeout={scanner.timeout} on interface={scanner.interface}...")
+        scanner.scan()
+        scanner.show_aps()
         LOGGER.info("Network scan complete.")
     elif action == "2":
         LOGGER.info("Starting AP showcase...")
@@ -98,6 +108,11 @@ def scan_menu(scanner: Scanner):
                             filename if filename.endswith(".json") else filename + ".json"
                             )
         LOGGER.info("Scan saved.")
+    elif action == "8":
+        LOGGER.info("Saving scan as pdf...")
+        filename = input("Filename: ")
+        scanner.png_scan(filename=filename)
+        LOGGER.info("Scan saved as pdf.")
     elif action == "9":
         start_menu(scanner)
     else:

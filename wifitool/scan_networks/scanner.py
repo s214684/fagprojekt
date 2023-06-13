@@ -46,16 +46,7 @@ class Scanner:
         set_channel(self.interface, self.curr_channel)
         LOGGER.info("Exiting scanner")
 
-    def save_scan(self, filename: str) -> None:
-        """
-        Saves the topology to a file in JSON format:
-        {Num_of_wifis: , scan_time: , interface: , TIMEOUT: , Topology: 
-            {WIFI_NAME (SSID): 
-                {BSSID: ,CRYPTO: CRYPTO, CHANNEL: CHANNEL, DBM_SIGNAL: DBM_SIGNAL, COUNTRY: COUNTRY, MAX_RATE: MAX_RATE, BEACON_INTERVAL: BEACON_INTERVAL, CLIENTS: [CLIENTS]}}}
-        :param filename: The name of the file to save to
-        :return: None
-        """
-        LOGGER.debug("Running 'save_scan' function")
+    def create_json(self) -> dict:
         # get the scan time
         scan_time = time.time()
 
@@ -78,11 +69,46 @@ class Scanner:
                          "CLIENTS": wifi.clients}
             # add the wifi to the dictionary
             scan["Topology"][wifi.SSID] = wifi_dict
+        return scan
+
+
+    def save_scan(self, filename: str) -> None:
+        """
+        Saves the topology to a file in JSON format:
+        {Num_of_wifis: , scan_time: , interface: , TIMEOUT: , Topology: 
+            {WIFI_NAME (SSID): 
+                {BSSID: ,CRYPTO: CRYPTO, CHANNEL: CHANNEL, DBM_SIGNAL: DBM_SIGNAL, COUNTRY: COUNTRY, MAX_RATE: MAX_RATE, BEACON_INTERVAL: BEACON_INTERVAL, CLIENTS: [CLIENTS]}}}
+        :param filename: The name of the file to save to
+        :return: None
+        """
+        LOGGER.debug("Running 'save_scan' function")
+        
+        scan = self.create_json()
 
         # save the dictionary to the file
         with open(filename, "w") as file:
             json.dump(scan, file, indent=4)
         LOGGER.info(f"Network scan has been saved to file {filename}")
+
+    def png_scan(self, filename: str) -> None:
+        from prexview import PrexView
+        pxv = PrexView("n8g7125fYIUAtnazom4v2mUv5KSMBErYCIFmbFGhDV8Z9sBpNPGOQAUazmvDnvfL")
+        options = {'template': 'supported_languages', 'output': 'pdf'}
+        json = self.create_json()
+
+        file = filename + '.pdf'
+
+        try:
+            res = pxv.sendJSON(json, options)
+
+            with open(file, 'wb') as f:
+                f.write(res['file'])
+                f.close()
+
+            print('File created:', file)
+        except Exception as e:
+            print(e)
+
 
     def scan(self, timeout: int = 0) -> None:
         """
@@ -222,16 +248,6 @@ class Scanner:
             for wifi in self.wifis:
                 clients.append({"SSID": wifi.SSID, "clients": wifi.get_clients()})
         return clients if clients != [] else []
-
-    def scan_network(self) -> bool:
-        """Function to print the scanned network topology for APs and clients
-
-        Returns:
-            bool: True if APs were found, False if not
-        """
-        print("Building topology:\n Scanning network for APs and clients...")
-        self.scan()
-        return self.show_aps()
 
     def show_aps(self) -> bool:
         """for each AP print in tabular the data associated with it and its clients"""
