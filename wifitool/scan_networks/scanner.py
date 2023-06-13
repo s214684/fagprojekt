@@ -131,7 +131,7 @@ class Scanner:
         nx.draw_networkx_labels(graph, pos, labels=nx.get_node_attributes(graph, 'label'), font_color='white')
 
         # Save the graph as a PNG file
-        plt.savefig('network_topology.png', format='png', bbox_inches='tight', dpi=300)
+        plt.savefig(file, format='png', bbox_inches='tight', dpi=300)
 
     def scan(self, timeout: int = 0) -> None:
         """
