@@ -102,15 +102,11 @@ def scan_menu(scanner: Scanner):
         LOGGER.info("Beacon attack complete.")
     elif action == "7":
         LOGGER.info("Saving scan...")
-        filename = input("Filename: ")
-        scanner.save_scan(filename=
-                            filename if filename.endswith(".json") else filename + ".json"
-                            )
+        scanner.save_scan()
         LOGGER.info("Scan saved.")
     elif action == "8":
         LOGGER.info("Saving scan as pdf...")
-        filename = input("Filename: ")
-        scanner.png_scan(filename=filename)
+        scanner.png_scan()
         LOGGER.info("Scan saved as pdf.")
     elif action == "9":
         print("\033c")

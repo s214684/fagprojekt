@@ -76,7 +76,7 @@ class Scanner:
         return scan
 
 
-    def save_scan(self, filename: str) -> None:
+    def save_scan(self) -> None:
         """
         Saves the topology to a file in JSON format:
         {Num_of_wifis: , scan_time: , interface: , TIMEOUT: , Topology: 
@@ -90,16 +90,14 @@ class Scanner:
         scan = self.create_json()
 
         # save the dictionary to the file
-        with open(filename, "w") as file:
+        with open("network_topology.json", "w") as file:
             json.dump(scan, file, indent=4)
-        print(f"Network topology has been saved to file {filename}")
-        LOGGER.info(f"Network scan has been saved to file {filename}")
+        print(f"Network topology has been saved to file network_topology.json")
+        LOGGER.info(f"Network scan has been saved to file")
 
-    def png_scan(self, filename: str) -> None:
+    def png_scan(self) -> None:
         
         topology_json = self.create_json()
-
-        file = filename + '.png'
 
         # Create an empty graph
         graph = nx.Graph()
@@ -109,29 +107,42 @@ class Scanner:
             graph.add_node(ssid, label=ssid, is_client=False)
             for client in info['CLIENTS']:
                 graph.add_node(client, label=client, is_client=True)
-
-        # Add edges to the graph
-        for ssid, info in topology_json['Topology'].items():
-            for client in info['CLIENTS']:
                 graph.add_edge(ssid, client)
 
+
+        # # Add edges to the graph
+        # for ssid, info in topology_json['Topology'].items():
+        #     for client in info['CLIENTS']:
+        #         graph.add_edge(ssid, client)
+
         # Set the positions of the nodes
-        pos = nx.spring_layout(graph, k=1)
+        pos = nx.spring_layout(graph, k=1, iterations=50)
 
         # Draw access points
-        nx.draw_networkx_nodes(graph, pos, nodelist=[node for node in graph.nodes if not graph.nodes[node]['is_client']], node_color='blue')
+        nx.draw_networkx_nodes(graph, pos, nodelist=[node for node in graph.nodes if not graph.nodes[node]['is_client']], node_color='lightblue', node_size=300)
 
         # Draw clients
-        nx.draw_networkx_nodes(graph, pos, nodelist=[node for node in graph.nodes if graph.nodes[node]['is_client']], node_color='red')
+        nx.draw_networkx_nodes(graph, pos, nodelist=[node for node in graph.nodes if graph.nodes[node]['is_client']], node_color='red', node_size=100)
 
         # Draw edges
         nx.draw_networkx_edges(graph, pos)
 
-        # Draw labels
-        nx.draw_networkx_labels(graph, pos, labels=nx.get_node_attributes(graph, 'label'), font_color='white')
+        # Draw labels with adjusted positions to avoid overlap
+        node_labels = nx.get_node_attributes(graph, 'label')
+        label_pos = {node: (pos[node][0], pos[node][1] + 0.00) for node in graph.nodes}
+        ap_labels = {node: label for node, label in node_labels.items() if not graph.nodes[node]['is_client']}
+        nx.draw_networkx_labels(graph, label_pos, labels=ap_labels, font_color='black', font_size=8)
+
+        # Set the font size for client labels
+        client_labels = {node: label for node, label in node_labels.items() if graph.nodes[node]['is_client']}
+        nx.draw_networkx_labels(graph, label_pos, labels=client_labels, font_color='black', font_size=5)
+
+        # labels
+        plt.legend(["AP", "client"])
 
         # Save the graph as a PNG file
         plt.savefig('network_topology.png', format='png', bbox_inches='tight', dpi=300)
+        plt.clf()
 
     def scan(self, timeout: int = 0) -> None:
         """
@@ -175,7 +186,7 @@ class Scanner:
         # get the name of it
         stats = packet[Dot11Beacon].network_stats()
         ssid = stats['ssid'].strip()
-        if not ssid:
+        if not ssid or ssid == "\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000":
             ssid = "'Hidden SSID'"
         if ssid in self.wifis:
             return
@@ -214,11 +225,15 @@ class Scanner:
         if self.from_client(packet):
             # extract the MAC address of the client
             src_BSSID = packet[Dot11].addr2
+            if src_BSSID == "ff:ff:ff:ff:ff:ff":
+                return client_list
             if packet[Dot11].addr1 in wifis_list_of_bssid:
                 client_list.append([src_BSSID, packet[Dot11].addr1])
         else:
             # extract the MAC address of the Client
             dst_BSSID = packet[Dot11].addr1
+            if dst_BSSID == "ff:ff:ff:ff:ff:ff":
+                return client_list
             # check if source address is as specified
             if packet[Dot11].addr2 in wifis_list_of_bssid:
                 client_list.append([dst_BSSID, packet[Dot11].addr2])
