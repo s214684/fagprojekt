@@ -75,7 +75,6 @@ class Scanner:
             scan["Topology"][wifi.SSID] = wifi_dict
         return scan
 
-
     def save_scan(self) -> None:
         """
         Saves the topology to a file in JSON format:
@@ -207,8 +206,7 @@ class Scanner:
         max_rate = stats['rates'][-1]
         beacon_interval: int = packet[Dot11Beacon].fields['beacon_interval']
 
-        return Wifi(ssid, bssid, dbm_signal, channel, crypto, country, max_rate, beacon_interval)
-
+        return Wifi(ssid, bssid, dbm_signal, channel, crypto, max_rate, country, beacon_interval)
 
     def handle_clients(self, packet, client_list: list[list[str]]) -> list[list[str]]:
         """Function to handle the clients connected to the APs
@@ -432,7 +430,6 @@ class Scanner:
             BSSID = str(RandMAC())
         beacon(self.interface, BSSID, SSID)
 
-
     def get_ivs(self):
         LOGGER.debug("Function 'get_ivs' is running")
         if not self.wifis:
@@ -463,7 +460,6 @@ class Scanner:
         sniff(iface=self.interface, prn=filter_WEP, timeout=int(time_for_sniff))
 
         print(f'IVs saved to file: {pktdump.filename}.\n')
-
 
     def crack_wep(self):
         """Function to crack WEP encryption"""
