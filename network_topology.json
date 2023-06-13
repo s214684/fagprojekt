@@ -1,0 +1,86 @@
+{
+    "Num_of_wifis": 6,
+    "scan_time": 1686649505.8908484,
+    "interface": "wlan0",
+    "TIMEOUT": 5,
+    "Topology": {
+        "eduroam": {
+            "BSSID": "00:81:c4:73:c4:03",
+            "CRYPTO": "{'WPA2/802.1X'}",
+            "CHANNEL": 11,
+            "DBM_SIGNAL": -89,
+            "COUNTRY": 54.0,
+            "MAX_RATE": "DK",
+            "BEACON_INTERVAL": 102,
+            "CLIENTS": [
+                "ca:c2:41:ea:b3:69"
+            ]
+        },
+        "DTUguest": {
+            "BSSID": "00:81:c4:21:33:51",
+            "CRYPTO": "{'OPN'}",
+            "CHANNEL": 11,
+            "DBM_SIGNAL": -83,
+            "COUNTRY": 54.0,
+            "MAX_RATE": "DK",
+            "BEACON_INTERVAL": 102,
+            "CLIENTS": [
+                "aa:8e:86:7f:42:88",
+                "fa:65:89:4b:88:fa",
+                "02:ad:f0:16:4d:6e"
+            ]
+        },
+        "DTUdevice": {
+            "BSSID": "00:81:c4:73:c4:02",
+            "CRYPTO": "{'WPA2/PSK'}",
+            "CHANNEL": 11,
+            "DBM_SIGNAL": -89,
+            "COUNTRY": 54.0,
+            "MAX_RATE": "DK",
+            "BEACON_INTERVAL": 102,
+            "CLIENTS": [
+                "ca:c2:41:ea:b3:69"
+            ]
+        },
+        "DTUsecure": {
+            "BSSID": "00:81:c4:21:33:50",
+            "CRYPTO": "{'WPA2/802.1X'}",
+            "CHANNEL": 11,
+            "DBM_SIGNAL": -85,
+            "COUNTRY": 54.0,
+            "MAX_RATE": "DK",
+            "BEACON_INTERVAL": 102,
+            "CLIENTS": [
+                "aa:8e:86:7f:42:88",
+                "fa:65:89:4b:88:fa",
+                "02:ad:f0:16:4d:6e"
+            ]
+        },
+        "device": {
+            "BSSID": "00:81:c4:21:33:54",
+            "CRYPTO": "{'OPN'}",
+            "CHANNEL": 11,
+            "DBM_SIGNAL": -85,
+            "COUNTRY": 54.0,
+            "MAX_RATE": "DK",
+            "BEACON_INTERVAL": 102,
+            "CLIENTS": [
+                "aa:8e:86:7f:42:88",
+                "fa:65:89:4b:88:fa",
+                "02:ad:f0:16:4d:6e"
+            ]
+        },
+        "ClickShare-1871802550": {
+            "BSSID": "d8:61:62:0b:7c:c8",
+            "CRYPTO": "{'WPA2/PSK'}",
+            "CHANNEL": 1,
+            "DBM_SIGNAL": -77,
+            "COUNTRY": 54.0,
+            "MAX_RATE": "BE",
+            "BEACON_INTERVAL": 100,
+            "CLIENTS": [
+                "4e:33:17:bd:cb:6d"
+            ]
+        }
+    }
+}
