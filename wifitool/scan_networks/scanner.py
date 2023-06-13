@@ -7,6 +7,8 @@ from threading import Thread
 from utils import get_current_channel, change_channel, set_channel, strip_non_ascii
 from utils import LOGGER
 from wifi import Wifi
+import networkx as nx
+import matplotlib.pyplot as plt
 import json
 import os
 import time
@@ -94,23 +96,37 @@ class Scanner:
         LOGGER.info(f"Network scan has been saved to file {filename}")
 
     def png_scan(self, filename: str) -> None:
-        from prexview import PrexView
-        pxv = PrexView("n8g7125fYIUAtnazom4v2mUv5KSMBErYCIFmbFGhDV8Z9sBpNPGOQAUazmvDnvfL")
-        options = {'template': 'supported_languages', 'output': 'pdf'}
-        json = self.create_json()
+        
+        topology_json = self.create_json()
 
-        file = filename + '.pdf'
+        file = filename + '.png'
 
-        try:
-            res = pxv.sendJSON(json, options)
+        # Create an empty graph
+        graph = nx.Graph()
 
-            with open(file, 'wb') as f:
-                f.write(res['file'])
-                f.close()
+        # Add nodes to the graph
+        for ssid, info in topology_json['Topology'].items():
+            graph.add_node(ssid, label=ssid)
 
-            print('File created:', file)
-        except Exception as e:
-            print(e)
+        # Add edges to the graph
+        for ssid, info in topology_json['Topology'].items():
+            for client in info['CLIENTS']:
+                graph.add_edge(ssid, client)
+
+        # Generate the layout of the graph
+        pos = nx.spring_layout(graph)
+
+        # Draw the nodes
+        nx.draw_networkx_nodes(graph, pos)
+
+        # Draw the edges
+        nx.draw_networkx_edges(graph, pos)
+
+        # Draw the labels of the nodes
+        nx.draw_networkx_labels(graph, pos, labels=nx.get_node_attributes(graph, 'label'))
+
+        # Save the graph as a PNG image
+        plt.savefig(filename)
 
 
     def scan(self, timeout: int = 0) -> None:
