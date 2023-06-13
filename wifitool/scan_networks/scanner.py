@@ -106,28 +106,32 @@ class Scanner:
 
         # Add nodes to the graph
         for ssid, info in topology_json['Topology'].items():
-            graph.add_node(ssid, label=ssid)
+            graph.add_node(ssid, label=ssid, is_client=False)
+            for client in info['CLIENTS']:
+                graph.add_node(client, label=client, is_client=True)
 
         # Add edges to the graph
         for ssid, info in topology_json['Topology'].items():
             for client in info['CLIENTS']:
                 graph.add_edge(ssid, client)
 
-        # Generate the layout of the graph
-        pos = nx.spring_layout(graph)
+        # Set the positions of the nodes
+        pos = nx.spring_layout(graph, k=1)
 
-        # Draw the nodes
-        nx.draw_networkx_nodes(graph, pos)
+        # Draw access points
+        nx.draw_networkx_nodes(graph, pos, nodelist=[node for node in graph.nodes if not graph.nodes[node]['is_client']], node_color='blue')
 
-        # Draw the edges
+        # Draw clients
+        nx.draw_networkx_nodes(graph, pos, nodelist=[node for node in graph.nodes if graph.nodes[node]['is_client']], node_color='red')
+
+        # Draw edges
         nx.draw_networkx_edges(graph, pos)
 
-        # Draw the labels of the nodes
-        nx.draw_networkx_labels(graph, pos, labels=nx.get_node_attributes(graph, 'label'))
+        # Draw labels
+        nx.draw_networkx_labels(graph, pos, labels=nx.get_node_attributes(graph, 'label'), font_color='white')
 
-        # Save the graph as a PNG image
-        plt.savefig(filename)
-
+        # Save the graph as a PNG file
+        plt.savefig('network_topology.png', format='png', bbox_inches='tight', dpi=300)
 
     def scan(self, timeout: int = 0) -> None:
         """
