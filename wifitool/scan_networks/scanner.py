@@ -390,6 +390,7 @@ class Scanner:
 
 
     def get_ivs(self):
+        """Function to get IVs from a chosen AP. Only APs with WEP encryption can be chosen"""
         LOGGER.debug("Function 'get_ivs' is running")
         if not self.wifis:
             print("AP list is empty, please scan the network first.")
@@ -397,11 +398,15 @@ class Scanner:
             return
         # Create file to save IVs to
         pktdump = PcapWriter("iv_file.cap", append=True, sync=True)
-
+        
         # Filter for WEP packets
         def filter_WEP(p):
+            found = False
             if p.haslayer(Dot11WEP):
+                if found == False:
+                    found = True
                 print("Found WEP packet")
+
                 pktdump.write(p)
 
         # For testing
@@ -410,6 +415,7 @@ class Scanner:
         # Get AP to sniff from
         target_ap = self.prompt_for_ap()
         
+
         if not target_ap.crypto == "{'WEP'}":
             print("AP is not WEP encrypted. Please choose another AP.")
             return
@@ -427,10 +433,14 @@ class Scanner:
         # Check if we have a file with IVs
         if not os.path.isfile("iv_file.cap"):
             print("No file with IVs found. Please capture IVs first.")
+            LOGGER.debug("No file with IVs found.")
             time.sleep(0.5)
             return
         # Crack WEP encryption
         # os.system(f'Aircrack-ng {pktdump.filename}') Doesn't work
-        command = f"aircrack-ng output-01.cap"
-        subprocess.call(command, shell=True)
-        sys.exit(0)
+            
+        command = f"aircrack-ng -q -e bridge output-01.cap"
+        #subprocess.run(command, shell=True,timeout=7)
+        p = subprocess.check_output(command, shell=True, stderr=subprocess.PIPE,timeout=10)
+        #p = subprocess.call(command, shell=True)
+        print(p.stdout.read())
