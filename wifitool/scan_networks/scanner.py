@@ -108,12 +108,6 @@ class Scanner:
                 graph.add_node(client, label=client, is_client=True)
                 graph.add_edge(ssid, client)
 
-
-        # # Add edges to the graph
-        # for ssid, info in topology_json['Topology'].items():
-        #     for client in info['CLIENTS']:
-        #         graph.add_edge(ssid, client)
-
         # Set the positions of the nodes
         pos = nx.spring_layout(graph, k=1, iterations=50)
 
