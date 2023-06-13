@@ -1,0 +1,143 @@
+{
+    "Num_of_wifis": 10,
+    "scan_time": 1686654893.4503362,
+    "interface": "wlan0",
+    "TIMEOUT": 20,
+    "Topology": {
+        "PET lyttevogn 2": {
+            "BSSID": "e6:e6:38:67:3b:c2",
+            "CRYPTO": "{'WPA2/PSK'}",
+            "CHANNEL": 6,
+            "DBM_SIGNAL": -80,
+            "COUNTRY": 54.0,
+            "MAX_RATE": "",
+            "BEACON_INTERVAL": 100,
+            "CLIENTS": [
+                "96:f5:1f:5d:6f:3f",
+                "68:54:5a:65:d2:95",
+                "4a:86:7e:ae:0d:2f",
+                "50:02:91:df:47:ff"
+            ]
+        },
+        "MINE": {
+            "BSSID": "fa:8f:ca:8b:43:26",
+            "CRYPTO": "{'OPN'}",
+            "CHANNEL": 6,
+            "DBM_SIGNAL": -77,
+            "COUNTRY": 54.0,
+            "MAX_RATE": "",
+            "BEACON_INTERVAL": 100,
+            "CLIENTS": [
+                "4a:86:7e:ae:0d:2f"
+            ]
+        },
+        "Nicklas - iPhone": {
+            "BSSID": "72:57:87:ea:3d:36",
+            "CRYPTO": "{'WPA2/PSK'}",
+            "CHANNEL": 6,
+            "DBM_SIGNAL": -54,
+            "COUNTRY": 48.0,
+            "MAX_RATE": "DK",
+            "BEACON_INTERVAL": 100,
+            "CLIENTS": [
+                "96:f5:1f:5d:6f:3f",
+                "b0:be:83:16:0d:68",
+                "33:33:ff:e7:58:46",
+                "4a:86:7e:ae:0d:2f"
+            ]
+        },
+        "DTUdevice": {
+            "BSSID": "00:81:c4:9d:0b:92",
+            "CRYPTO": "{'WPA2/PSK'}",
+            "CHANNEL": 6,
+            "DBM_SIGNAL": -74,
+            "COUNTRY": 54.0,
+            "MAX_RATE": "DK",
+            "BEACON_INTERVAL": 102,
+            "CLIENTS": [
+                "7e:67:f9:d9:12:7f",
+                "3e:55:4c:a0:5d:31",
+                "1e:8b:ce:ab:c9:35",
+                "4a:86:7e:ae:0d:2f"
+            ]
+        },
+        "DTUsecure": {
+            "BSSID": "00:81:c4:21:3d:10",
+            "CRYPTO": "{'WPA2/802.1X'}",
+            "CHANNEL": 6,
+            "DBM_SIGNAL": -61,
+            "COUNTRY": 54.0,
+            "MAX_RATE": "DK",
+            "BEACON_INTERVAL": 102,
+            "CLIENTS": [
+                "96:f5:1f:5d:6f:3f",
+                "4a:86:7e:ae:0d:2f"
+            ]
+        },
+        "device": {
+            "BSSID": "00:81:c4:21:3d:14",
+            "CRYPTO": "{'OPN'}",
+            "CHANNEL": 6,
+            "DBM_SIGNAL": -62,
+            "COUNTRY": 54.0,
+            "MAX_RATE": "DK",
+            "BEACON_INTERVAL": 102,
+            "CLIENTS": [
+                "96:f5:1f:5d:6f:3f",
+                "4a:86:7e:ae:0d:2f"
+            ]
+        },
+        "DTUguest": {
+            "BSSID": "00:81:c4:9d:0b:91",
+            "CRYPTO": "{'OPN'}",
+            "CHANNEL": 6,
+            "DBM_SIGNAL": -74,
+            "COUNTRY": 54.0,
+            "MAX_RATE": "DK",
+            "BEACON_INTERVAL": 102,
+            "CLIENTS": [
+                "96:f5:1f:5d:6f:3f",
+                "7e:67:f9:d9:12:7f",
+                "3e:55:4c:a0:5d:31",
+                "1e:8b:ce:ab:c9:35",
+                "4a:86:7e:ae:0d:2f"
+            ]
+        },
+        "eduroam": {
+            "BSSID": "00:81:c4:9d:0b:93",
+            "CRYPTO": "{'WPA2/802.1X'}",
+            "CHANNEL": 6,
+            "DBM_SIGNAL": -74,
+            "COUNTRY": 54.0,
+            "MAX_RATE": "DK",
+            "BEACON_INTERVAL": 102,
+            "CLIENTS": [
+                "96:f5:1f:5d:6f:3f",
+                "7e:67:f9:d9:12:7f",
+                "3e:55:4c:a0:5d:31",
+                "1e:8b:ce:ab:c9:35",
+                "4a:86:7e:ae:0d:2f"
+            ]
+        },
+        "SHAW505": {
+            "BSSID": "28:c6:8e:00:ad:c6",
+            "CRYPTO": "{'WPA/PSK', 'WPA2/PSK'}",
+            "CHANNEL": 6,
+            "DBM_SIGNAL": -92,
+            "COUNTRY": 54.0,
+            "MAX_RATE": "",
+            "BEACON_INTERVAL": 100,
+            "CLIENTS": []
+        },
+        "ClickShare-1871802550": {
+            "BSSID": "d8:61:62:0b:7c:c8",
+            "CRYPTO": "{'WPA2/PSK'}",
+            "CHANNEL": 1,
+            "DBM_SIGNAL": -89,
+            "COUNTRY": 54.0,
+            "MAX_RATE": "BE",
+            "BEACON_INTERVAL": 100,
+            "CLIENTS": []
+        }
+    }
+}

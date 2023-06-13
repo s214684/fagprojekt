@@ -7,6 +7,8 @@ from threading import Thread
 from utils import get_current_channel, change_channel, set_channel, strip_non_ascii
 from utils import LOGGER
 from wifi import Wifi
+import networkx as nx
+import matplotlib.pyplot as plt
 import json
 import os
 import time
@@ -48,16 +50,7 @@ class Scanner:
         set_channel(self.interface, self.curr_channel)
         LOGGER.info("Exiting scanner")
 
-    def save_scan(self, filename: str) -> None:
-        """
-        Saves the topology to a file in JSON format:
-        {Num_of_wifis: , scan_time: , interface: , TIMEOUT: , Topology: 
-            {WIFI_NAME (SSID): 
-                {BSSID: ,CRYPTO: CRYPTO, CHANNEL: CHANNEL, DBM_SIGNAL: DBM_SIGNAL, COUNTRY: COUNTRY, MAX_RATE: MAX_RATE, BEACON_INTERVAL: BEACON_INTERVAL, CLIENTS: [CLIENTS]}}}
-        :param filename: The name of the file to save to
-        :return: None
-        """
-        LOGGER.debug("Running 'save_scan' function")
+    def create_json(self) -> dict:
         # get the scan time
         scan_time = time.time()
 
@@ -80,12 +73,69 @@ class Scanner:
                          "CLIENTS": wifi.clients}
             # add the wifi to the dictionary
             scan["Topology"][wifi.SSID] = wifi_dict
+        return scan
+
+    def save_scan(self) -> None:
+        """
+        Saves the topology to a file in JSON format:
+        {Num_of_wifis: , scan_time: , interface: , TIMEOUT: , Topology: 
+            {WIFI_NAME (SSID): 
+                {BSSID: ,CRYPTO: CRYPTO, CHANNEL: CHANNEL, DBM_SIGNAL: DBM_SIGNAL, COUNTRY: COUNTRY, MAX_RATE: MAX_RATE, BEACON_INTERVAL: BEACON_INTERVAL, CLIENTS: [CLIENTS]}}}
+        :param filename: The name of the file to save to
+        :return: None
+        """
+        LOGGER.debug("Running 'save_scan' function")
+        
+        scan = self.create_json()
 
         # save the dictionary to the file
-        with open(filename, "w") as file:
+        with open("network_topology.json", "w") as file:
             json.dump(scan, file, indent=4)
-        print(f"Network topology has been saved to file {filename}")
-        LOGGER.info(f"Network scan has been saved to file {filename}")
+        print(f"Network topology has been saved to file network_topology.json")
+        LOGGER.info(f"Network scan has been saved to file")
+
+    def png_scan(self) -> None:
+        
+        topology_json = self.create_json()
+
+        # Create an empty graph
+        graph = nx.Graph()
+
+        # Add nodes to the graph
+        for ssid, info in topology_json['Topology'].items():
+            graph.add_node(ssid, label=ssid, is_client=False)
+            for client in info['CLIENTS']:
+                graph.add_node(client, label=client, is_client=True)
+                graph.add_edge(ssid, client)
+
+        # Set the positions of the nodes
+        pos = nx.spring_layout(graph, k=1, iterations=50)
+
+        # Draw access points
+        nx.draw_networkx_nodes(graph, pos, nodelist=[node for node in graph.nodes if not graph.nodes[node]['is_client']], node_color='lightblue', node_size=300)
+
+        # Draw clients
+        nx.draw_networkx_nodes(graph, pos, nodelist=[node for node in graph.nodes if graph.nodes[node]['is_client']], node_color='red', node_size=100)
+
+        # Draw edges
+        nx.draw_networkx_edges(graph, pos)
+
+        # Draw labels with adjusted positions to avoid overlap
+        node_labels = nx.get_node_attributes(graph, 'label')
+        label_pos = {node: (pos[node][0], pos[node][1] + 0.00) for node in graph.nodes}
+        ap_labels = {node: label for node, label in node_labels.items() if not graph.nodes[node]['is_client']}
+        nx.draw_networkx_labels(graph, label_pos, labels=ap_labels, font_color='black', font_size=8)
+
+        # Set the font size for client labels
+        client_labels = {node: label for node, label in node_labels.items() if graph.nodes[node]['is_client']}
+        nx.draw_networkx_labels(graph, label_pos, labels=client_labels, font_color='black', font_size=5)
+
+        # labels
+        plt.legend(["AP", "client"])
+
+        # Save the graph as a PNG file
+        plt.savefig('network_topology.png', format='png', bbox_inches='tight', dpi=300)
+        plt.clf()
 
     def scan(self, timeout: int = 0) -> None:
         """
@@ -129,7 +179,7 @@ class Scanner:
         # get the name of it
         stats = packet[Dot11Beacon].network_stats()
         ssid = stats['ssid'].strip()
-        if not ssid:
+        if not ssid or ssid == "\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000":
             ssid = "'Hidden SSID'"
         if ssid in self.wifis:
             return
@@ -150,15 +200,7 @@ class Scanner:
         max_rate = stats['rates'][-1]
         beacon_interval: int = packet[Dot11Beacon].fields['beacon_interval']
 
-        return Wifi(ssid, bssid, dbm_signal, channel, crypto, country, max_rate, beacon_interval)
-
-    def test(self):
-        def _callback(packet):
-            stats = packet[Dot11Beacon].network_stats()
-            print(stats)
-            print(stats['country'])
-
-        sniff(prn=_callback, iface=self.interface, timeout=self.timeout, count=4)
+        return Wifi(ssid, bssid, dbm_signal, channel, crypto, max_rate, country, beacon_interval)
 
     def handle_clients(self, packet, client_list: list[list[str]]) -> list[list[str]]:
         """Function to handle the clients connected to the APs
@@ -175,11 +217,15 @@ class Scanner:
         if self.from_client(packet):
             # extract the MAC address of the client
             src_BSSID = packet[Dot11].addr2
+            if src_BSSID == "ff:ff:ff:ff:ff:ff":
+                return client_list
             if packet[Dot11].addr1 in wifis_list_of_bssid:
                 client_list.append([src_BSSID, packet[Dot11].addr1])
         else:
             # extract the MAC address of the Client
             dst_BSSID = packet[Dot11].addr1
+            if dst_BSSID == "ff:ff:ff:ff:ff:ff":
+                return client_list
             # check if source address is as specified
             if packet[Dot11].addr2 in wifis_list_of_bssid:
                 client_list.append([dst_BSSID, packet[Dot11].addr2])
@@ -225,16 +271,6 @@ class Scanner:
             for wifi in self.wifis:
                 clients.append({"SSID": wifi.SSID, "clients": wifi.get_clients()})
         return clients if clients != [] else []
-
-    def scan_network(self) -> bool:
-        """Function to print the scanned network topology for APs and clients
-
-        Returns:
-            bool: True if APs were found, False if not
-        """
-        print("Building topology:\nScanning network for APs and clients...")
-        self.scan()
-        return self.show_aps()
 
     def show_aps(self) -> bool:
         """for each AP print in tabular the data associated with it and its clients"""
@@ -388,7 +424,6 @@ class Scanner:
             BSSID = str(RandMAC())
         beacon(self.interface, BSSID, SSID)
 
-
     def get_ivs(self):
         """Function to get IVs from a chosen AP. Only APs with WEP encryption can be chosen"""
         LOGGER.debug("Function 'get_ivs' is running")
@@ -425,7 +460,6 @@ class Scanner:
         sniff(iface=self.interface, prn=filter_WEP, timeout=int(time_for_sniff))
 
         print(f'IVs saved to file: {pktdump.filename}.\n')
-
 
     def crack_wep(self):
         """Function to crack WEP encryption"""

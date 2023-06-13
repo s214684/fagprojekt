@@ -72,7 +72,7 @@ def change_channel() -> None:
         set_channel(interface, ch)
         # switch channel from 1 to 14 each 0.5s
         ch = (ch % 13) + 1
-        time.sleep(0.5)  # TODO: Can we tune this?
+        time.sleep(0.205)  # TODO: Can we tune this?
 
 
 def set_channel(interface, channel: int) -> None:
