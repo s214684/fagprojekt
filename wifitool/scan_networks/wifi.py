@@ -1,4 +1,4 @@
-from scapy.all import RadioTap, Dot11, Dot11Deauth, sendp, sniff
+from typing import Union
 
 
 class Wifi:
@@ -9,9 +9,9 @@ class Wifi:
         self.dBm_signal: str = dBm_signal
         self.channel: int = channel
         self.crypto: str = crypto
-        self.beacon_interval: int = None if beacon_interval == 0 else beacon_interval
-        self.max_bitrate: int = None if max_bitrate == 0 else max_bitrate
-        self.country: str = None if not country else country
+        self.beacon_interval: Union[int, None] = None if beacon_interval == 0 else beacon_interval
+        self.max_bitrate: Union[int, None] = None if max_bitrate == 0 else max_bitrate
+        self.country: Union[str, None] = None if not country else country
         self.clients: list[str] = []
 
     def __eq__(self, other):
