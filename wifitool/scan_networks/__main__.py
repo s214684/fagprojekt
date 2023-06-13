@@ -1,4 +1,4 @@
-from cli import prompt_menu, options_menu, start_menu
+from cli import options_menu, start_menu
 from scanner import Scanner
 from utils import check_system
 from utils import LOGGER

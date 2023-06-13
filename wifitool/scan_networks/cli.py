@@ -1,8 +1,7 @@
 from scanner import Scanner
+from utils import LOGGER
 import datetime
 import sys
-
-from utils import LOGGER
 
 
 def start_menu(scanner: Scanner):
@@ -61,7 +60,7 @@ def scan_menu(scanner: Scanner):
     SCAN MENU
     Network topology currently consists of {len(scanner.wifis)} APs.
 
-        Please choose what you want to do:
+    Please choose what you want to do:
     1. Scan network
     2. Show APs
     3. Show clients
@@ -114,6 +113,7 @@ def scan_menu(scanner: Scanner):
         scanner.png_scan(filename=filename)
         LOGGER.info("Scan saved as pdf.")
     elif action == "9":
+        print("\033c")
         start_menu(scanner)
     else:
         print("Invalid input. Try again..")
@@ -123,14 +123,32 @@ def scan_menu(scanner: Scanner):
 
 
 def crack_menu(scanner: Scanner):
-    LOGGER.info("Starting IV scan...")
-    scanner.get_ivs()
-    LOGGER.info("IV scan complete.")
-    start_menu(scanner)
+    print("Either scan a specific AP or load a scan to crack WEP.")
+    print("1: Choose AP to scan \n2: Load scan \n3: Back")
+    action = input("Input action wanted: ").strip()
+    print(action)
+    if action == "1":
+        LOGGER.info("Starting IV scan...")
+        scanner.get_ivs()
+        LOGGER.info("IV scan complete.")
+    elif action == "2":
+        LOGGER.info("Starting WEP crack...")
+        scanner.crack_wep()
+        LOGGER.info("WEP crack complete.")
+    elif action == "3":
+        print("Returning to start menu...")
+        start_menu(scanner)
+    else:
+        print("Invalid input. Try again..")
+        LOGGER.info("Invalid input detected")
+    crack_menu(scanner)
+
 
 
 def options_menu(scanner: Scanner) -> None:
+    print("\n")
     """Lets the user change the settings of the network scanner."""
+    LOGGER.info("Entering options menu...")
     print("Current settings:")
     print(f"Timeout: {scanner.timeout}")
     print(f"Interface: {scanner.interface}")
@@ -142,10 +160,13 @@ def options_menu(scanner: Scanner) -> None:
     if choice == "1":
         timeout = int(input("Input new timeout: "))
         scanner.timeout = timeout
+        LOGGER.info(f"Timeout changed to {timeout}")
     elif choice == "2":
         interface = input("Input new interface: ")
         scanner.interface = interface
+        LOGGER.info(f"Interface changed to {interface}")
     elif choice == "3":
+        print("\033c")
         return
     else:
         print("Invalid input. Try again..")

