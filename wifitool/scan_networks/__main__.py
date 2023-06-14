@@ -21,5 +21,5 @@ def main(interface: str, timeout: int) -> None:
 
 if __name__ == "__main__":
     INTERFACE = check_system()
-    TIMEOUT = 3
+    TIMEOUT = 7
     main(INTERFACE, TIMEOUT)
