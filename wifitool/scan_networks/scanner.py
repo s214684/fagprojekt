@@ -76,8 +76,7 @@ class Scanner:
         return scan
 
     def save_scan(self) -> None:
-        """
-        Saves the topology to a file in JSON format:
+        """Saves the topology to a file in JSON format:
         {Num_of_wifis: , scan_time: , interface: , TIMEOUT: , Topology: 
             {WIFI_NAME (SSID): 
                 {BSSID: ,CRYPTO: CRYPTO, CHANNEL: CHANNEL, DBM_SIGNAL: DBM_SIGNAL, COUNTRY: COUNTRY, MAX_RATE: MAX_RATE, BEACON_INTERVAL: BEACON_INTERVAL, CLIENTS: [CLIENTS]}}}
@@ -95,12 +94,13 @@ class Scanner:
         LOGGER.info(f"Network scan has been saved to file")
 
     def png_scan(self) -> None:
-        
+        """Save the network topology as a graph in a png file
+        """
         topology_json = self.create_json()
 
         # Create an empty graph
         graph = nx.Graph()
-
+        
         # Add nodes to the graph
         for ssid, info in topology_json['Topology'].items():
             graph.add_node(ssid, label=ssid, is_client=False)
