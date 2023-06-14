@@ -2,15 +2,13 @@ from deauth import deauth, beacon, deauth_with_beacon
 from scapy.all import Dot11Beacon, Dot11, sniff, Dot11WEP, PcapWriter, RandMAC
 from typing import Union
 from threading import Thread
-from utils import get_current_channel, change_channel, set_channel, strip_non_ascii
-from utils import LOGGER
+from utils import get_current_channel, change_channel, set_channel, strip_non_ascii, LOGGER, set_interface_mode
 from wifi import Wifi
 import json
 import networkx as nx
 import matplotlib.pyplot as plt
 import subprocess
 import os
-import sys
 import time
 
 
@@ -18,7 +16,7 @@ class Scanner:
     """
     Context manager for scanning the network
     """
-    def __init__(self, interface: str, timeout):
+    def __init__(self, interface: str, timeout: int) -> None:
         self.wifis: list[Wifi] = []
         self.interface = interface
         self.curr_channel: int
@@ -29,11 +27,9 @@ class Scanner:
         LOGGER.debug("Function '__enter__' is running")
         self.curr_channel = get_current_channel(iface=self.interface)
         # set the interface to monitor mode
-        os.system(f'ip link set dev {self.interface} down')
-        os.system(f'iw dev {self.interface} set type monitor')
-        os.system(f'ip link set dev {self.interface} up')
+        set_interface_mode(interface=self.interface, monitor_mode=True)
         # start the channel changer
-        channel_changer = Thread(target=change_channel)
+        channel_changer = Thread(target=change_channel(self.interface))
         channel_changer.daemon = True
         channel_changer.start()
         LOGGER.info("Scanner entered")
@@ -43,15 +39,19 @@ class Scanner:
         """Exit the scanner context manager"""
         LOGGER.debug("Function '__exit__' is running")
         # Set the interface back to managed mode
-        os.system(f'ip link set dev {self.interface} down')
-        os.system(f'iw dev {self.interface} set type managed')
-        os.system(f'ip link set dev {self.interface} up')
+        set_interface_mode(interface=self.interface, monitor_mode=False)
         # set the channel back to the original channel
         set_channel(self.interface, self.curr_channel)
         LOGGER.info("Exiting scanner")
 
     def create_json(self) -> dict:
+        """
+        Create JSON object of Scanner instance
+        Returns:
+            dict
+        """
         # get the scan time
+        LOGGER.info("Creating JSON object of Scanner instance")
         scan_time = time.time()
 
         # create the dictionary
@@ -79,9 +79,7 @@ class Scanner:
         """Saves the topology to a file in JSON format:
         {Num_of_wifis: , scan_time: , interface: , TIMEOUT: , Topology: 
             {WIFI_NAME (SSID): 
-                {BSSID: ,CRYPTO: CRYPTO, CHANNEL: CHANNEL, DBM_SIGNAL: DBM_SIGNAL, COUNTRY: COUNTRY, MAX_RATE: MAX_RATE, BEACON_INTERVAL: BEACON_INTERVAL, CLIENTS: [CLIENTS]}}}
-        :param filename: The name of the file to save to
-        :return: None
+                {BSSID: ,CRYPTO: , CHANNEL: , DBM_SIGNAL: , COUNTRY: , MAX_RATE: , BEACON_INTERVAL: , CLIENTS: [CLIENT_LIST]}}}
         """
         LOGGER.debug("Running 'save_scan' function")
         
@@ -94,8 +92,10 @@ class Scanner:
         LOGGER.info(f"Network scan has been saved to file")
 
     def png_scan(self) -> None:
-        """Save the network topology as a graph in a png file
         """
+        Save the network topology as a graph in a png file
+        """
+        LOGGER.info("Creating a png of scanner instance")
         topology_json = self.create_json()
 
         # Create an empty graph
@@ -140,8 +140,8 @@ class Scanner:
     def scan(self, timeout: int = 0) -> None:
         """
         Scans the network for wifi networks and clients
-        :param timeout: The time to scan for
-        :return: None
+        Args:
+            timeout: int - The time to scan for
         """
         LOGGER.debug("Function 'scan' is running")
         if timeout == 0:
@@ -157,6 +157,7 @@ class Scanner:
                     self.wifis.append(wifi)
             elif packet[Dot11]:
                 self.client_list = self.handle_clients(packet, self.client_list)
+
         LOGGER.info("Sniffing started")
         sniff(prn=_callback, iface=self.interface, timeout=timeout)
 
@@ -168,21 +169,25 @@ class Scanner:
                         wifi.clients.append(client[0])
 
     def handle_beacon(self, packet) -> Wifi:
-        """Function to handle the beacon packets
+        """
+        Function to handle the beacon packets
 
         Args:
-            packet (scapy.layers.dot11.Dot11): The packet sniffed
+            packet: The packet sniffed
 
         Returns:
-            WIFI: The wifi object created
+            Wifi: The wifi object created
         """
         # get the name of it
         stats = packet[Dot11Beacon].network_stats()
         ssid = stats['ssid'].strip()
+
+        # check for hidden network
         if not ssid or ssid == "\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000":
             ssid = "'Hidden SSID'"
         if ssid in self.wifis:
             return
+
         # extract the MAC address of the network
         bssid = packet[Dot11].addr2
         try:
@@ -203,16 +208,16 @@ class Scanner:
         return Wifi(ssid, bssid, dbm_signal, channel, crypto, max_rate, country, beacon_interval)
 
     def handle_clients(self, packet, client_list: list[list[str]]) -> list[list[str]]:
-        """Function to handle the clients connected to the APs
+        """
+        Function to handle the clients connected to the APs
 
         Args:
-            packet (scapy.layers.dot11.Dot11): The packet sniffed
+            packet : The packet sniffed
             client_list (list): The list of clients
 
         Returns:
             list: The list of clients
         """
-
         wifis_list_of_bssid = [wifi.BSSID for wifi in self.wifis]
         if self.from_client(packet):
             # extract the MAC address of the client
@@ -234,11 +239,10 @@ class Scanner:
     def from_client(self, packet) -> bool:
         """Function to check whether the packet is sent from client or AP"""
 
+        # extracting ds field from packet
         DS = packet.FCfield & 0x3
         to_ds = DS & 0x1 != 0
         from_ds = DS & 0x2 != 0
-
-        # to_ds betyder at addr1 vil være AP, og addr2 vil være client.
 
         if not to_ds and from_ds:
             # Packet is sent from AP to client
@@ -354,7 +358,7 @@ class Scanner:
         LOGGER.debug("Function 'send_deauth' is running")
         if not self.wifis:
             print("AP list is empty, please scan the network first.")
-            time.sleep(0.5)
+            time.sleep(0.5)  # time for reading above print statement
             return
         target_ap = self.prompt_for_ap()
         set_channel(self.interface, target_ap.channel)
@@ -381,59 +385,17 @@ class Scanner:
 
         deauth(self.interface, target_ap.BSSID, target_client)
 
-    def send_deauth_with_beacon(self):
-        """Function to send deauth and beacon packets to APs and clients"""
-        LOGGER.debug("Function 'send_deauth_with_beacon' is running")
-        if not self.wifis:
-            print("AP list is empty, please scan the network first.")
-            time.sleep(0.5)
-            return
-        target_ap = self.prompt_for_ap()
-        set_channel(self.interface, target_ap.channel)
-
-        # Check if we have clients on the AP. If so, prompt user for client to deauth
-        if target_ap.clients:
-            print("Choose client to deauth from list:")
-            for i, client in enumerate(target_ap.clients):
-                print(f"{i}. {client}")
-            print(f"{len(target_ap.clients)+1}. User defined client")
-            print(f"{len(target_ap.clients)+2}. Deauth all clients")
-            client_to_deauth = int(input("Input choice: "))
-
-            if client_to_deauth == len(target_ap.clients) + 1:
-                target_client = input("Input client MAC for deauth: ")
-            elif client_to_deauth == len(target_ap.clients) + 2:
-                target_client = "ff:ff:ff:ff:ff:ff"
-            else:
-                target_client = target_ap.clients[client_to_deauth]
-
-        # If we don't have clients on the AP, prompt user for client to deauth
-        else:
-            target_client = input("Input client MAC for deauth: ")
-
-        deauth_with_beacon(self.interface, target_ap.SSID, target_ap.BSSID, target_client)
-
-    def send_beacon(self):
-        """Function to send beacon packets"""
-        LOGGER.debug("Function 'send_beacon' is running")
-        self.show_aps()
-        print("\n")
-        SSID =  input("Write SSID to mimic ")
-        BSSID = input("Write MAC address to mimic ('0' for random MAC) ").strip()
-        if BSSID == '0':
-            BSSID = str(RandMAC())
-        beacon(self.interface, BSSID, SSID)
-
-    def get_ivs(self):
+    def get_ivs(self) -> None:
         """Function to get IVs from a chosen AP. Only APs with WEP encryption can be chosen"""
         LOGGER.debug("Function 'get_ivs' is running")
         if not self.wifis:
             print("AP list is empty, please scan the network first.")
-            time.sleep(0.5)
+            time.sleep(0.5)  # time for reading above print statement
             return
+
         # Create file to save IVs to
         pktdump = PcapWriter("iv_file.cap", append=True, sync=True)
-        
+
         # Filter for WEP packets
         def filter_WEP(p):
             found = False
@@ -444,37 +406,23 @@ class Scanner:
 
                 pktdump.write(p)
 
-        # For testing
-        # sniff(offline="output-01.cap", prn=filter_WEP, count=int(time_for_sniff))
-
         # Get AP to sniff from
         target_ap = self.prompt_for_ap()
         
-
         if not target_ap.crypto == "{'WEP'}":
             print("AP is not WEP encrypted. Please choose another AP.")
             return
+        
         set_channel(self.interface, target_ap.channel)
+        
         time_for_sniff = input("How long do you want to capture IVs? (seconds): ")
 
         sniff(iface=self.interface, prn=filter_WEP, timeout=int(time_for_sniff))
 
         print(f'IVs saved to file: {pktdump.filename}.\n')
+        LOGGER.info("IV captured :)")
 
-    def crack_wep(self):
+    def crack_wep(self) -> None:
         """Function to crack WEP encryption"""
         LOGGER.debug("Function 'crack_wep' is running")
-        # Check if we have a file with IVs
-        if not os.path.isfile("iv_file.cap"):
-            print("No file with IVs found. Please capture IVs first.")
-            LOGGER.debug("No file with IVs found.")
-            time.sleep(0.5)
-            return
-        # Crack WEP encryption
-        # os.system(f'Aircrack-ng {pktdump.filename}') Doesn't work
-            
-        command = f"aircrack-ng -q -e bridge output-01.cap"
-        #subprocess.run(command, shell=True,timeout=7)
-        p = subprocess.check_output(command, shell=True, stderr=subprocess.PIPE,timeout=10)
-        #p = subprocess.call(command, shell=True)
-        print(p.stdout.read())
+        print("Please run AirCrackNG ^.^")

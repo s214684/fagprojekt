@@ -1,5 +1,4 @@
 from getpass import getuser
-from scapy.all import sniff
 from subprocess import PIPE, run
 import logging
 import os
@@ -8,7 +7,7 @@ import time
 
 
 # Create the logger for the whole project
-file_handler = logging.FileHandler(filename='log.log')
+file_handler = logging.FileHandler(filename='wifitool.log')
 file_handler.setLevel(level=logging.DEBUG)
 stdout_handler = logging.StreamHandler(stream=sys.stdout)
 handlers = [file_handler]
@@ -22,15 +21,31 @@ LOGGER = logging.getLogger('wifitool')
 LOGGER.debug("Logger created")
 
 
-def out(command) -> str:
+def out(command: str) -> str:
+    """
+    Small function to run shell commands
+    Args:
+        command: str - the command to execute
+    """
     result = run(command, stdout=PIPE, stderr=PIPE, universal_newlines=True, shell=True)
     return result.stdout
 
 
-def set_interface_to_monitor_mode(interface):
-    os.system(f'ip link set dev {interface} down')
-    os.system(f'iw dev {interface} set type monitor')
-    os.system(f'ip link set dev {interface} up')
+def set_interface_mode(interface: str, monitor_mode: bool) -> None:
+    """
+    Put network interface in monitor mode
+    Args:
+        interface: str - the interface in question
+        monitor_mode: bool - True if interface should be in monitor mode
+    """
+    if monitor_mode:
+        os.system(f'ip link set dev {interface} down')
+        os.system(f'iw dev {interface} set type monitor')
+        os.system(f'ip link set dev {interface} up')
+    else:
+        os.system(f'ip link set dev {interface} down')
+        os.system(f'iw dev {interface} set type managed')
+        os.system(f'ip link set dev {interface} up')
 
 
 def check_system() -> str:
@@ -43,6 +58,12 @@ def check_system() -> str:
         print("Please use a Linux distribution instead.")
         exit(1)
     LOGGER.debug("Checking if user is root")
+    if sys.platform == "darwin":
+        LOGGER.debug("MacOS detected")
+        print("MacOS detected")
+        print("MacOS users are at the moment not able to use this tool.")
+        print("Please use a Linux distribution instead.")
+        exit(1)
     if getuser() != "root":
         print("Error: You need to be root to run this script")
         LOGGER.debug("User is not root")
@@ -56,30 +77,45 @@ def check_system() -> str:
 
 
 def get_current_channel(iface: str) -> str:
+    """
+    Get current channel
+
+    Args:
+        iface: str - Network interface to get current channel from
+    Returns:
+        str - current channel
+    """
     x = out(f"iw {iface} info | grep 'channel' | cut -d ' ' -f 2")
     return x.strip()
 
 
-def change_channel() -> None:
+def change_channel(interface: str) -> None:
     """
-    @ https://thepacketgeek.com/scapy/sniffing-custom-actions/part-2/
+    Used to change the channel of inter interface
+    Args:
+        iface: str - Network interface to change channel
     Note: Channels 12 and 13 are allowed in low-power mode, while channel 14 is banned and only allowed in Japan.
-    Thus we don't use channel 14.
+    Consequently we don't use channel 14.
+    We change channel every 0.0205 seconds as this is optimal (see report if curious).
     """
     ch = 1
-    interface = get_iface()
     while True:
         set_channel(interface, ch)
-        # switch channel from 1 to 14 each 0.5s
         ch = (ch % 13) + 1
-        time.sleep(0.205)  # TODO: Can we tune this?
+        time.sleep(0.205)
 
 
-def set_channel(interface, channel: int) -> None:
+def set_channel(interface: str, channel: int) -> None:
+    """
+    Sets channel of the network interface
+    Args:
+        interface: str - network interface
+        channel: int - channel to switch to
+    """
     try:
         os.system(f"iw dev {interface} set channel {channel}")
     except Exception:
-        print("Failed to set channel")
+        raise RuntimeError("Failed to set channel")
 
 def strip_non_ascii(string: str) -> str:
     ''' Returns the string without non ASCII characters
@@ -89,8 +125,7 @@ def strip_non_ascii(string: str) -> str:
     return s.decode()
 
 def get_iface() -> str:
+    """
+    Returns network interface of user system
+    """
     return out("iw dev | grep Interface | cut -d ' ' -f 2").strip()
-
-
-def sniff_5_packets(iface: str):
-    return sniff(count=5, filter="type mgt", iface=iface)

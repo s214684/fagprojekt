@@ -1,4 +1,4 @@
-from cli import options_menu, start_menu
+from cli import start_menu
 from scanner import Scanner
 from utils import check_system
 from utils import LOGGER
@@ -6,10 +6,8 @@ import sys
 
 
 def main(interface: str, timeout: int) -> None:
-    """Main function of the program."""
     with Scanner(interface, timeout) as scanner:
         """The context manager is entered here. Then the functions are called based on the user input."""
-        scanner = scanner
         LOGGER.info("Starting WifiTool...")
         # Clear screen
         print("\033c")

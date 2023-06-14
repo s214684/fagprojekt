@@ -14,7 +14,7 @@ class Wifi:
         self.country: Union[str, None] = None if not country else country
         self.clients: list[str] = []
 
-    def __eq__(self, other):
+    def __eq__(self, other) -> bool:
         # Dunder for comparing two Wifi objects
         if (isinstance(other, Wifi)):
             return self.SSID == other.SSID
@@ -23,7 +23,7 @@ class Wifi:
     def __str__(self) -> str:
         return self.SSID
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         # Dunder for printing a Wifi object
         return str(self)
 
@@ -42,11 +42,3 @@ class Wifi:
             str: of all clients connected to the AP
         """
         return "\n".join(self.clients)
-
-    def details(self) -> str:
-        """Function to get all details that has a value and return them in a nice newline seperated string format
-
-        Returns:
-            str: of all details that has a value
-        """
-        return "\n".join([f"{key}: {value}" for key, value in self.__dict__.items() if value])

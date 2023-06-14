@@ -4,7 +4,7 @@ import datetime
 import sys
 
 
-def start_menu(scanner: Scanner):
+def start_menu(scanner: Scanner) -> None:
     """Prints the start menu and send user to chosen menu."""
     ASCII_banner = f"""
         ░▒█░░▒█░▀█▀░▒█▀▀▀░▀█▀░░░▀▀█▀▀░▒█▀▀▀█░▒█▀▀▀█░▒█░░░
@@ -46,7 +46,7 @@ def start_menu(scanner: Scanner):
     start_menu(scanner)
 
 
-def scan_menu(scanner: Scanner):
+def scan_menu(scanner: Scanner) -> None:
     """Prints the scan menu and send user to chosen action."""
 
     if not scanner.wifis:
@@ -65,10 +65,8 @@ def scan_menu(scanner: Scanner):
     2. Show APs
     3. Show clients
     4. Send deauth
-    5. Send deauth with beacon
-    6. Send beacon
-    7. Save network topology as json
-    8. save network topology as pdf
+    5. Save network topology as json
+    6. save network topology as png
 
     9. Back
     """)
@@ -93,18 +91,10 @@ def scan_menu(scanner: Scanner):
         scanner.send_deauth()
         LOGGER.info("Deauth complete.")
     elif action == "5":
-        LOGGER.info("Starting deauth with beacon attack...")
-        scanner.send_deauth_with_beacon()   # TODO: Is this needed?
-        LOGGER.info("Deauth with beacon attack complete.")
-    elif action == "6":
-        LOGGER.info("Starting beacon attack...")
-        scanner.send_beacon()   # TODO: Is this needed?
-        LOGGER.info("Beacon attack complete.")
-    elif action == "7":
         LOGGER.info("Saving scan as json...")
         scanner.save_scan()
         LOGGER.info("Scan saved as json.")
-    elif action == "8":
+    elif action == "6":
         LOGGER.info("Saving scan as pdf...")
         scanner.png_scan()
         LOGGER.info("Scan saved as pdf.")
@@ -118,11 +108,14 @@ def scan_menu(scanner: Scanner):
     scan_menu(scanner)
 
 
-def crack_menu(scanner: Scanner):
+def crack_menu(scanner: Scanner) -> None:
+    """Menu for cracking WEP secret key"""
+    
     print("Either scan a specific AP or load a scan to crack WEP.")
     print("1: Choose AP to scan \n2: Load scan \n3: Back")
+
     action = input("Input action wanted: ").strip()
-    print(action)
+
     if action == "1":
         LOGGER.info("Starting IV scan...")
         scanner.get_ivs()
@@ -132,6 +125,7 @@ def crack_menu(scanner: Scanner):
         scanner.crack_wep()
         LOGGER.info("WEP crack complete.")
     elif action == "3":
+        LOGGER.info("Returning to start menu")
         print("Returning to start menu...")
         start_menu(scanner)
     else:
@@ -140,25 +134,23 @@ def crack_menu(scanner: Scanner):
     crack_menu(scanner)
 
 
-
 def options_menu(scanner: Scanner) -> None:
-    print("\n")
     """Lets the user change the settings of the network scanner."""
     LOGGER.info("Entering options menu...")
-    print("Current settings:")
-    print(f"Timeout: {scanner.timeout}")
-    print(f"Interface: {scanner.interface}")
-    print("Choose what to change:")
-    print("1. Timeout")
-    print("2. Interface")
-    print("3. Back")
+    print(f"""\nCurrent settings:
+    Timeout: {scanner.timeout}
+    Interface: {scanner.interface}
+    Choose what to change:
+        1. Timeout
+        2. Interface
+        3. Back""")
     choice = input("Input choice: ")
     if choice == "1":
-        timeout = int(input("Input new timeout: "))
+        timeout = int(input("Input new timeout: ").strip())
         scanner.timeout = timeout
         LOGGER.info(f"Timeout changed to {timeout}")
     elif choice == "2":
-        interface = input("Input new interface: ")
+        interface = input("Input new interface: ").strip()
         scanner.interface = interface
         LOGGER.info(f"Interface changed to {interface}")
     elif choice == "3":
