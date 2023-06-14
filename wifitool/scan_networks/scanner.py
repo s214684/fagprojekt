@@ -154,7 +154,7 @@ class Scanner:
             # Check for type of packet
             if Dot11Beacon in packet.layers():
                 wifi = self.handle_beacon(packet)
-                if wifi not in self.wifis and wifi is Wifi:
+                if wifi not in self.wifis and isinstance(wifi, Wifi):
                     self.wifis.append(wifi)
             elif packet[Dot11]:
                 self.client_list = self.handle_clients(packet, self.client_list)
