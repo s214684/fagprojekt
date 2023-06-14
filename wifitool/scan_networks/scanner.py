@@ -7,8 +7,6 @@ from wifi import Wifi
 import json
 import networkx as nx
 import matplotlib.pyplot as plt
-import subprocess
-import os
 import time
 
 
