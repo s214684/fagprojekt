@@ -35,7 +35,7 @@ def set_interface_to_monitor_mode(interface):
 
 def check_system() -> str:
     """Checks if the user is root and if the system is Linux. If not, the program exits."""
-    LOGGER.debug("Checking system")
+    LOGGER.debug("Checking operating system")
     if sys.platform == "win32":
         LOGGER.debug("Windows detected")
         print("Windows detected")

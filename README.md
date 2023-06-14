@@ -1,33 +1,6 @@
 # fagprojekt
 
 
-
-## Areas of responsibility
-
-### Code-manager
-Mediater in code-reviews, keep overview of the whole codebase, make sure styleguiide is followed.
-
-Oliver Tabersen
-
-
-### Report-/hand-in-manager
-Keep the report "up-to-date", Making sure we follow deadlines, spellcheck
-
-Lucas Tabersen
-
-
-### Project-manager
-kanbas board, calendar meetings, github issues, referat, update project description
-
-Nicklas Tabersen
-
-
-### Communication manager
-
-Lucas Tabersen
-
-
-
 ## Code style guideline 
 - Everything on github has to be in English.
 - We structure our code by the PEP8 standards. 

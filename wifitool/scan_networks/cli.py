@@ -51,7 +51,7 @@ def scan_menu(scanner: Scanner):
 
     if not scanner.wifis:
         LOGGER.info("Starting network scan...")
-        print(f"Building topology:\n Scanning network for APs and clients with timeout={scanner.timeout} on interface={scanner.interface}...")
+        print(f"Building topology:\nScanning network for APs and clients with timeout={scanner.timeout} on interface={scanner.interface}...")
         scanner.scan()
         scanner.show_aps()
         LOGGER.info("Network scan complete.")
@@ -67,8 +67,8 @@ def scan_menu(scanner: Scanner):
     4. Send deauth
     5. Send deauth with beacon
     6. Send beacon
-    7. Save network topology
-    8. save network topology as .pdf
+    7. Save network topology as json
+    8. save network topology as pdf
 
     9. Back
     """)
@@ -76,7 +76,7 @@ def scan_menu(scanner: Scanner):
 
     if action == "1":
         LOGGER.info("Starting network scan...")
-        print(f"Building topology:\n Scanning network for APs and clients with timeout={scanner.timeout} on interface={scanner.interface}...")
+        print(f"Building topology:\nScanning network for APs and clients with timeout={scanner.timeout} on interface={scanner.interface}...")
         scanner.scan()
         scanner.show_aps()
         LOGGER.info("Network scan complete.")
@@ -94,16 +94,16 @@ def scan_menu(scanner: Scanner):
         LOGGER.info("Deauth complete.")
     elif action == "5":
         LOGGER.info("Starting deauth with beacon attack...")
-        scanner.send_deauth_with_beacon()
+        scanner.send_deauth_with_beacon()   # TODO: Is this needed?
         LOGGER.info("Deauth with beacon attack complete.")
     elif action == "6":
         LOGGER.info("Starting beacon attack...")
-        scanner.send_beacon()
+        scanner.send_beacon()   # TODO: Is this needed?
         LOGGER.info("Beacon attack complete.")
     elif action == "7":
-        LOGGER.info("Saving scan...")
+        LOGGER.info("Saving scan as json...")
         scanner.save_scan()
-        LOGGER.info("Scan saved.")
+        LOGGER.info("Scan saved as json.")
     elif action == "8":
         LOGGER.info("Saving scan as pdf...")
         scanner.png_scan()

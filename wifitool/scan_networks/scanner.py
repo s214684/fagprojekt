@@ -1,5 +1,3 @@
-import subprocess
-import sys
 from deauth import deauth, beacon, deauth_with_beacon
 from scapy.all import Dot11Beacon, Dot11, sniff, Dot11WEP, PcapWriter, RandMAC
 from typing import Union
@@ -7,10 +5,12 @@ from threading import Thread
 from utils import get_current_channel, change_channel, set_channel, strip_non_ascii
 from utils import LOGGER
 from wifi import Wifi
+import json
 import networkx as nx
 import matplotlib.pyplot as plt
-import json
+import subprocess
 import os
+import sys
 import time
 
 
