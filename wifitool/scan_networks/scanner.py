@@ -1,4 +1,4 @@
-from deauth import deauth, beacon, deauth_with_beacon
+from deauth import deauth
 from scapy.all import Dot11Beacon, Dot11, sniff, Dot11WEP, PcapWriter, RandMAC
 from typing import Union
 from threading import Thread
