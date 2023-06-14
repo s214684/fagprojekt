@@ -8,6 +8,7 @@ import sys
 def main(interface: str, timeout: int) -> None:
     with Scanner(interface, timeout) as scanner:
         """The context manager is entered here. Then the functions are called based on the user input."""
+        scanner = scanner
         LOGGER.info("Starting WifiTool...")
         # Clear screen
         print("\033c")

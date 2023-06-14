@@ -89,7 +89,7 @@ def get_current_channel(iface: str) -> str:
     return x.strip()
 
 
-def change_channel(interface: str) -> None:
+def change_channel(interface: str = ""):
     """
     Used to change the channel of inter interface
     Args:
@@ -98,6 +98,8 @@ def change_channel(interface: str) -> None:
     Consequently we don't use channel 14.
     We change channel every 0.0205 seconds as this is optimal (see report if curious).
     """
+    if interface == "":
+        interface = get_iface()
     ch = 1
     while True:
         set_channel(interface, ch)
@@ -105,7 +107,7 @@ def change_channel(interface: str) -> None:
         time.sleep(0.205)
 
 
-def set_channel(interface: str, channel: int) -> None:
+def set_channel(interface: str, channel: int):
     """
     Sets channel of the network interface
     Args:
@@ -113,7 +115,7 @@ def set_channel(interface: str, channel: int) -> None:
         channel: int - channel to switch to
     """
     try:
-        os.system(f"iw dev {interface} set channel {channel}")
+        out(f"iw dev {interface} set channel {channel}")
     except Exception:
         raise RuntimeError("Failed to set channel")
 

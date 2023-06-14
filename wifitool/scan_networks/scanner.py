@@ -14,7 +14,8 @@ class Scanner:
     """
     Context manager for scanning the network
     """
-    def __init__(self, interface: str, timeout: int) -> None:
+    def __init__(self, interface: str, timeout: int):
+        LOGGER.debug("in init")
         self.wifis: list[Wifi] = []
         self.interface = interface
         self.curr_channel: int
@@ -26,11 +27,13 @@ class Scanner:
         self.curr_channel = get_current_channel(iface=self.interface)
         # set the interface to monitor mode
         set_interface_mode(interface=self.interface, monitor_mode=True)
+        LOGGER.debug("interface in monitor mode")
         # start the channel changer
-        channel_changer = Thread(target=change_channel(self.interface))
+        channel_changer = Thread(target=change_channel)
         channel_changer.daemon = True
         channel_changer.start()
         LOGGER.info("Scanner entered")
+        LOGGER.debug("out of __enter__")
         return self
 
     def __exit__(self, exc_type, exc_value, exc_tb):
@@ -151,7 +154,7 @@ class Scanner:
             # Check for type of packet
             if Dot11Beacon in packet.layers():
                 wifi = self.handle_beacon(packet)
-                if wifi not in self.wifis:
+                if wifi not in self.wifis and wifi is Wifi:
                     self.wifis.append(wifi)
             elif packet[Dot11]:
                 self.client_list = self.handle_clients(packet, self.client_list)
@@ -178,8 +181,10 @@ class Scanner:
         """
         # get the name of it
         stats = packet[Dot11Beacon].network_stats()
-        ssid = stats['ssid'].strip()
-
+        try: 
+            ssid = stats['ssid'].strip()
+        except KeyError:
+            return
         # check for hidden network
         if not ssid or ssid == "\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000":
             ssid = "'Hidden SSID'"
