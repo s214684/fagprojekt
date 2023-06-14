@@ -19,7 +19,7 @@ def deauth(iface: str, BSSID: str, client: str, reason: int = 7):
     LOGGER.info("Sending deauth packet to client: '" + client + "' from BSSID: '" + BSSID + "' through interface: '" + iface + "'.")
     sendp(packet, iface=iface, loop=1, inter=0.01)
 
-
+# TODO: Keep?
 def beacon(iface: str, BSSID: str, SSID: str, client: str = "ff:ff:ff:ff:ff:ff"):
     """Send beacon frames spoofed as a target network.
 
@@ -38,7 +38,7 @@ def beacon(iface: str, BSSID: str, SSID: str, client: str = "ff:ff:ff:ff:ff:ff")
     LOGGER.info("Sending beacon packet with SSID: '" + SSID + "' from BSSID: '" + BSSID + "' through interface: '" + iface + "'.")
     sendp(packet, iface=iface, loop=1, inter=0.1)
 
-
+# TODO: Keep?
 def deauth_with_beacon(iface: str, SSID: str, deauth_BSSID: str, deauth_client: str, reason: int = 7, timeout: int = 20):
     """Send deauth and beacon packets to disconnect a client from a network, 
        and then create a fake network with the same SSID to lure the client to connect to it.

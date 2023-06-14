@@ -45,7 +45,7 @@ def print_all(stuff_to_print):
         print(stuff_to_print)
         time.sleep(0.5)
 
-# TODO: Exists in scanner, unused, remove?
+# TODO: Exists in scanner, remove?
 def change_channel(interface: str):
     """
     @ https://thepacketgeek.com/scapy/sniffing-custom-actions/part-2/
