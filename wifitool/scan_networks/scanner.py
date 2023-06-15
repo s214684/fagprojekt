@@ -356,7 +356,7 @@ class Scanner:
                 self.scan()
         return True
 
-    def send_deauth(self):
+    def send_deauth(self) -> None:
         """Function to send deauth packets to APs and clients"""
         LOGGER.debug("Function 'send_deauth' is running")
         if not self.wifis:
