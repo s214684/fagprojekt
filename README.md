@@ -19,6 +19,6 @@ Back at the main menu you can now choose the Crack WEP option. In this menu you 
 
 Then you can choose to crack that AP, but it will just tell you to use Aircrack. Do that by installing aircrack-ng on linux and then running a terminal where the file iv_file.cap is located and running the command: "sudo aircrack-ng iv_file.cap" and it should crack the WiFi.
 
-Finally you can go to the options menu. Here you can choose between the timeout for how long it should scan for beacon frames to get the network topology, the default is 7 seconds, which should be enough to get all APs and most clients if they are active on the network. If not, then you can set a longer timeout. You can also choose another interface in case you have multiple interfaces set up. This is only recommended for advanced users as the default should work. 
+From the main menu, you can go to the options menu. Here you can choose between the timeout, which is for how long it should scan for beacon frames to get the network topology. The default is 7 seconds, which should be enough to get all APs and most clients if they are active on the network. If not, you can set a longer timeout. You can also choose another interface in case you have multiple interfaces set up. This is only recommended for advanced users as the default should work.
 
 
