@@ -213,10 +213,14 @@ The main vulnerability of WEP cracking is the fact that WEP is not in use today.
 \section{Implementation}
 
 \subsection{Method}
-PEP8 standard, Agil software development, Code-review, 
+The implementation of the system is based on the agile software development method. This means that the development of the system with its underlying blocks is done in iterations, where each iteration builds on top of the former. 
+The agile method is used because it allows for a more flexible development process, where the system can be changed and adapted to new requirements as the development progresses. This is especially useful in a project such as this, where we were not exactly sure of the scope and functionality at the beginning.
+In order to ensure a high quality of the code, we have used the PEP8 standard for Python code. Likewise we all agreed to follow at a reasonable extend the "Google Python Style Guide" (https://google.github.io/styleguide/pyguide.html). The PEP8 standard is a set of rules for how Python code should be written, and is used to ensure that the code is readable and understandable for other developers. This is especially useful in a project such as this, where the code is written by multiple developers.
+We have further used code-reviews to ensure a common understanding of the code and that the code is similar in nature. We've done the code review by having one developer walkthrough the code whilst the others have come with feedback and questions. This has been done for all the code that has been written. 
 
 
 
+\subsection{Tools}
 The implementation is based purely on Python3 and the library Scapy. Figure \ref{UML_diagram} shows a UML-class-diagram of the two classes utilized in the implementation (without CLI and utilization files). The Scanner class can hold multiple WiFi objects. The Scanner class can be seen as the main class holding and performing the core functionalities. Whereas the WiFis are the individual APs that are detected from the network scan, and subsequently saves to the topology.
 \begin{figure}[!htbp]
     \centering
