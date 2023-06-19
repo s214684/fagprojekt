@@ -20,13 +20,15 @@
 \usepackage{lastpage}
 \usepackage{caption}
 \usepackage{subcaption}
+\usepackage{hyperref}
+\usepackage{float}
 
 
 
 \pagestyle{fancy}
 \fancyhf{}
-\lhead{Project}
-\rhead{34229 Project Work - Bachelor in Cyber Technology}
+\lhead{20. june 2023}
+\rhead{34229 Project in Cyber Technology}
 \cfoot{Side \thepage{} af \pageref{LastPage}}
 
 \definecolor{codegreen}{rgb}{0,0.6,0}
@@ -60,19 +62,14 @@
 \addbibresource{Internet.bib}
 
 
+
 \begin{document}
 
-
-
 \input{Forside}
-
-
 \newpage
+
 \input{Latex-Files/Final Report}
-%\newpage
-%\input{Latex-Files/Functionel Description Report}
 
-%\input{Rapport}
-\newpage
 \printbibliography %Prints bibliography
+
 \end{document}
