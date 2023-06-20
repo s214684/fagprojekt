@@ -1,79 +1,28 @@
-
-- Hvor udbredt er sårbarheden
-- Mitigation afsnit
-- Er client tilsluttet eller er det bare kommu - Oliver - donski (sådan da)
-- Sætte angrebene i kontekst med cyber kill chain?
-- Løse Kommentarer
-- Tests tilføjes mere - done?.
-- Implimentation, nye ting ( fx. Json)
-- Vi skal have noget med om vores metodik i opgaven, fx det her med at følge PEP8 standard og at vi har lavet agil (?) software development..
-
-
-\textbf{Hvad er done?
-}Abstact - DONE
-Contributers - Mangler (sidste ting)
-Introduction - DONE
-Functionality - DONE
-Theory - Mangler kort afsnit om problem ved deauthentication 
-Implementation - Figurer osv skal placeres godt, 
-Tests - DONE
-How to run - DONE
-Discussion - Mangler noget om udløbsdato på angrebene, diskussion om resultaterne
-Conlusion - Skal genemarbejdes yderligere (må gerne være lidt længere if need be)
-Peer feedback - DONE
-Collaborative Experience - Kun snakke om tidsplan en gang
-
-
 \section*{Abstract}
-The main goal of this project is to explore and examine the properties of the 802.11 specification. Wireless communication/security is critical to maintaining the internet infrastructure and is widely used, therefore it is a focus of both hackers and network administrators. As data is sent over a shared medium it is possible to both obtain and manipulate it . By doing so, two attacks have been examined in this report. A Denial-of-Service (DoS) attack has been exploited on the wireless local area network (WLAN) - the deauthentication attack, whilst WEP secret key cracking has been used to obtain clear text traffic. WEP was one of the first ways to encrypt wireless data, but has glaring flaws in its algorithm. It's been possible to crack the password for a network secured by WEP and shown that by capturing packets from a single user on an AP, all data that has been sent over the medium can be decrypted. The WLAN has been mapped by with a network interface in monitor mode and data processing using Scapy (Python library) in connection with our deauthentication attacks that show key information on the WLAN. A deauthentication attack has been successfully completed on a modern device after identifying it with the self-developed tool named WiFi-scanner. This shows that even secure networks using technologies in use today, are still at risk of certain attacks.
+The main goal of this project is to explore and examine the properties of the 802.11 standard. Wireless communication and security is critical to maintaining the internet infrastructure and is widely used, therefore it is a focus of network administrators, but also hackers. As data is sent over a shared medium it is possible to obtain and manipulate it . By doing so, two attacks have been examined in this report. A Denial-of-Service (DoS) attack has been exploited on the wireless local area network (WLAN) - the deauthentication attack. Whilst WEP secret key cracking has been used to crack an AP using WEP. WEP was one of the first ways to encrypt wireless data, but has glaring flaws in its algorithm, which can be exploited. The WLAN has been mapped using a network interface in monitor mode and data processing in Scapy (Python library) in connection with our deauthentication attacks that show key information on the WLAN. A deauthentication attack has been successfully completed on modern devices after identifying them with the self-developed tool named "wifitool". This shows that even secure networks using technologies in use today, are still at risk of certain attacks. Yet the newer security protocol WPA3, handles this with the introduction of Protected Management Frames.
 
 \newpage
 \tableofcontents
 \newpage
 
-\section*{Contributers}
-
-\begin{table}[!htbp]
-\centering
-\begin{tabular}{|l|l|l|}
-\hline
-
-\textbf{Section}   & \textbf{Contributer} & \textbf{Reviewer} \\ \hline
-Abstract           & Oliver               & Lucas             \\ \hline
-Introduction       & Nicklas              & Oliver            \\ \hline
-Functionality      & Everyone             & Everyone          \\ \hline
-Theory 4.1         & Lucas                & Oliver            \\ \hline
-Theory 4.2         & Nicklas              & Oliver            \\ \hline
-Implementation 5.1 & Oliver               & Nicklas           \\ \hline
-Implementation 5.2 & Nicklas              & Lucas             \\ \hline
-Implementation 5.3 & Lucas                & Oliver            \\ \hline
-Tests 6.1          & Oliver               & Lucas             \\ \hline
-Tests 6.2          & Nicklas              & Lucas             \\ \hline
-Tests 6.3          & Lucas                & Nicklas           \\ \hline
-Discussion         & Nicklas              & Oliver            \\ \hline
-Conclusion         & Nicklas              & Oliver            \\ \hline
-\end{tabular}
-\end{table}
-
 \section{Introduction}
-Wireless security has become increasingly critical due to the rapidly expanding use and need for internet access. Many devices use WiFi to connect to the internet, such as smartphones and laptops. As data over WiFi is sent via radio waves, thus using a shared medium there is a coherent risk when communicating. The data is at risk of being captured by bad actors and is prone to manipulation. Thus a need for strong encryption and control of said data is necessary. However, some security measures for wireless networks, still have vulnerabilities to exploit. One such attack, which is a focus of this report, is a denial-of-service (DoS) attack: the deauthentication attack. It's an attack where a user will be denied access to the network and thereby either disrupt a workplace or pave the way for other more sophisticated attacks such as the Evil Twin Attack\footnote{An Evil Twin attack is when the adversary creates an AP identical to the victim's, and then either forcing or tricking the victim's devices to connect to the malicious AP, thus obtaining a Man-in-the-Middle state.}.
+Wireless security has become increasingly critical due to the rapidly expanding use and need for internet access. Many devices use WiFi to connect to the internet, such as smartphones and laptops. As data over WiFi is sent via radio waves, thus using a shared medium, there is an inherent risk when communicating. The data is at risk of being captured by malicious actors, and is prone to manipulation. Thus there is a need for strong encryption and control of said data. However, some security measures for wireless networks still have vulnerabilities to exploit. One such vulnerability, which is a focus of this report, is a denial-of-service (DoS) attack: the deauthentication attack. The deauthentication attack is an attack wherein a user will be denied access to the network and thereby either disrupt a workplace or pave the way for other more sophisticated attacks, such as the Evil Twin Attack\footnote{An Evil Twin attack is when the adversary creates an AP identical to the victim's, and then either forcing or tricking the victim's devices to connect to the malicious AP, thus obtaining a Man-in-the-Middle state.}.
 
-This project will explore the theory and practical applications of deauthentication attacks on networks. Further, password cracking will be explored for secret keys used in the encryption of wireless network traffic using the now outdated WEP protocol. To achieve these goals, information about the wireless local area network (WLAN) has to be known. Thus, another goal for the project is  to obtain information of available SSIDs, clients connected, signal strength and so on.
-
-By doing this project we have explored the theory and practical applications of deauthentication attacks on networks and the building blocks that make up data-packets in a wireless network. By extension of this we have also acquired knowledge about how an access point (AP) connects and disconnects clients and how a local network is built. It is important to note that this project is for educational purposes only and should not be used for malicious activities.
+This project will explore the theory and practical applications of deauthentication attacks on wireless networks. Furthermore, password cracking will be explored for secret keys used in the encryption of wireless network traffic, using the, now outdated, WEP protocol. To achieve these goals, information about the wireless local area network (WLAN) is necessary. Thus, another goal for the project is to obtain information of available SSIDs, existing clients, signal strength etc.
+It is important to note that this project is for educational purposes only and should not be used for malicious activities.
 
 
 \section{Functionality}
 Our project consists of the following functionalities:
 \begin{enumerate}
-    \item Scan the WLAN and identify key information about clients/Access Points.
-    \item Perform deauthentication attack on WiFi devices.
-    \item Capture packets and obtain clear text by cracking the password of WEP encryption.
+    \item Scan the WLAN, and identify key information about clients/Access Points.
+    \item Perform deauthentication attacks on WiFi devices.
+    \item Capture packets, and obtain clear text by cracking the password of WEP encryption.
 \end{enumerate}
 
 These functionalities represent the core of the project. Wherein scanning and mapping the WLAN, is of a great importance. As this is necessary for performing both deauthentication and password cracking. 
 
-A typical user road-map utilizing the scanning of the network in order to deauthenticate the user is shown on figure \ref{user-roadmap}.  
+A typical user road-map utilizing the scanning of the network, in order to deauthenticate the user is shown on figure \ref{user-roadmap}.  
 
 \begin{figure}[!htbp]
     \centering
@@ -82,8 +31,10 @@ A typical user road-map utilizing the scanning of the network in order to deauth
     \label{user-roadmap}
 \end{figure}
 
-A deauthentication attack is a type of Denial-of-Service (DoS) attack that targets communication between a user and a WiFi access point \cite{Deauth}. It exploits a feature of IEEE 802.11 wireless networks that allows devices to disconnect from a network by the deauthentication management frame \cite{Deauth_Wiki}.
-A deauthentication frame tells a device to stop communicating with the AP. It can be sent by either the AP or the device itself. It's normally used for legitimate purposes, such as ending a connection or switching to another network (handover); Yet there is no identification check performed in this procedure. Therefore an attacker can exploit this feature and send deauthentication frames to the AP with a spoofed\footnote{Spoofed: An illegitimate address to trick a victim.} client source address. This causes the connection to close making the spoofed device's connection end and probably reconnect. This exploitation has multiple use-cases. If done repeatedly or to multiple devices, this can disrupt or disable the network entirely, thus resulting in a DoS Attack. Meanwhile it can also be used to obtain an EAPOL 4-way-handshake for WPA or as a way to misguide a client to a rogue access point created by a malicious user to obtain a Man-In-The-Middle state, known as an Evil Twin Attack. 
+A deauthentication attack is a type of Denial-of-Service (DoS) attack that targets communication between a user and a WiFi access point \cite{Deauth}. It exploits a feature of IEEE's 802.11 standard on wireless networks, that allows devices to disconnect from a network by the deauthentication management frame \cite{Deauth_Wiki}.
+A deauthentication frame tells a device to stop communicating with the AP. It can be sent by either the AP or the device itself. It's normally used for legitimate purposes, such as ending a connection or switching to another network (handover); Yet there is no integrity check performed in this procedure. 
+
+Therefore an attacker can exploit this feature and send deauthentication frames to the AP with a spoofed\footnote{Spoofed: An illegitimate address to trick a victim.} client source address. This causes the connection to close making the spoofed device's connection end. This exploitation has multiple use-cases. If done repeatedly or to multiple devices, this can disrupt or disable the network entirely, thus resulting in a DoS Attack. Meanwhile it can also be used to obtain an EAPOL 4-way-handshake for WPA or as a way to misguide a client to a rogue access point created by a malicious user to obtain a Man-In-The-Middle state, known as an Evil Twin Attack. 
 
 \begin{figure}[!htbp]
     \centering
@@ -93,20 +44,20 @@ A deauthentication frame tells a device to stop communicating with the AP. It ca
 \end{figure}
 
 
-Comparing this attack with Lockheed Martin's Cyber Kill Chain and Mitre's Att\&ck framework the "Scan of network" function would be the reconnaissance of the attack, with the technique T1590 Gather Victim Network Information \cite{lockheed} \cite{Mitre}. Then the two audits (Client and AP) could be signified as Resource Development (Mitre) or Weaponization (Kill Chain) as it is here chosen what clients/AP to spoof. The when the DoS attack happens the Execution/Exploitation happens such that the impact will be DoS and thus the technique T1489  Service Stop.  Hence this is a somewhat simple attack as much of the Mitre Framework is applied, yet it goes through the whole Kill Chain and can thus be a standalone attack, instead of other typical attacks focusing only on reconnaissance or Privilege Escalation.
+Comparing this attack with Lockheed Martin's Cyber Kill Chain and Mitre's ATT\&CK framework the "Scan of network" function would be the reconnaissance of the attack, with the technique T1590 Gather Victim Network Information \cite{lockheed} \cite{Mitre}. Then the two audits (Client and AP) could be signified as Resource Development (Mitre) or Weaponization (Kill Chain) as it is here chosen what clients/AP to spoof. Then when the DoS attack happens the Execution/Exploitation happens such that the impact will be DoS and thus the technique T1489  Service Stop.  Hence this is a somewhat simple attack with only some of the Mitre Framework applied, yet it goes through the whole Kill Chain and can thus be a standalone attack, instead of other typical attacks focusing only on reconnaissance or Privilege Escalation.
 
-The last point is password cracking. The product is able to crack a network and obtain the AP's password if that AP uses the WEP algorithm. WEP is one of the most basic WiFi algorithms. It is an outdated and non-secure algorithm and the product utilizes Aircrack-ng's FMS\footnote{A Fluhrer, Mantin and Shamir attack} attack to recreate the passwords on the APs \cite{aircrack-ng}. It is a method wherein you can use initialization vectors (IVs), which are created in the WEP algorithm to recreate the password used to encrypt the data. The method needs data-packets from users on the network containing initialization vectors and those are captured by the WiFi scanner, as that is its primary functionality. It needs about 250.000 packets which it stores in a file that is then read by Aircrack-ng which then cracks the password. 
+The last point is password cracking. The product is able to crack a network and obtain the AP's password if that AP uses the WEP algorithm. WEP is one of the most basic WiFi algorithms. It is an outdated and non-secure algorithm and the product utilizes Aircrack-ng's FMS\footnote{A Fluhrer, Mantin and Shamir attack} attack to recreate the passwords on the APs \cite{aircrack-ng} \cite{Weakness}. It is a method wherein you can use initialization vectors (IVs), which are created in the WEP algorithm to recreate the password used to encrypt the data. The method needs data-packets from users on the network containing initialization vectors and those are captured by the WiFi scanner, as that is its primary functionality. It needs about 250.000 packets which it stores in a file that is then read by Aircrack-ng which cracks the password. 
 
 The implementations are mainly based on the python library Scapy \cite{scapy} to implement the functionalities. As our network interface has to be put in monitor mode a UNIX environment is used. 
 The network interface is both a Realtek DWA 131-E1 dongle and the Qualcomm Atheros UB93 dongle. The Realtek dongle is used as it is cheap and allows for the usage of monitor mode and very well models a typical client whereas the Qualcomm dongle is used to signify and model a more sophisticated actor, which typically would use stronger and more technical hardware. Thus a typical setup is with the client using the Realtek dongle and the emulated attacker using the Qualcomm dongle.
+
 The UNIX platform has the consequence of limiting the use of the implementation to a specific platform. Though this should be able to be ported to Windows and MacOS if need be. Here the Linux-sub-system (WSL) on Windows might be exploited \cite{WSL_exploit}.
-The positive side of using UNIX is that we can implement the program on many types of systems as we use a virtual machine to create the product and the tool being relatively easier to port to other systems. Thus making a possible conversion to a raspberry pi easier. The negative side is that the use of a virtual machine is mandatory on other operating systems, which can create problems with drivers and performance. 
+The positive side of using UNIX is that we can implement the program on many types of systems as we use a virtual machine to create the product and the tool being relatively easier to port to other systems. Thus making a possible conversion to a Raspberry Pi easier. The negative side is that the use of a virtual machine is mandatory on other operating systems, which can create problems with drivers and performance. 
 
 \subsection{Mapping of networks}
-This block takes the physical data being sent in the wireless 2.4 GHz medium, and transforms it into information that the other blocks need and use. It stores a table that holds the information as sub-blocks, for instance access points (AP) in the WLAN, the signal strength of the AP and which channels are used as well as the clients on said AP. This mapping can be done via beacon management frames used by APs to announce their respective presence. Likewise probe management frames can be used to understand what APs a client has been associated with in the past.
-Furthermore the block possesses the ability to save the network topology as a png and a json file. This makes it easier to understand the local topology as well as providing the user with the possibility of further analysis using 3rd party software.
+This block takes the physical data being sent in the wireless 2.4 GHz medium, and transforms it into information that the other blocks need and use. It stores a table that holds the information as sub-blocks, for instance access points (AP) in the WLAN, the signal strength of the AP, and which channels are used, as well as the clients communicating on the medium. This mapping can be done via beacon management frames used by APs to announce their respective presence. Likewise probe management frames can be used to understand what APs a client has been associated with in the past.
+Furthermore the block possesses the ability to save the network topology as a PNG and a JSON file. This makes it easier to understand the local topology as well as providing the user with the possibility of further analysis using 3rd party software.
 The block also contains a way of collecting data-packets containing initialization vectors and sending them to the password cracking block. 
-
 
 \subsection{Deauthentication}
 This block handles the creation and transmission of the deauthentication packets used for the deauthentication attack, it is here the deauthentication packets are spoofed with the desired BSSIDs and then deployed to attack the AP in question. The transmission of the deauthentication packets is tested for optimal performance utilizing the equipment we have had access to. 
@@ -132,7 +83,9 @@ There are three frame types in 802.11: management frames, control frames, and da
 
 This is done via 2 ways of scanning: Active scanning and passive scanning. 
 As an 802.11 environment is an open medium, the packets sent over the network are easily obtained by bystanders. Yet the amount of traffic sent is governed by the clients and APs. Thus enabling passive scanning to obtain data frames sent over the medium with no involvement. Active scanning is different in the way that it also obtains the packages the same way, but here the scanner actively joins the communication in the hope of stimulating the clients/APs/targets to provide/send more data \cite{Mitre2}.
-The amount of data sent is often non-deterministic, since a client, in principle, can be connected to an AP without sending any information or data for long periods. Therefore making determining the relation between a client and an AP challenging. Yet it is normal for clients to send out probe requests and in general a modern client sends more data. A paper from 2014 shows that background traffic constitutes 40\% of traffic \cite{utility}. With mobile devices accounting for over 50\% of all traffic, there is a lot of data sent even without the user actively using the device \cite{stats_mobile}.
+
+The amount of data sent is often non-deterministic, since a client, in principle, can be connected to an AP without sending any information or data for long periods. Therefore making determining the relation between a client and an AP challenging. Yet it is normal for clients to send out probe requests and in general a modern client sends more data. A paper from 2014 shows that background traffic constitutes 40\% of traffic \cite{utility}. With mobile devices accounting for over 50\% of all traffic, there is a lot of data sent even without the user actively using the device \cite{stats_mobile}. Further it has been shown that 70\% of a smartphones traffic is background traffic \cite{background_traffic}.
+
 However it is easier to estimate the amount of beacon frames sent from an AP, which is one of the most obvious frames to scan for. As beacon frames contains a field called Beacon interval containing the time interval between each beacon frame in Time Units (1024 microseconds). This can be used to understand how long one should scan in a given channel in order to be sure that a beacon frame has been obtained.
 Since at least one beacon frame is needed and it has to be obtained in full it can be argued that a period of at least two beacon intervals has to be observed in each channel. Therefore the time in each channel is given by:
 \begin{align}
@@ -147,7 +100,7 @@ Thus the overall time to scan for APs will be:
 Where the number of channels most often is 14 and the beacon interval 100TU.
 
 \subsection{The Scapy library}
-This project utilizes the python library "Scapy" for sniffing, analyzing and transmitting 802.11 packets. Scapy is a complex and substantial program and library built in Python with a plethora of functionality. One example of functionality Scapy, used for this project is the "sniff" function. This enables users to capture network packets sent on the wireless medium. 
+This project utilizes the python library "Scapy" for sniffing, analyzing and transmitting 802.11 packets. Scapy is a complex and substantial program and library built in Python with a plethora of functionality. One example of functionality Scapy, used for this project is the \lstinline{sniff} function. This enables users to capture network packets sent on the wireless medium. 
 The packets captured are described as Scapy packet objects. Wherein Scapy internally decodes captured packets, and defines the packet object with layers corresponding to the protocol layers used the packet. The packet object consequently contains a great amount of information about the packet. This information includes SSIDs, BSSIDs, channels, cryptographies and more. 
 Scapy can furthermore be used to create and send packets via the same methods as decoding these packets. 
 
@@ -158,7 +111,7 @@ Scapy can furthermore be used to create and send packets via the same methods as
     \label{scapy_packet}
 \end{figure}
 
-An example of the creation of a packet can be seen in figure \ref{scapy_packet}. Wherein a deauthentication packet is built, by stacking layers on top of each other. For the deauthentication packet, the Radiotap layer serves as the foundation of the packet. The Radiotap layer contains properties such as signal strength, channel information etc. This is followed by a "Dot11" layer on top, this layer describes, among other things, the type and subtype of the packet, in this case "type = 0" which represents a management frame and "subtype = 12" which represents a deauthentication packet. Ultimately the "Dot11Deauth" layer is added, this layer provides the ability to alter the reason code sent with the deauthentication packet, indicating the reason for the deauthentication.\cite{Scapy_documentation}
+An example of the creation of a packet can be seen in figure \ref{scapy_packet}. Wherein a deauthentication packet is built, by stacking layers on top of each other. For the deauthentication packet, the radiotap layer serves as the foundation of the packet. The radiotap layer contains properties such as signal strength, channel information etc. This is followed by a "Dot11" layer on top, this layer describes, among other things, the type and subtype of the packet, in this case "type = 0" which represents a management frame and "subtype = 12" which represents a deauthentication packet. Ultimately the "Dot11Deauth" layer is added, this layer provides the ability to alter the reason code sent with the deauthentication packet, indicating the reason for the deauthentication.\cite{Scapy_documentation}
 
 
 \subsection{Deauthentication in WLAN}
@@ -171,7 +124,7 @@ The connection between clients and APs can be exploited by deauthentication atta
     \label{deauth_flow}
 \end{figure}
 
-Figure \ref{deauth_flow} illustrates a deauthentication attack in action, wherein a stable connection is established, but followed by the attacker transmitting a deauthentication packet to the AP, spoofed as the client. Following this the AP sends a deauthentication to the client, thus terminating the connection.
+Figure \ref{deauth_flow} illustrates a deauthentication attack in action, wherein a stable connection is established, but followed by the attacker transmitting a deauthentication packet to the client, spoofed as the AP. Following this the client sends a deauthentication to the AP, thus terminating the connection.
 
 Deauthentication frames are of the management frame type as seen in figure \ref{WiFi Types}, and have the overall structure as such. Therefore the deauthentication frame contains, among other things, three addresses. These addresses being the destination address, the source address, and the BSSID of the AP's wirelsess interface (the two last addresses are often identical). These three addresses are what can be altered in order to spoof packets, and perform a deauthentication attack. One of the fields in a deauthentication frame is the reason code, which is a 16-bit field, thus giving 65,536 unique possible reason codes, yet only about 66 are utilized \cite{Cisco_Deathentication_reasoncodes}. The reasoncode defines the reason for the termination of the connection. Apart from a reason code, the frame body includes vendor specific elements, and the Management MIC IE (MMIE) \cite{IEEE_802.11w}. Though this is only present when protected management frames(PMF) are enabled, further examination of PMF will follow in subsequent sections the report.
 
@@ -181,7 +134,7 @@ These spoofed deauthentication packets can be sent, thus denying service for cli
 \subsection{WEP \& WiFi security standards}
 Wireless networks also need security while sending packets, i.e. integrity and confidentiality. To ensure confidentiality, data-frames are encrypted with a security standard. The oldest widespread type being Wired Equivalent Privacy (WEP). It had major security flaws that allowed hackers to bypass the algorithm and read the data being sent\cite{WEP1}. Therefore a new protocol for network security was in need. WiFi Protected Access (WPA) was soon after developed and implemented from 2003\cite{WEP3}. 
 
-WEP uses a secret key to encrypt packets sent between a client and the AP \cite{WEP2}. Although, a fundamental underlying problem with WEP is that WEP uses the RC4 encryption algorithm, which is known as a stream cipher. A stream cipher operates by making a short key into a random key-stream. The client uses the XOR operator on the key-stream with the plain data to produce the encrypted data. The AP has a copy of the same used key, and uses it to generate an identical key-stream. The AP then performs the XOR operation on the key-stream with the encrypted data thus obtaining the exact same plain data back. This type of encryption can be decrypted relatively easily. A Fluhrer, Mantin and Shamir attack (FMS attack) uses the initialization vectors (IVs) used in RC4 to crack the WEP algorithm. It needs a certain amount of packets to use statistical analysis to recreate the password uses to encrypt the data.
+WEP uses a secret key to encrypt packets sent between a client and the AP \cite{WEP2}. Although, a fundamental underlying problem with WEP is that WEP uses the RC4 encryption algorithm, which is known as a stream cipher. A stream cipher operates by making a short key into a random key-stream. The client uses the XOR operator on the key-stream with the plain data to produce the encrypted data. The AP has a copy of the same used key, and uses it to generate an identical key-stream. The AP then performs the XOR operation on the key-stream with the encrypted data thus obtaining the exact same plain data back. This type of encryption can be decrypted relatively easily. A Fluhrer, Mantin and Shamir attack (FMS attack) uses the initialization vectors (IVs) used in RC4 to crack the WEP algorithm \cite{Weakness}. It needs a certain amount of packets to use statistical analysis to recreate the password uses to encrypt the data.
 
 \begin{figure}[!htbp]
     \centering
@@ -196,27 +149,33 @@ Fortunately mitigation for the flaws of WEP have become industry standard since 
 
 
 \subsection{Mitigation, and vulnerability}
-Attacks such as deauthentication and WEP cracking have been around for a long time, and while they still work in some instances, measures have been made in order to mitigate and lessen the effects of such attacks.
+Attacks such as deauthentication and WEP cracking have been around for a long time. And while they still work in some instances, measures have been made in order to mitigate and lessen the effects of such attacks.
+
 \subsubsection{Mitigation of deauthentication attacks}
-The deauthentication attacks rely on the possibility of any user to send a deauthentication packet to an AP, wherein the integrity of the deauthentication can be forged. This is possible with deauthentication packets made in cleartext and with no integrity check. In order to mitigate this attack, 802.11w, released in 2009, introduced protected management frames (PMF). These mitigated deauthentication attacks by ensuring the integrity in the management frame. The integrity check is achieved by the sender calculating a Message Integrity Check (MIC) value, and appending this to the frame. The receiver then calculates the MIC value using the same algorithm, and compares the two. If the two MIC values match, the frame is considered to not having been tampered with, thus marking it as authentic. Furthermore a frame sequence number(FSN) is introduced, which is used to prevent replay attacks. \cite{IEEE_802.11w}
+The deauthentication attack relies on the possibility of any user to send a deauthentication packet to an AP, wherein the integrity of the deauthentication can be forged. This is possible with deauthentication packets sent in cleartext and with no integrity check. In order to mitigate this attack, 802.11w, released in 2009, introduced protected management frames (PMF). These mitigated deauthentication attacks by ensuring the integrity in the management frame. The integrity check is achieved by the sender calculating a Message Integrity Check (MIC) value, and appending this to the frame. 
+
+The receiver then calculates the MIC value using the same algorithm, and compares the two. If the two MIC values match, the frame is considered to not having been tampered with, thus marking it as authentic. Furthermore a frame sequence number(FSN) is introduced, which is used to prevent replay attacks. \cite{IEEE_802.11w}
 Thus mitigation of deauthentication attacks has been achieved when using protected management frames. 
 
-An additional method of mitigating a deauthentication attack, is simply to survey the packets that are being transmitted on the medium. Since the deauthentication attack consists of transmitting deauthentication packets constantly, this can fairly easily be discovered if surveillance of packets being received is possible. For example, our implementation of the deauthentication transmits a deauthentication packet once every 0.005 seconds which is very much noticeable if one was to see the transmitted packets. Therefore by surveilling the medium with a WIDS (wireless-intrusion-detection-system), the deauthentication attack could be discovered.
+An additional method of mitigating a deauthentication attack, is simply to survey the packets that are being transmitted on the medium. Since the deauthentication attack consists of transmitting deauthentication packets constantly, this can be fairly easy to discover, if surveillance of packets being received is possible. As an example, our implementation of the deauthentication transmits a deauthentication packet once every 0.005 seconds which is very much noticeable if one was to see the transmitted packets. Therefore by surveilling the medium with a WIDS (wireless-intrusion-detection-system), the deauthentication attack could be discovered.
 
 \subsubsection{Vulnerability of deauthentication attacks}
 Though PMF introduced a method of mitigating deauthentication attacks, the use of PMF is still not as widespread as one would think. Since PMF is a setting that should be enabled by the user manually, this is often not done. Thus creating a sizeable vulnerability for many users. The use of PMF will continue to increase in connection with the widening use of WPA3, since PMF are required for WPA3, thus further lowering the vulnerability of deauthentication attacks \cite{WPA3_info}\cite{wpa/pmf}. 
 
-As the system depends on the availability of data frames in order to act and exploit these the system has to be able to obtain these frames. The obvious way is thus to be physically present at the location, consequently doing a so called "on-premise" attack. This has drawbacks as the attacker has to be close to the victim and thus exposing herself to the environment and being easier to catch. Because of this it makes sense to test the equipment's, here the wireless network cards, properties such as how far away from a given victim one needs to be in order to firstly perform the passive scan and secondly perform the required attack (deauthentication or WEP cracking). Similar it can make sense to explore the possibility of creating mobile devices that can be hidden in proximity to the victim, this will be further elaborated at future work. 
+As the system depends on the availability of data frames in order to act and exploit these the system has to be able to obtain these frames. The obvious way is thus to be physically present at the location, consequently doing a so called "on-premise" attack. This has drawbacks as the attacker has to be close to the victim and thus exposing themselves to the environment and being easier to catch. Because of this it makes sense to test the equipment's, here the wireless network cards, properties such as how far away from a given victim one needs to be in order to firstly perform the passive scan and secondly perform the required attack (deauthentication or WEP cracking). Similar it can make sense to explore the possibility of creating mobile devices that can be hidden in proximity to the victim, this will be further elaborated at future work. 
 
 \subsubsection{Vulnerability of WEP cracking}
-The main vulnerability of WEP cracking is the fact that WEP is not in use today. The widespread adoption of WPA2 and later security algorithms means that WEP cracking is not really a problem today. All cracking of WiFi traffic requires the capture of packets that are being sent. Therefore the best way to stop this would be to make sure that as little sensitive information as possible is being sent over WiFi. The attacker also has to be close to the sender and receiver to collect these packet being sent and so APs could be set to only broadcast in a small area at for example a workplace so that packets can't be collected from outside. 
+APs that use WEP are very vulnerable to attack, but the main defense is the fact that almost no-one uses WEP today. The widespread adoption of WPA2 and later security algorithms means that WEP cracking is not really a problem today. All cracking of WiFi traffic requires the capture of packets that are being sent. Therefore the best way to stop this would be to make sure that as little sensitive information as possible is being sent over WiFi. The attacker also has to be close to the sender and receiver to collect these packet being sent and so APs could be set to only broadcast in a small area at for example a workplace so that packets can't be collected from outside. 
+
 \section{Implementation}
 
 \subsection{Method}
 The implementation of the system is based on the agile software development method. This means that the development of the system with its underlying blocks is done in iterations, where each iteration builds on top of the former. 
 The agile method is used because it allows for a more flexible development process, where the system can be changed and adapted to new requirements as the development progresses. This is especially useful in a project such as this, where we were not exactly sure of the scope and functionality at the beginning.
-In order to ensure a high quality of the code, we have used the PEP8 standard for Python code. Likewise we all agreed to follow at a reasonable extend the "Google Python Style Guide" (https://google.github.io/styleguide/pyguide.html). The PEP8 standard is a set of rules for how Python code should be written, and is used to ensure that the code is readable and understandable for other developers. This is especially useful in a project such as this, where the code is written by multiple developers.
-We have further used code-reviews to ensure a common understanding of the code and that the code is similar in nature. We've done the code review by having one developer walkthrough the code whilst the others have come with feedback and questions. This has been done for all the code that has been written. 
+
+In order to ensure a high quality of the code, we have used the PEP8 standard for Python code. Likewise we all agreed to follow the "Google Python Style Guide", where reasonable \cite{PEP}. The PEP8 standard is a set of rules for how Python code should be written, and is used to ensure that the code is readable and understandable for other developers. This is especially useful in a project such as this, where the code is written by multiple developers.
+We have further used code-reviews to ensure a common understanding of the code and that the code is similar in nature. We've done the code review by having one developer walk through the code whilst the others have come with feedback and questions. This has been done for all the code that has been written. 
+Overall we have focused on writing clean and readable code, that would be somewhat easy to build on top of.
 
 
 
@@ -231,9 +190,7 @@ The implementation is based purely on Python3 and the library Scapy. Figure \ref
 \subsection{Mapping of networks}
 The WiFi-scanner is the backbone of our implementation. It listens to all data that is transferred over WiFi and subsequently creates the lists that the deauthentication uses and captures packets for the password cracker. The point of this functionality is to gather information about APs and the associated clients, the logic for this implementation is shown in figure \ref{Flowchart} as a flowchart.
 
-\newpage
-
-\begin{figure}[!htbp]
+\begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{Latex-Files/Billeder/Flowcharts/network_flowchart.png}
     \caption{Flowchart for mapping of WLAN}
@@ -242,7 +199,7 @@ The WiFi-scanner is the backbone of our implementation. It listens to all data t
 
 \newpage
 
-Firstly a system check is performed to ensure that the program is running on a UNIX system, as the program is not compatible with other systems. A possible operating system error is shown on figure \ref{W_error}.
+Firstly a check is performed to ensure that the program is running on a UNIX system, as the program is not compatible with other systems. A possible operating system error is shown on figure \ref{W_error}.
 
 \begin{figure}[!htbp]
     \centering
@@ -251,11 +208,11 @@ Firstly a system check is performed to ensure that the program is running on a U
     \label{W_error}
 \end{figure}
 
-Then the program checks if the user is running the program as root, as this is required for Scapy to capture packets and go into monitor mode (this could also be done by creating a special user with the needed groups). The passive scan is split into two main tasks, the first being the scanning for APs and the second being the scanning for clients. 
+Then a check is done to ensure the user is running the program as \textit{root}, as this is required for Scapy to capture packets and go into \textit{monitor mode} (this could also be done by creating a special user with the needed groups). The passive scan is split into two main tasks, the first being the scanning for APs and the second being the scanning for clients. 
 Even tough it is viewed as two different tasks, the data obtained for the above classification is done once and then processed.
 The scanning for APs is done by sniffing for beacon frames, which are sent by APs to announce their presence.
 
-The sniffing is done by using the Scapy function "sniff", which is very similar to wiresharks capture and takes a filter as an argument, this function is used when scanning for APs. The function is set to run for a specified timeout duration. This is done to ensure that the program does not run indefinitely, and thereby potentially causing issues with the system. The code for part of this is shown in figure \ref{Scan1}.
+The sniffing is done by using the Scapy function \lstinline{sniff}, which is very similar to Wireshark's capture and takes a filter as an argument, this function is used when scanning for APs. The function is set to run for a specified timeout duration. This is done to ensure that the program does not run indefinitely, and thereby potentially causing issues with the system. The code for part of this is shown in figure \ref{Scan1}.
 \begin{figure}[!htbp]
     \centering
     \includegraphics[width=0.6\textwidth]{Latex-Files/Billeder/Implementation/AP_Scan.png}
@@ -265,7 +222,7 @@ The sniffing is done by using the Scapy function "sniff", which is very similar 
 
 The scanning is done on each network channel in turn, where it scans for beacon frames from the APs. It returns the BSSID (MAC-address), SSID, signal strength, channel and the cryptography of each AP and other fields if they exists (country, max bitrate and beacon interval). As the main focus for the scanning is to obtain APs, the minimal time to scan for each channel is found as described in the theory, equation \ref{tallchannels}. Thus by using the general default value of beacon interval at 100 TU and 14 channels the optimal time per channel is 0.205 s and time for the full scan is then 2.87 s.  
 
-This is however a very theoretical value and does not take the time it takes to switch channel into account. Thus examining the time for a scan of all channels gives us approximately 6.11 seconds, thus rounding to 7 makes sure that there is a small wiggle room. This is further shown in figure \ref{timne_to_scan}. Yet it is surprising that the changing of channels is just as time consuming as being in the scan. Further an issue with going through each channel means that some of the 2.4 GHz spectrum is not scanned at all times, thus traffic will be missed. Different approaches to solving this can be done, such as using more interfaces or staying in channels that are more centered thus catching the surrounding channel's traffic as well (such as channel 4 and 8). Yet it has not been deemed important for this project as single data frames are not necessary to create a topology. 
+This is however a very theoretical value and does not take the time it takes to switch channel into account. Thus examining the time for a scan of all channels gives us approximately 6.11 seconds, thus rounding to 7 makes sure that there is a small wiggle room. This is further shown in figure \ref{time_to_scan}. Yet it is surprising that the changing of channels is just as time consuming as being in the scan. Further an issue with going through each channel means that some of the 2.4 GHz spectrum is not scanned at all times, thus traffic will be missed. Different approaches to solving this can be done, such as using more interfaces or staying in channels that are more centered thus catching the surrounding channel's traffic as well (such as channel 4 and 8). Yet it has not been deemed important for this project as every single data frames are not necessary to create a topology. 
 
 \begin{figure}[!htbp]
     \centering
@@ -301,7 +258,7 @@ We use the obtained data that we found and then look at packets being sent and c
 
 Further optimization can be done to create better filters and most importantly use all data sent over the medium to create a more complete map of the WLAN. This however has not been done in the current level of implementation and might be deemed unnecessary as the needed data is obtained.
 
-As this tool can be a standalone tool, but could be used in other projects a JSON object of the topology has been implemented based on the WLAN scan. The code for the implementation can be seen on figure \ref{create_json_code}. A scan's JSON object can be seen on figure \ref{json_scan}.
+As this tool can be a standalone tool, but could be used in other projects a json object of the topology has been implemented based on the WLAN scan. The code for the implementation can be seen on figure \ref{create_json_code}. A scan's json object can be seen on figure \ref{json_scan}.
 
 \begin{figure}[!htbp]
     \centering
@@ -314,17 +271,17 @@ As this tool can be a standalone tool, but could be used in other projects a JSO
       \begin{subfigure}{0.49\textwidth}
          \centering
          \includegraphics[width=\textwidth]{Latex-Files/Billeder/JSON_object.png}
-         \caption{JSON object from scan}
+         \caption{json object from scan}
          \label{json_scan}
      \end{subfigure}
      \caption{}
 \end{figure}
 
-The topology of the WLAN based on the JSON data from the scan has been used to create a graphical topology for the user. This has been done using the python library networkx. An example can bee seen on figure \ref{network_topology}.
+The topology of the WLAN based on the json data from the scan has been used to create a graphical topology for the user in a PNG format. This has been done using the python library \textit{networkx}. An example can bee seen on figure \ref{network_topology}.
 
 \begin{figure}[!htbp]
     \centering
-    \includegraphics[width=0.5\textwidth]{Latex-Files/Billeder/network_topology.png}
+    \includegraphics[width=0.4\textwidth]{Latex-Files/Billeder/network_topology.png}
     \caption{Example of a network topology when scanning}
     \label{network_topology}
 \end{figure}
@@ -332,7 +289,7 @@ The topology of the WLAN based on the JSON data from the scan has been used to c
 
 
 
-\subsubsection{Limitations}
+\subsubsection*{Limitations}
 The implementation is limited to only being able to scan for APs and clients in the 2.4 GHz band. This is a physical limitation due to the fact that the dongle used for the implementation only supports the 2.4 GHz band.
 The mapping of the network is done by passively scanning the medium, thus resulting in the implementation being limited to only having the ability to scan for APs and clients that are actively sending data. This is a limitation that is inherent to passive scanning. It can be overcome by using active scanning e.g. via a Replay Attack (which can force a device to send specific packets).
 
@@ -375,15 +332,15 @@ We have then decided to show another prompt menu which gives the user the option
      \caption{}
 \end{figure}
 
-After a target AP and a target client has been defined, the "deauth" function, seen in figure \ref{deauth_func_code}, is then called. This function is what creates the appropriate deauthentication packets. The instantiation of the packet works by stacking layers on top of each other. In this case the packet is created by first making a RadioTap layer, which is responsible for sending the packet we create.
+After a target AP and a target client has been defined, the \lstinline{deauth} function, seen in figure \ref{deauth_func_code}, is then called. This function is what creates the appropriate deauthentication packets. The instantiation of the packet works by stacking layers on top of each other. In this case the packet is created by first making a RadioTap layer, which is responsible for sending the packet we create.
 
-Then a Scapy "Dot11" layer is made, which represents a basic 802.11 frame. Here the type i set to 0, indicating a management frame, and the subtype to 12 indicating a deauthentication frame. From here the addresses are defined for the target of the frame. 
+Then a Scapy "Dot11" layer is made, which represents a basic 802.11 frame. Here the type is set to 0, indicating a management frame, and the subtype to 12 indicating a deauthentication frame. From here the addresses are defined for the target of the frame. 
 
 Finally the last layer is added, this being the "Dot11Deauth" layer which here defines a reason code for the deauthentication. This reason code is set to be 7 by default, which corresponds to the reason "Class 3 frame received from non-associated STA" \cite{Cisco_Deathentication_reasoncodes}. In a communications relation, the reason code provides important information about the cause of the deauthentication. However it is not an integral part of the deauthentication action itself, therefore the reason code is just given as a random number we have chosen.
 Although it does not have a functional use, the reason code could in practice improve a deauthentication attack, by using appropriate reason codes, thus further concealing the fact that it is of malicious nature.
 
 Subsequently a line is printed to the console notifying the user that a deauthentication attack will commence, combined with the target for the attack.
-Ultimately the "sendp" function sends the beforehand created deauthentication frame on the second layer of the OSI model. Since this is where the deauthentication frames are transmitted\cite{data-link-layer}.
+Ultimately the \lstinline{sendp} function sends the beforehand created deauthentication frame on the second layer of the OSI model. Since this is where the deauthentication frames are transmitted\cite{data-link-layer}.
 
 
 Figure \ref{deauth_attack} shows the output presented to the user, when performing the deauthentication attack. The user can here choose to selectively deauthenticate a single client. Alternately the user possesses the option to deauthenticate all clients from the targeted AP. Upon the user inputting a choice, the program begins transmitting the packet constructed. The deauthentication attack is continuous and will only stop when interrupted by the user. Using the keyboardinterrupt, as seen done in figure \ref{deauth_attack}. 
@@ -422,11 +379,11 @@ First a menu is shown where the user can chose between scanning for packets and 
 \end{figure}
 
 
-Afterwards the packets are saved in a file that can then be read by Aircrack-ng. Aircrack-ng is run in a terminal on the file "IV\_file.cap.
+Afterwards the packets are saved in a file that can then be read by Aircrack-ng. Aircrack-ng is run in a terminal on the file "IV\_file.cap".
 
 Aircrack-ng is made up of commands that is used to manipulate data, it is not code written directly. This has the consequence that most of the implementation will be in the mapping of networks part. 
 
-The way Scapy saves the packets has the consequences that Aircrack-ng cannot use the PTW method of cracking for passwords and subsequently it uses the lesser method, FMS, which requires a minimum of 250.000 packets, about 15 times more packets \cite{Weakness}. Therefore it needs a lot more time to crack the network. 
+The way Scapy saves the packets has the consequence that Aircrack-ng cannot use the PTW method of cracking for passwords and subsequently it uses the lesser method, FMS, which requires a minimum of 250.000 packets, about 15 times more packets \cite{Weakness}. Therefore it needs a lot more time to crack the network. PTW is an attack developed about 5 years after the FMS attack and is much better \cite{PTW}.
 
 
 A successful test has also been completed with the use of Airodump-ng which is a part of Aircrack-ng.
@@ -450,7 +407,7 @@ As we can see the test was successfully completed and DTUsecure, eduroam, DTUdev
 
 \subsection{Deauthentication}
 
-The deauthentication of a Macbook was tested. It was connected to a smartphone set up as an AP (using WPA2) and both the Macbook and the AP showed up. We started a constant ping on the Macbook and afterwards started the deauth attack. The pinging i shown on figure \ref{Test2}.
+The deauthentication of a Macbook was tested. It was connected to a smartphone set up as an AP (using WPA2) and both the Macbook and the AP showed up. We started a constant ping on the Macbook and afterwards started the deauth attack. The pinging is shown on figure \ref{Test2}.
 
 \begin{figure}[!htbp]
      \centering
@@ -459,7 +416,7 @@ The deauthentication of a Macbook was tested. It was connected to a smartphone s
      \label{Test2}
 \end{figure}
 
-Figure \ref{Test2} shows the result of the attack. This attack was run by deauthenticating a single client. it is evident that the pinging to google works in absence of complications, however when the deauthentication attack is deployed, the pinging encounters issues and outputs "No route to host". Thereby denying the client service, and disconnecting the client from the internet. We then tested on a Windows PC as seen on figure \ref{Test3}.
+Figure \ref{Test2} shows the result of the attack. This attack was run by deauthenticating a single client. It is evident that the pinging to google works in absence of complications, however when the deauthentication attack is deployed, the pinging encounters issues and outputs "No route to host". Thereby denying the client service, and disconnecting the client from the internet. We then tested on a Windows PC as seen on figure \ref{Test3}.
 
 \begin{figure}[!htbp]
     \centering
@@ -468,7 +425,7 @@ Figure \ref{Test2} shows the result of the attack. This attack was run by deauth
     \label{Test3}
 \end{figure}
 
-As with the test on the macbook, it is here evident that a stable connection is in place in the beginning. Whereas once the deauthentication attack is deployed, the connection is interrupted. Thereby showing that the deauthentication attaack works on both the Windows and Mac operating system.
+As with the test on the MacBook, it is here evident that a stable connection is in place in the beginning. Whereas once the deauthentication attack is deployed, the connection is interrupted. Thereby showing that the deauthentication attack works on both the Windows and Mac operating system.
 
 \begin{figure}[H]
     \centering
@@ -478,7 +435,6 @@ As with the test on the macbook, it is here evident that a stable connection is 
 \end{figure}
 
 As well as testing the deauthentication by pinging, we have examined the packets themselves using Wireshark. In figure \ref{deauth_pcap} the deauthentication packets sent out can be observed. It is evident that as expected, our program transmits deauthentication packets for the designated target. The deauthentication packets were, in this test, broadcasted in order to deauthenticate all clients connected to the AP. 
-Notice packet number 381, which is an acknowledgement, thus confirming the deauthentication of the client.
 
 
 \begin{figure}[H]
@@ -492,7 +448,7 @@ Delving deeper into a particular deauthentication packet transmitted, as shown i
 
 
 \subsubsection{Examination of deauthentication frame interval}
-Examining the test on frame interval, with results seen in table \ref{Examination of deauthentication frame interval}, as standpoint, the interval in which each deauthenticaion frame is sent from the attacker is examined in order to propose an ideal interval. The setup has been tested outside for the minimal amount of interference and reflection from surface areas and has been done with the wireless dongles Qualcomm Atheros UB93 and the Realtek DWA 131-E1 for the attacker and defender respectively in order to simulate a likely setup. For the first test, the distance was 1 meter between the users, such that distance would not affect the result. The test parameters was a qualitative answer to if the user was successfully deauthenticated and how many packets was sent and how many where received and the loss. The resulting data can be seen in table \ref{Examination of deauthentication frame interval}.
+Examining the test on frame interval, with results seen in table \ref{Examination of deauthentication frame interval}, as standpoint, the interval in which each deauthenticaion frame is sent from the attacker is examined in order to propose an ideal interval. The setup has been tested outside for the minimal amount of interference and reflection from surface areas and has been done with the wireless dongles Qualcomm Atheros UB93 and the Realtek DWA 131-E1 for the attacker and defender respectively in order to simulate a likely setup. For the first test, the distance was 1 meter between the users, such that distance would not affect the result. The test parameters was a qualitative answer to if the user was successfully deauthenticated, how many packets was sent and how many were received. The resulting data can be seen in table \ref{Examination of deauthentication frame interval}.
 
 \begin{table}[!htbp]
 \centering
@@ -540,7 +496,7 @@ Distance {[}m{]} & Deauthenticated? & Packets send & Packets recieved & Loss    
 
 It is evident that the distance is clearly affecting the loss ratio: The further away the attacker is from the target, the worse the attack performs, and at 15 meters and above, the attack completely fails at deauthenticating the client. This further validates the vulnerability of the attack type in that the main requirement is that the attacker is very close to the client and that this places limitations on the attack thus further segmenting it as an on-premise attack.
 
-The very high packet loss, at minimum 75\%, for both tests, regardless of distance or interval is caused by the environment affecting the setup (reflections, temperature, humidity etc.), but the most significant factor is the channel changing implementation. The program is set up to switch channels every 0.205 seconds as explained in the implementation and as a consequence, the client only receives deauthentication packets when the attacker is on the same, or surrounding, channels as the client, which accounts for approximately 4 to 5 channels. Backhanded math shows that this equals about $\frac{5}{14} = 35\%$ of the channels and thereby about 35\% of the time and so a minimum of 75\% of the packets are lost, which is clearly shown in test and the rest is accounted for by the environmental impact.
+The very high packet loss, at a minimum of 75\%, for both tests, regardless of distance or interval is caused by the environment affecting the setup (reflections, temperature, humidity etc.), but the most significant factor is the channel changing implementation. The program is set up to switch channels every 0.205 seconds as explained in the implementation and as a consequence, the client only receives deauthentication packets when the attacker is on the same, or surrounding, channels as the client, which accounts for approximately 4 to 5 channels. Backhanded math shows that this equals about $\frac{5}{14} = 35\%$ of the channels and thereby about 35\% of the time and so a minimum of 65\% of the packets are lost, which is clearly shown in test and the rest is accounted for by the environmental impact.
 
 \subsection{Password Cracking}
 Two tests where done for password cracking, one only using Aircrack-ng to test if our AP was compatible and if Aircrack-ng works. The second test was about if our program could get the required IVs to make Aircrack-ng crack the WEP protected AP.
@@ -558,9 +514,9 @@ This test was only using Aircrack-ng and Airodump-ng, a subfunction of Aircrack-
 
 The test was that an AP, with the capability to use WEP, was set up and connected to a wider network on the internet and then made to use WEP with passkeys, as seen on figure \ref{Crack2}. Then a computer using Linux was connected to that AP and a constant stream of data was created by watching YouTube. Then another computer was setup to monitor these data-packets and capture those that contain an initialization vector (IV). 
 
-There was a small problem with the connection between the AP and the wider internet, so we had to constantly pull the Ethernet plug and replug. This was probably because the wider network didn't like using WEP, and that was also why YouTube did not actually work. So the computer sent and received data-packets from the AP only. Enough data-packets where still created and so a large .pcap file was made with about 10.000 IV packets. 
+There was a small problem with the connection between the AP and the wider internet, so we had to constantly pull the Ethernet plug and replug. This issue was due to our hardware being out of date, which made Youtube work poorly. So the computer sent and received data-packets from the AP only. Enough data-packets where still created and so a large .pcap file was made with about 10.000 IV packets. 
 
-\begin{figure}[!htbp]
+\begin{figure}[H]
     \centering
     \includegraphics[width=0.5\textwidth]{Latex-Files/Billeder/Kode1.png}
     \caption{Aircrack-ng finding the password}
@@ -568,8 +524,8 @@ There was a small problem with the connection between the AP and the wider inter
 \end{figure}
 
 
-Then Aircrack-ng was used on this .pcap file to find the passkey, which it did after 40 seconds. The passkey corresponds with one of the chosen passkeys on the AP. We can see the result on figure \ref{Crack1}.
-
+Then Aircrack-ng was used on this .pcap file to find the passkey, which it did after 40 seconds. The passkey corresponds with one of the chosen passkeys on the AP. We can see the result on the bottom of figure \ref{Crack1}. The result shows that the key "8C:F7:A8:AC:86" was found, comparing this to the keys set, seen in figure \ref{Crack2}, this corresponds to key 2, thus confirming the crack was successful.
+\subsubsection{Test 2: Our own function + Aircrack-ng}
 Next a test was done using the programs \lstinline{get_ivs} function on the same AP with a different password. The options of the AP is shown on figure \ref{Crack3} 
 \begin{figure}[!htbp]
     \centering
@@ -589,7 +545,7 @@ A computer was connected to this AP that was connected to the internet and a You
 
 Now the crack could be started on Aircrack with the FMS attack and it took a minute longer to complete and gave the correct code out. This shows that our program can be used to get the IVs required to crack a WEP protected AP.
 
-\section{How to Run}
+\section{User Guide}
 This section highlights requirements to run the program, as well as outlining how to run the program. 
 
 An example run of the system has been recorded and uploaded to YouTube as a guide for the user, watch it here:
@@ -598,7 +554,7 @@ An example run of the system has been recorded and uploaded to YouTube as a guid
 The program has a repository on GitHub, which can be accessed through the link underneath.
 \url{https://github.com/s214684/fagprojekt}
 \subsection{General Requirements}
-The program must be run on a Linux system. If run on a windows or mac, the program will raise an exception, and terminate the program. Furthermore the user must run the program as root ("sudo"), if not the program will terminate.
+The program must be run on a Linux system. If run on a windows or mac, the program will raise an exception, and terminate the program. Furthermore the user must run the program as root ("sudo"), if not the program will terminate. In order to run the program correctly a \textit{requirements.txt} file has been created as well, with the needed python packages. It can be installed by the command \textit{pip install  -r path/to/project/requirements.txt}.
 Lastly the user must have a network card capable of monitor mode, if not the program will terminate.
 \subsection{Network Scan}
 Most functionalities of the program require a populated map of the network, this is achieved by scanning the network. 
@@ -620,6 +576,12 @@ The user can subsequently choose to crack that AP, however, since the program is
 From the main menu, the user can go to the options menu. Wherein he/she can choose between the timeout, which defines the time for scanning for packets to populate the network topology. The default is 7 seconds, which should be enough to get all APs and some clients if they are active on the network. If not, the user can set a longer timeout. The user can also choose another interface in case he/she has multiple interfaces set up. This is only recommended for advanced users as the default should work.
 
 \section{Discussion}
+\subsection{Result}
+We have succeeded in what we set out to do in that we have created a program which is able to scan local networks and do deauthentication attacks and WEP attacks. But it has some limitations. 
+
+First of all it can only scan networks in the 2.4 GHz spectrum as our dongles can only scan in that spectrum. It is also only scanning through passive scanning which means that it has a risk of missing APs or clients that are not active in the WLAN. This could be solved by using active scanning, but it has the inherent risks of being caught by WIDS. In regards to our deauthentication: We have succeeded in doing a deauthentication attack, but have found that it has a relatively short range, which means that it is an "on-premise" attack , the range can of course be altered with better equipment. Also the continued increase in adoption of WPA3/PMF means that our type of deauthentication attack is less and less viable as a means of deauthentication as it does not work with PMF. As a result there is a probable expiration date for our attack in the next 10 years when WPA3 will be a more and more common security algorithm. 
+
+The main problem with our WEP cracker is that almost no-one uses WEP security today and therefore our program is only able to crack an AP that we set up ourselves, yet the examination of obtaining the secret-key has solely been for exploratory and educational purpose to get an insight in the vulnerability. So it has no actual impact on the real world. Yet without understanding former vulnerabilities it can be hard to understand newer, more sophisticated ones.
 
 
 \subsection{Main Challenges}
@@ -644,25 +606,57 @@ The mitigation and discovery of the implemented attacks could also be researched
 
 
 \section{Conclusion}
-In this project we have investigated network traffic by mapping local WiFi networks using python and the tool Scapy to show all APs connected and the clients connected to these networks. By obtaining knowledge of the WLAN it was managed to send deauthentication frames from a spoofed source address, hence doing a deauthentication attacks to disconnect one or more clients from using wireless networking. By doing this we gained advanced knowledge about different types of frames and subframes in the 802.11 standard as well as a thorough understanding of the attacks. The security algorithm in the 802.11, namely WEP has been examined and exploited to understand fundamental methods as statistical analysis to exploit flaws in the algorithm. Yet there is still work left in order to explore mitigations for the different attacks. Likewise there is work left in order to ensure stability and integrity of the attacks, and anonymity when performing the attacks.  
+In this project we have investigated network traffic by mapping local WiFi networks using python and the tool Scapy to show all APs connected and the clients connected to these networks. By obtaining knowledge of the WLAN it was managed to send deauthentication frames from a spoofed source address, hence doing a deauthentication attacks to disconnect one or more clients from using wireless networking. By doing this we gained advanced knowledge about different types of frames and subframes in the 802.11 standard as well as a thorough understanding of the attacks. The security algorithm in the 802.11, namely WEP has been examined and exploited to understand fundamental methods as statistical analysis to exploit flaws in the algorithm. Yet there is still work left in order to explore further mitigations for the different attacks. Likewise there is work left in order to ensure stability and integrity of the attacks, and anonymity when performing the attacks.  
 During this project we also increased our knowledge of python programming and networking toolboxes that use python, which gives a broad understanding of how packets are structured. 
 
 
 \section{Appendix}
 
-\section{Peer Feedback}
-We received feedback about some theory that should be added about Scapy. We fixed this by giving more information about Scapy.
+\subsection{Peer Feedback}
+We received feedback about some theory that should be added about Scapy. We fixed this by giving more information about Scapy. We also needed a section on active vs. passive scanning which would explain why we used on over the other and what the risk vs. rewards. 
 We also changed how we inserted our code snippets as a screenshot of dark code makes it hard to read, so we fixed it by adding the code inside the report as text. 
 We added a small section after the introduction showing who wrote what as it was proposed in the peer-review in order to obtain a quick overview.
+A criticism was that we needed more figures in our report to make it easier to understand the theory and this was improved by adding more flowcharts, as well as other illustrations simplifying the concepts. 
+We also needed more tests which was also done with the completion of our program which also added a discussion of our results, that was also needed. 
+We also changed the contributor to be a table at the start of the report as some reviewers liked that over writing it at the start of each section.
 
-\section{Collaborative Experience}
+\subsection{Collaborative Experience}
 Our collaboration revolved around an approach, in which we collectively tackled project tasks and thought about the most effective strategies for their execution. We then divided the workload among the three group members, allowing each individual to focus on specific components.
-Afterwhich we merged our contributions into a coherent program. During this phase, we engaged in discussions, exchanging expertise and gaining a deep understanding of our respective work. These interactions secured a full understanding of the project as an entirety for the whole group.
+After which we merged our contributions into a coherent program. During this phase, we engaged in discussions, exchanging expertise and gaining a deep understanding of our respective work. These interactions secured a full understanding of the project as an entirety for the whole group.
+This ensured a very even split of workload, no one group member has contributed significantly more than others. 
 Throughout the 13-week period, we generally stuck to our planned schedule, although we found ourselves working more than anticipated. As a result, during the subsequent 3-week period, our initial time estimates were somewhat conservative. Thereby giving us extra time for smaller features of the program, such as the logger.
 
 
+\subsection{Contributors}
+
+\begin{table}[!htbp]
+\centering
+\begin{tabular}{|l|l|l|}
+\hline
+
+\textbf{Section}   & \textbf{Contributor} & \textbf{Reviewer} \\ \hline
+Abstract           & Oliver               & Lucas             \\ \hline
+Introduction       & Nicklas              & Oliver            \\ \hline
+Functionality      & Everyone             & Everyone          \\ \hline
+Theory 3.1         & Lucas                & Oliver            \\ \hline
+Theory 3.2         & Oliver               & Nicklas            \\ \hline
+Theory 3.3         & Nicklas              & Oliver            \\ \hline
+Theory 3.4         & Lucas                & Nicklas            \\ \hline
+Theory 3.5         & Nicklas              & Lucas            \\ \hline
+Implementation 4.1 & Oliver               & Nicklas           \\ \hline
+Implementation 4.2 & Nicklas              & Lucas             \\ \hline
+Implementation 4.3 & Lucas                & Oliver            \\ \hline
+Implementation 4.4 & Lucas                & Nicklas            \\ \hline
+Implementation 4.5 & Oliver               & Lucas            \\ \hline
+Tests 5.1          & Oliver               & Lucas             \\ \hline
+Tests 5.2          & Nicklas              & Lucas             \\ \hline
+Tests 5.3          & Lucas                & Nicklas           \\ \hline
+User Guide         & Nicklas              & Oliver           \\ \hline
+Discussion         & Oliver               & Nicklas            \\ \hline
+Conclusion         & Lucas                & Oliver            \\ \hline
+\end{tabular}
+\end{table}
+
 
 \newpage
-
 \listoffigures
-
